@@ -196,8 +196,8 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
         window.API.adminDiagnoses()
       ]);
       setRealData({
-        users: users.users || users || [],
-        scans: scansData.diagnoses || scansData || []
+        users: Array.isArray(users) ? users : (users.users || []),
+        scans: Array.isArray(scansData) ? scansData : (scansData.scans || scansData.diagnoses || [])
       });
     } catch (err) {
       console.error('[Admin] Live fetch failed:', err);
@@ -299,13 +299,13 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
           {tab === 'overview'  && <Overview data={demoMode ? null : realData} />}
           {tab === 'users'     && <UsersTable data={demoMode ? null : realData.users} />}
           {tab === 'diagnoses' && <DiagnosesTab data={demoMode ? null : realData.scans} />}
-          {tab === 'outbreaks' && <OutbreaksTab />}
-          {tab === 'whatsapp'  && <WhatsAppOps />}
-          {tab === 'sponsors'  && <SponsorsTab />}
-          {tab === 'revenue'   && <RevenueTab />}
-          {tab === 'catalog'   && <CatalogTab />}
+          {tab === 'outbreaks' && <OutbreaksTab demoMode={demoMode} />}
+          {tab === 'whatsapp'  && <WhatsAppOps demoMode={demoMode} />}
+          {tab === 'sponsors'  && <SponsorsTab demoMode={demoMode} />}
+          {tab === 'revenue'   && <RevenueTab demoMode={demoMode} />}
+          {tab === 'catalog'   && <CatalogTab demoMode={demoMode} />}
           {tab === 'api'       && <ApiKeysTab />}
-          {tab === 'team'      && <TeamTab />}
+          {tab === 'team'      && <TeamTab demoMode={demoMode} />}
         </div>
       </main>
 
