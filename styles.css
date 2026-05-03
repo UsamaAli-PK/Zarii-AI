@@ -1,0 +1,167 @@
+/* ZARii AI — Design tokens & global styles */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Nastaliq+Urdu:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Brand palette */
+  --green-900: #1F4A2C;
+  --green-700: #2E6B3F;   /* primary */
+  --green-500: #66A64F;   /* accent */
+  --green-300: #9DCB7C;   /* light */
+  --green-100: #E4F0D8;   /* tint */
+  --green-50:  #F1F7E9;   /* faint tint */
+  --amber:     #F4A62A;   /* highlight */
+  --amber-soft:#FCD58A;
+  --cream:     #F7E8C6;   /* surface warm */
+  --cream-50:  #FBF4E2;
+  --ink:       #2B2B2B;
+  --ink-soft:  #4A4A4A;
+  --ink-mute:  #7E7E7E;
+  --line:      #E6E0D1;
+  --line-soft: #F1ECDD;
+  --bg:        #FBFAF4;
+  --paper:     #FFFFFF;
+
+  --font-en:   'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-ur:   'Noto Nastaliq Urdu', 'Noto Naskh Arabic', serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --radius-sm: 10px;
+  --radius:    14px;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+
+  --shadow-sm: 0 1px 2px rgba(31, 74, 44, 0.06), 0 0 0 1px rgba(31, 74, 44, 0.04);
+  --shadow:    0 4px 16px rgba(31, 74, 44, 0.08), 0 0 0 1px rgba(31, 74, 44, 0.04);
+  --shadow-lg: 0 16px 40px rgba(31, 74, 44, 0.14), 0 0 0 1px rgba(31, 74, 44, 0.04);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-en);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+input, textarea { font-family: inherit; }
+
+.urdu { font-family: var(--font-ur); direction: rtl; line-height: 2; }
+.urdu-inline { font-family: var(--font-ur); direction: rtl; unicode-bidi: isolate; }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 15px;
+  transition: transform .12s ease, background .15s ease, box-shadow .15s ease;
+  white-space: nowrap;
+}
+.btn:active { transform: translateY(1px); }
+.btn-primary {
+  background: var(--green-700); color: #fff;
+  box-shadow: 0 6px 14px rgba(46, 107, 63, 0.28);
+}
+.btn-primary:hover { background: var(--green-900); }
+.btn-secondary {
+  background: var(--paper); color: var(--green-900);
+  box-shadow: inset 0 0 0 1.5px var(--green-700);
+}
+.btn-secondary:hover { background: var(--green-50); }
+.btn-ghost { color: var(--green-900); }
+.btn-ghost:hover { background: var(--green-50); }
+.btn-amber {
+  background: var(--amber); color: #2B1F00;
+  box-shadow: 0 6px 14px rgba(244, 166, 42, 0.32);
+}
+.btn-amber:hover { filter: brightness(0.96); }
+.btn-wa {
+  background: #25D366; color: #fff;
+  box-shadow: 0 6px 14px rgba(37, 211, 102, 0.30);
+}
+.btn-wa:hover { background: #1EBE5C; }
+
+.btn-lg { padding: 16px 28px; font-size: 16px; }
+.btn-sm { padding: 8px 14px; font-size: 13px; }
+
+/* Cards */
+.card {
+  background: var(--paper);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line-soft);
+}
+
+/* Tags */
+.tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.tag-green { background: var(--green-100); color: var(--green-900); }
+.tag-amber { background: #FDE9C2; color: #6E4A00; }
+.tag-cream { background: var(--cream); color: var(--green-900); }
+.tag-red { background: #FCDFD9; color: #8A2A1B; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #DCD5C2; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: #C7BF9F; }
+
+/* Utility */
+.divider {
+  height: 1px; background: var(--line-soft); margin: 16px 0;
+}
+
+/* Animated stuff */
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 rgba(244, 166, 42, 0.55); }
+  70%  { box-shadow: 0 0 0 28px rgba(244, 166, 42, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(244, 166, 42, 0); }
+}
+@keyframes pulseRingGreen {
+  0%   { box-shadow: 0 0 0 0 rgba(102, 166, 79, 0.45); }
+  70%  { box-shadow: 0 0 0 24px rgba(102, 166, 79, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(102, 166, 79, 0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+@keyframes mic-bar {
+  0%, 100% { transform: scaleY(0.3); }
+  50%      { transform: scaleY(1.0); }
+}
+@keyframes scanline {
+  0%   { top: 0; }
+  100% { top: 100%; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #EFE9D6 0%, #F8F2DF 40%, #EFE9D6 80%);
+  background-size: 800px 100%;
+  animation: shimmer 1.6s infinite linear;
+  border-radius: 8px;
+}
+
+/* App frame */
+#root { min-height: 100vh; }

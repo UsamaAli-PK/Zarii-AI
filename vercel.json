@@ -1,0 +1,34 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "backend/server.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/backend/server.js" },
+    { "source": "/webhooks/(.*)", "destination": "/backend/server.js" },
+    { "source": "/webhook", "destination": "/backend/server.js" },
+    { "source": "/uploads/(.*)", "destination": "/backend/server.js" },
+    { "source": "/diseases(.*)", "destination": "/backend/server.js" },
+    { "source": "/pesticides(.*)", "destination": "/backend/server.js" },
+    { "source": "/farmers(.*)", "destination": "/backend/server.js" },
+    { "source": "/learn(.*)", "destination": "/backend/server.js" },
+    { "source": "/sitemap.xml", "destination": "/backend/server.js" },
+    { "source": "/robots.txt", "destination": "/backend/server.js" },
+    { "source": "/admin", "destination": "/backend/server.js" }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/backend/server.js"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron",
+      "schedule": "0 * * * *"
+    }
+  ]
+}

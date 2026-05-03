@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Env / Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build / IDE
+dist/
+build/
+.cache/
+.vscode/
+.idea/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Agent / AI Assistant specific
+.claude/
+.local/
+.agents/
+.gemini/
+brain/
+scratch/
+pup.js
+scratch_*.js
+
+# Legacy / Local Data
+data/
+*.db
+*.sqlite
+*.shm
+*.wal
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Project-Specific Exclusions
+audits/
+attached_assets/
+uploads/
+replit.md
+claude.md
+DOCUMENTATION_OLD.md
+*.tmp
+temp/

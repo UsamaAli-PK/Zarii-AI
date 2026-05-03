@@ -1,0 +1,262 @@
+{
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\api.js": {
+    "mtime": 1777792834.3482418,
+    "hash": "4441e7cc83e7d6ad4da2741fe73ca5fb"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\app.jsx": {
+    "mtime": 1777797388.544458,
+    "hash": "08d03fa533d4f5ef636557bd06ce7152"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\pup.js": {
+    "mtime": 1777796309.840062,
+    "hash": "a0b4fbe46cfb56729ec8e6415f5209b1"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\server.js": {
+    "mtime": 1777791379.127642,
+    "hash": "c4893a54b8f7bdca84296ceb82e521d7"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\config.js": {
+    "mtime": 1777799568.122942,
+    "hash": "d1cec70d84bbbe7dd99f4ed3ebd3fcd5"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\server.js": {
+    "mtime": 1777799612.4283452,
+    "hash": "d67178152861cd56572779c41f1f2ac9"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\supabase.js": {
+    "mtime": 1777798256.3234916,
+    "hash": "7ae6073479ce93dedbd14d5d8ca953bf"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\db\\migrate.js": {
+    "mtime": 1777747697.0,
+    "hash": "d25d35adfd2465a93f2506c7e41dffc1"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\db\\supabase-schema.sql": {
+    "mtime": 1777745572.0,
+    "hash": "2194ebb975832d3ae550c508a5bded58"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\middleware\\adminAuth.js": {
+    "mtime": 1777733405.0,
+    "hash": "327e8f45dbefe6a14b61ee5e57ee0028"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\middleware\\auth.js": {
+    "mtime": 1777733399.0,
+    "hash": "7ec8a08f2cd630e4c5a0c79aa1e9486b"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\auth.js": {
+    "mtime": 1777796549.6395571,
+    "hash": "b27c790d8721ba0560f9f57e3cb9e2df"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\cron.js": {
+    "mtime": 1777799603.7369883,
+    "hash": "9501ca81e9035112d01018a023d2b874"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\dashboard.js": {
+    "mtime": 1777795715.4393556,
+    "hash": "906738d53a9336e1ae7a4ece18c93015"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\diagnose.js": {
+    "mtime": 1777747381.0,
+    "hash": "bcfce74ae445b62f195c200d0626ec90"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\history.js": {
+    "mtime": 1777747320.0,
+    "hash": "79b54e8483e7d739a7c5d9051809f4c6"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\users.js": {
+    "mtime": 1777747300.0,
+    "hash": "4edc137a207eba67a5c6c34c66162383"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\voice.js": {
+    "mtime": 1777795697.6816497,
+    "hash": "37d560abd6fd3e8fae028c6eead3098a"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\webhook.js": {
+    "mtime": 1777747399.0,
+    "hash": "604a08610347f72632caf40593ce7666"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\apiKeys.js": {
+    "mtime": 1777795357.2582924,
+    "hash": "fa809295edc8565a3e40b4a8e02dfcab"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\catalog.js": {
+    "mtime": 1777747541.0,
+    "hash": "ada8855651f30ffc42b0d29074cb4431"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\diagnoses.js": {
+    "mtime": 1777747495.0,
+    "hash": "abfdaee758528b9c9a8428bfb75cbedf"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\outbreaks.js": {
+    "mtime": 1777747507.0,
+    "hash": "ba1baf4e0f024616f5b17156a4f4be0b"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\overview.js": {
+    "mtime": 1777747466.0,
+    "hash": "8df0fbeea244ed04db1c76895dc9d084"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\revenue.js": {
+    "mtime": 1777747553.0,
+    "hash": "e352ccc08a99195ec087fa008c5cc862"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\sponsors.js": {
+    "mtime": 1777747525.0,
+    "hash": "6fbc5aa4784f9cf5e0c83b53a32bca5f"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\team.js": {
+    "mtime": 1777792799.466946,
+    "hash": "a8a77fc716dba7ffed1f4e2fc6ba4e9e"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\users.js": {
+    "mtime": 1777747480.0,
+    "hash": "7cf5a510d8351869b1268a7bac91ef6b"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\routes\\admin\\whatsapp.js": {
+    "mtime": 1777747649.0,
+    "hash": "37878b41d197ea27bc2b0865d9ec724a"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\diseaseData.js": {
+    "mtime": 1777738192.0,
+    "hash": "60fe9cdeaf0fd1065a10bb64d5d7ccd3"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\glossaryData.js": {
+    "mtime": 1777738300.0,
+    "hash": "bdfc8a3d07ece678e911bf5cde019ee8"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\locationData.js": {
+    "mtime": 1777738219.0,
+    "hash": "43929c42420d363ca4e5776ccb984739"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\seoData.js": {
+    "mtime": 1777739629.0,
+    "hash": "d78213e8c899357856f1e561efa7f545"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\seoRoutes.js": {
+    "mtime": 1777799472.7978761,
+    "hash": "d4e8ceb9db2870ad41aa4ee252784351"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\seo\\ssrShell.js": {
+    "mtime": 1777738022.0,
+    "hash": "645864b3d72369727bfac7868b7b4ac7"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\services\\aiRouter.js": {
+    "mtime": 1777795627.210248,
+    "hash": "3342788b588398347f26f94136d5e6c0"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\services\\apiKeys.js": {
+    "mtime": 1777798019.9453402,
+    "hash": "a223b9585c2fb2dc7568468e92131059"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\services\\cronJobs.js": {
+    "mtime": 1777747670.0,
+    "hash": "c0ade4f603866044b66561859aa71cf6"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\services\\indexing.js": {
+    "mtime": 1777799556.0160208,
+    "hash": "084f44e30369dc86e72cf5282fec788b"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\backend\\services\\otp.js": {
+    "mtime": 1777794755.8111954,
+    "hash": "1c9824a94b9b023cde3734c9c9ea83a6"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Admin.jsx": {
+    "mtime": 1777797836.6515665,
+    "hash": "cd22e1f4235e3c6348491e0a13d5afbf"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\AdminTabs.jsx": {
+    "mtime": 1777796598.019338,
+    "hash": "90e9ae2b7427b87fd300fb80650efc8d"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Analyze.jsx": {
+    "mtime": 1777734117.0,
+    "hash": "21f1b15d8638aa3e5a9a5aa98bf61f37"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Dashboard.jsx": {
+    "mtime": 1777732813.0,
+    "hash": "45e65edc013c2adb2d4c3d138c214363"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Landing.jsx": {
+    "mtime": 1777739882.0,
+    "hash": "0996af157fc40a5dde118aabccef21ee"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Onboarding.jsx": {
+    "mtime": 1777734010.0,
+    "hash": "2ca123070215f4f5ab301781978771c7"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\Pages.jsx": {
+    "mtime": 1777732813.0,
+    "hash": "4edd2502c6af3d6a4424e5d286fe2f87"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\components\\shared.jsx": {
+    "mtime": 1777732813.0,
+    "hash": "e7cf6a944af723c85758de3dc88945ec"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\CLAUDE.md": {
+    "mtime": 1777766564.9997532,
+    "hash": "2ed67c68f28bc1ef95ac24167431d7e8"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\DOCUMENTATION.md": {
+    "mtime": 1777791788.4238636,
+    "hash": "630a01205da20f83deafc02513cb971a"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\README.md": {
+    "mtime": 1777791857.2703855,
+    "hash": "bedf3101e4cac564f95b91b7e03c1711"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\replit.md": {
+    "mtime": 1777739956.0,
+    "hash": "954d2cc2e23ae83ea29b6b5c1788712b"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\ZARii AI Web App.html": {
+    "mtime": 1777739799.0,
+    "hash": "9dd4fc3fee35a4f61df6a1d81883b9b5"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\zarii-seo-strategy.md": {
+    "mtime": 1777740207.0,
+    "hash": "fdcaaff4f1504b7b4a60bee6fc091fbb"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\attached_assets\\agentcoversation_1777733193989.txt": {
+    "mtime": 1777733194.0,
+    "hash": "c4e60b57e381eda776cdd38308aa10ec"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\audits\\backend_db_services.audit.md": {
+    "mtime": 1777799229.4504921,
+    "hash": "2503ac80f7fcdf25c7ef95ced55c9ea5"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\audits\\backend_routes.audit.md": {
+    "mtime": 1777799277.5399551,
+    "hash": "9c1346736c6bf3fca8495fb7b0ab99fc"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\audits\\backend_seo.audit.md": {
+    "mtime": 1777799317.357541,
+    "hash": "24619acc113f52b6bb4c77fbf869905a"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\audits\\backend_server.audit.md": {
+    "mtime": 1777799166.2166252,
+    "hash": "60535821330150ecb752f9c919e81edc"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\uploads\\zarii.txt": {
+    "mtime": 1777732813.0,
+    "hash": "e9a0f0dabd40bf77d6d4b8fa8d92ece0"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\assets\\farmer-badge.png": {
+    "mtime": 1777732813.0,
+    "hash": "047bfa428147390140b406791165ed18"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\assets\\zarii-full-logo.png": {
+    "mtime": 1777732813.0,
+    "hash": "944b3d51e2e17f9b33ab6627a99b0242"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\assets\\zarii-logo.png": {
+    "mtime": 1777732813.0,
+    "hash": "04720b075ba0a40524f48d9e210d6195"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\assets\\zarii-wordmark.png": {
+    "mtime": 1777732813.0,
+    "hash": "5832237a1888a8f54a9d9a529f70fa24"
+  },
+  "C:\\Users\\uali24272\\Downloads\\Zarii-AI\\uploads\\logo.png": {
+    "mtime": 1777732813.0,
+    "hash": "04720b075ba0a40524f48d9e210d6195"
+  }
+}

@@ -1,0 +1,121 @@
+'use strict';
+
+const TERMS = [
+  {
+    term: 'Fungicide',
+    slug: 'fungicide',
+    urdu: 'پھپھوندی کش دوا',
+    category: 'Pesticide Type',
+    definition: 'A fungicide is a chemical or biological agent that kills or inhibits the growth of fungi causing crop diseases. In Pakistan, fungicides are the most widely used class of pesticides for controlling wheat rust, cotton blight, and mango anthracnose.',
+    how_it_works: 'Fungicides either prevent fungal spores from germinating (protectants) or kill established fungal infections (curatives/systemics). Systemic fungicides are absorbed into plant tissue and transported throughout the plant, providing protection beyond the spray area.',
+    common_examples: ['Propiconazole (Tilt 250 EC)', 'Tebuconazole', 'Propineb (Antracol 70 WP)', 'Mancozeb 75 WP', 'Difenoconazole (Score 250 EC)'],
+    pakistan_context: 'Pakistan\'s most important fungicide market is wheat rust control in Punjab, worth PKR 4+ billion annually. Bayer, Syngenta, and BASF are the top suppliers. The government subsidizes wheat fungicides in outbreak years through provincial agriculture departments.',
+    faqs: [
+      { q: 'What is the difference between a protectant and systemic fungicide?', a: 'Protectant fungicides (like Mancozeb) coat the plant surface and prevent spore germination — they must be applied before infection. Systemic fungicides (like Propiconazole) are absorbed into the plant and can cure early infections after they begin. Always use protectants preventively and systemics curatively.' },
+      { q: 'Can I mix two fungicides together?', a: 'Some fungicides can be tank-mixed for broader spectrum control, but never mix fungicides from the same chemical class — it wastes money and accelerates resistance. Common approved Pakistan mixes: Mancozeb + Metalaxyl (Ridomil Gold MZ), Propineb + Difenoconazole. Always check product labels.' },
+    ],
+  },
+  {
+    term: 'Insecticide',
+    slug: 'insecticide',
+    urdu: 'حشرہ کش دوا',
+    category: 'Pesticide Type',
+    definition: 'An insecticide is a chemical or biological substance used to kill or repel insects that damage crops. In Pakistan, insecticides are critically used against Cotton Whitefly (Bemisia tabaci), Bollworm (Helicoverpa armigera), and locust swarms.',
+    how_it_works: 'Insecticides work through contact (touching the insect), ingestion (eating treated plant tissue), or systemic action (absorbed by the plant and toxic to feeding insects). Neonicotinoids (like Imidacloprid) are systemic; Pyrethroids (like Lambda-cyhalothrin) are contact.',
+    common_examples: ['Imidacloprid (Confidor 200 SL)', 'Thiamethoxam (Actara 25 WG)', 'Lambda-cyhalothrin (Karate 2.5 EC)', 'Chlorpyrifos', 'Emamectin benzoate'],
+    pakistan_context: 'Pakistan uses over 70,000 tonnes of insecticides annually. Neonicotinoids dominate the whitefly market but face resistance issues after 20+ years of continuous use in Punjab cotton. The government has banned Endosulfan; Imidacloprid is under review for bee toxicity.',
+    faqs: [
+      { q: 'Why are whiteflies becoming resistant to insecticides in Pakistan?', a: 'Whitefly resistance to neonicotinoids (Imidacloprid, Thiamethoxam) has developed because Pakistani farmers use the same chemical class repeatedly — often every 7–10 days — without rotating to different modes of action. Resistance develops within 5–8 generations (3–4 weeks in summer). The solution is rotating chemical classes and integrating biological controls.' },
+      { q: 'What insecticides are banned in Pakistan?', a: 'As of 2026, Pakistan has banned Endosulfan (listed in Stockholm Convention Annex A), Methyl Parathion, and Monocrotophos. Several organochlorines are also prohibited. Always check the current Pakistan Environmental Protection Agency (PEPA) banned list before purchasing.' },
+    ],
+  },
+  {
+    term: 'IPM (Integrated Pest Management)',
+    slug: 'integrated-pest-management',
+    urdu: 'مربوط کیڑا انتظام',
+    category: 'Farming Practice',
+    definition: 'Integrated Pest Management (IPM) is an ecosystem-based strategy that combines biological, cultural, physical, and chemical tools to minimize pest and disease damage while reducing risks to humans, beneficial insects, and the environment. ZARii AI\'s diagnosis system is built on IPM principles.',
+    how_it_works: 'IPM follows four steps: (1) Monitor and identify pests accurately, (2) Set action thresholds — only spray when pest population exceeds economic threshold, (3) Prevent using cultural practices and resistant varieties, (4) Control using least-toxic methods first, chemical pesticides as last resort.',
+    common_examples: ['Pheromone traps for Bollworm monitoring', 'Beneficial insect conservation (lady beetles, lacewings)', 'Crop rotation to break disease cycles', 'Threshold-based spraying (not calendar-based)', 'Yellow sticky traps for whitefly monitoring'],
+    pakistan_context: 'Pakistan\'s government promotes IPM through the National IPM Programme under DRAP. Research shows Pakistani farmers who adopt IPM reduce pesticide use by 40–60% while maintaining yields. The FAO Pakistan office has trained 200,000+ farmers in IPM since 2000.',
+    faqs: [
+      { q: 'Does IPM mean I cannot use any pesticides?', a: 'No. IPM allows pesticide use but only when monitoring confirms pest populations exceed the economic threshold — the point where damage costs more than the spray. This means spraying when needed, not on a fixed calendar schedule. IPM farmers typically use 40–60% fewer pesticides than conventional farmers while achieving similar yields.' },
+      { q: 'What is an economic threshold in IPM?', a: 'The economic threshold (ET) is the pest population level at which the cost of crop damage exceeds the cost of control. For example, Pakistan\'s ET for Cotton Whitefly is 10–15 adults per leaf. Below this, natural enemies control the pest; above it, spraying is economically justified.' },
+    ],
+  },
+  {
+    term: 'Kharif Season',
+    slug: 'kharif-season',
+    urdu: 'خریف کا موسم',
+    category: 'Farming Calendar',
+    definition: 'Kharif is Pakistan\'s summer cropping season, running from April/May to October/November. It is one of the two main agricultural seasons in Pakistan (the other being Rabi). Major Kharif crops include cotton, rice, maize, sugarcane, and millet.',
+    how_it_works: 'Kharif crops are planted at the onset of monsoon rains (June–July) and harvested before winter. The warm, humid conditions of Kharif create ideal environments for insect pests (whitefly, bollworm) and fungal diseases (rice blast, mango anthracnose).',
+    common_examples: ['Cotton (major cash crop)', 'Rice (Basmati and IRRI)', 'Maize', 'Sugarcane', 'Mung bean', 'Groundnut'],
+    pakistan_context: 'Pakistan\'s Kharif season accounts for 45% of annual crop production. Cotton is the most economically important Kharif crop, contributing 5.2% of Pakistan\'s GDP through fiber and oil. The 2023–2026 period saw severe whitefly and CLCuV losses reducing cotton output by 30–40% in affected districts.',
+    faqs: [
+      { q: 'When does Kharif season start in Pakistan?', a: 'Kharif planting in Pakistan begins in April–May for early crops like maize, and June–July for cotton and rice (coinciding with monsoon onset). Harvesting runs from September to November. In Sindh, rice planting starts earlier (May) due to the earlier availability of canal water.' },
+      { q: 'What diseases are most common in Kharif crops?', a: 'The most damaging Kharif crop diseases in Pakistan are: Cotton Whitefly and Bollworm (cotton), Rice Blast and Bacterial Leaf Blight (rice), Maize Stalk Borer (maize), and Sugarcane Smut. Hot, humid monsoon conditions accelerate all of these. ZARii AI has diagnosis models for all major Kharif diseases.' },
+    ],
+  },
+  {
+    term: 'Rabi Season',
+    slug: 'rabi-season',
+    urdu: 'ربیع کا موسم',
+    category: 'Farming Calendar',
+    definition: 'Rabi is Pakistan\'s winter/spring cropping season, running from October/November to April/May. It is dominated by wheat, which is Pakistan\'s most important staple crop. Other Rabi crops include chickpea, lentil, mustard, and barley.',
+    how_it_works: 'Rabi crops are sown after the Kharif harvest when temperatures drop below 25°C. They grow through winter and are harvested in spring. Cool, moist conditions create ideal Yellow Rust pressure in wheat — the most economically devastating Rabi disease in Pakistan.',
+    common_examples: ['Wheat (occupies 70% of Rabi area)', 'Chickpea (gram)', 'Lentil', 'Mustard', 'Barley', 'Potato (early Rabi)'],
+    pakistan_context: 'Wheat occupies 8.7 million hectares in Pakistan\'s Rabi season and feeds 220 million people. The crop is strategic — any significant yield loss triggers national food security concerns and government intervention. Yellow Rust alone caused 1.3 million tonne wheat losses in Pakistan\'s worst outbreak years.',
+    faqs: [
+      { q: 'When should I apply fungicide on wheat in Pakistan\'s Rabi season?', a: 'Apply preventive fungicide (Mancozeb) when leaf wetness and cool temperatures (10–15°C) persist for 6+ hours — typically December to February in Punjab. Apply curative fungicide (Propiconazole/Tilt 250 EC) at the first visible Yellow Rust pustules. A single timely spray can reduce rust losses from 70% to under 5%.' },
+      { q: 'What is the best wheat variety for rust resistance in Pakistan?', a: 'AARI (Ayub Agricultural Research Institute, Faisalabad) recommends Faisalabad-2008, Sehar-2006, Lasani-2008, and NARC-2009 as moderately rust-resistant varieties suitable for Punjab. No variety has durable resistance to all rust races — monitor new races annually through AARI advisories.' },
+    ],
+  },
+  {
+    term: 'Systemic Fungicide',
+    slug: 'systemic-fungicide',
+    urdu: 'نظامی پھپھوندی کش',
+    category: 'Pesticide Type',
+    definition: 'A systemic fungicide is a chemical that is absorbed into the plant\'s vascular system and transported throughout its tissues, protecting parts of the plant that were not directly sprayed. Unlike contact (protectant) fungicides, systemics can cure early-stage infections after they have begun.',
+    how_it_works: 'After absorption through leaves or roots, systemic fungicides move through xylem and/or phloem. They inhibit specific fungal enzymes — for example, triazoles (like Propiconazole) block ergosterol biosynthesis, disrupting fungal cell membrane formation.',
+    common_examples: ['Propiconazole (Tilt 250 EC) — Triazole', 'Tebuconazole — Triazole', 'Azoxystrobin (Amistar) — Strobilurin', 'Difenoconazole (Score 250 EC) — Triazole', 'Metalaxyl (in Ridomil) — Phenylamide'],
+    pakistan_context: 'Triazole-group systemic fungicides are the backbone of wheat rust control in Pakistan. Propiconazole has been used since the 1990s. Some reduced sensitivity has been detected in Pakistani Puccinia populations — AARI recommends rotating to strobilurin mixes every 2–3 seasons to preserve efficacy.',
+    faqs: [
+      { q: 'Can I use systemic fungicide as a preventive spray?', a: 'Systemics work best curatively (up to 72–96 hours after infection) but can be used preventively when disease pressure is forecast. However, they are more expensive than contact protectants. Best practice: use Mancozeb preventively, switch to Propiconazole only when rust is confirmed in the field or neighboring area.' },
+    ],
+  },
+  {
+    term: 'Economic Threshold',
+    slug: 'economic-threshold',
+    urdu: 'اقتصادی دہلیز',
+    category: 'IPM Concept',
+    definition: 'The Economic Threshold (ET) is the pest population level at which the financial cost of crop damage equals or exceeds the cost of applying a control measure (spray, trap, etc.). Spraying below the ET wastes money and accelerates pesticide resistance; spraying above it is economically justified.',
+    how_it_works: 'ET is calculated from: (cost of control ÷ crop value per unit) × (crop units at risk). Government research institutes like AARI and NARC set ETs for Pakistan\'s major crops based on field trials. ZARii AI integrates ET recommendations into its treatment advice.',
+    common_examples: [
+      'Cotton Whitefly ET: 10–15 adults on underside of 3 leaves per plant',
+      'Bollworm ET: 10% boll damage or 8 moths/trap/night for 3 nights',
+      'Yellow Rust ET: First pustule visible in field — spray immediately',
+      'Aphid ET (Wheat): 20–25 aphids per tiller in 10% of plants',
+    ],
+    pakistan_context: 'Most Pakistani farmers spray on a fixed calendar schedule (every 7–14 days) rather than ET-based spraying. Research by Pakistan\'s National IPM Programme shows calendar sprayers use 2–4× more pesticides and spend PKR 8,000–15,000/acre more than ET-based farmers, often with lower yields due to natural enemy disruption.',
+    faqs: [
+      { q: 'Why should I not spray every 10 days as my dealer recommends?', a: 'Fixed-schedule spraying kills beneficial insects (parasitic wasps, lady beetles, lacewings) that naturally control pests at low populations. When beneficial insects are eliminated, pest populations rebound faster than before, requiring more sprays. ET-based spraying preserves beneficial insects and reduces total pesticide costs by 40–60%.' },
+    ],
+  },
+  {
+    term: 'CLCuV (Cotton Leaf Curl Virus)',
+    slug: 'cotton-leaf-curl-virus',
+    urdu: 'کپاس کا پتہ مروڑ وائرس',
+    category: 'Plant Virus',
+    definition: 'Cotton Leaf Curl Virus (CLCuV) is a devastating viral disease of cotton caused by a complex of begomoviruses transmitted exclusively by the whitefly Bemisia tabaci. CLCuV has caused estimated losses of $5 billion+ in Pakistan since its first outbreak in 1987.',
+    how_it_works: 'Whiteflies acquire CLCuV while feeding on infected plants. A single viruliferous whitefly can infect a healthy plant in as little as 1 hour of feeding. The virus spreads systemically through the plant, triggering characteristic leaf curling, vein darkening, and enation (leaf outgrowths). There is no cure once a plant is infected.',
+    common_examples: ['Leaf curling upward or downward', 'Vein darkening and thickening', 'Enation (small leaf-like outgrowths on undersides)', 'Stunting and reduced boll production', 'Dark green discoloration of new growth'],
+    pakistan_context: 'CLCuV destroyed 30–40% of Pakistan\'s cotton output in the 2015–2023 period, reducing the national crop from 14 million bales to under 9 million bales. The 2026 whitefly outbreak in Multan (1,840 farms, +312% above average) poses a serious CLCuV transmission risk. Pakistan\'s CCRI Multan has released tolerant varieties (MNH-886, CIM-632) but no fully resistant variety exists.',
+    faqs: [
+      { q: 'Is there any treatment for Cotton Leaf Curl Virus?', a: 'No. There is no chemical cure for CLCuV once a plant is infected. Infected plants must be removed and destroyed to prevent whitefly transmission to healthy plants. The only effective strategy is preventing infection by controlling whitefly populations below 10–15 adults per leaf using a rotated insecticide programme and tolerant varieties.' },
+      { q: 'How fast does CLCuV spread through a cotton field?', a: 'Under high whitefly pressure (100+ adults per leaf), CLCuV can spread to 80% of a cotton field within 3–4 weeks. Early removal of infected plants and intensive whitefly control in the first 60 days after transplanting are critical. Once 30%+ of a field is infected, economic recovery is very unlikely.' },
+    ],
+  },
+];
+
+module.exports = { TERMS };
