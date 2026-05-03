@@ -9,6 +9,9 @@ const { runMigrations } = require('./db/migrate');
 
 const app = express();
 
+// ─── Trust Replit's proxy (required for rate limiting) ─────────
+app.set('trust proxy', 1);
+
 // ─── Security headers ──────────────────────────────────────────
 app.use(helmet({
   contentSecurityPolicy: false, // Disable CSP for now (CDN React requires it off)
@@ -95,7 +98,7 @@ app.use(express.static(FRONTEND_DIR, {
   index: false,
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
-    else if (filePath.match(/\.(js|jsx|css)$/)) res.setHeader('Cache-Control', 'public, max-age=3600');
+    else if (filePath.match(/\.(js|jsx|css)$/)) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
   },
 }));
 

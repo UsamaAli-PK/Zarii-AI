@@ -429,7 +429,8 @@ const Overview = ({ data }) => {
       <Stat label="Sponsored impressions · 7d" value="184k" delta="+15%" icon="trend" color="#9DCB7C"/>
     </div>
   </div>
-);
+  );
+};
 
 // ============================================================
 // USERS
