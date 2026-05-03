@@ -180,7 +180,11 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
   const [tab, setTab] = useS_Adm('overview');
   const [cmdOpen, setCmdOpen] = useS_Adm(false);
   const [demoMode, setDemoMode] = useS_Adm(true);
-  const [realData, setRealData] = useS_Adm({ stats: null, users: [], scans: [] });
+  const [realData, setRealData] = useS_Adm({
+    overview: null, users: null, diagnoses: null, outbreaks: null,
+    waQueue: null, sponsors: null, sponsoredProducts: [], revenue: null,
+    catalog: null, apiKeys: null, team: null,
+  });
   const [liveError, setLiveError] = useS_Adm(null);
 
   useE_Adm(() => {
@@ -190,19 +194,55 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
   const fetchRealData = async () => {
     setLiveError(null);
     try {
-      // Use the window.API bridge — it handles zarii_admin_token automatically
-      const [users, scansData] = await Promise.all([
+      const results = await Promise.allSettled([
+        window.API.adminOverview(),
         window.API.adminUsers(),
-        window.API.adminDiagnoses()
+        window.API.adminDiagnoses(),
+        window.API.adminOutbreaks(),
+        window.API.adminAdvisories(),
+        window.API.adminWaQueue(),
+        window.API.adminSponsors(),
+        window.API.adminSponsoredProducts(),
+        window.API.adminRevenue(),
+        window.API.adminCatalog(),
+        window.API.adminApiKeys(),
+        window.API.adminTeam(),
+        window.API.adminAuditLog(),
       ]);
+      const [ovRes, usersRes, diagRes, outbreaksRes, advisoriesRes, waQueueRes,
+             sponsorsRes, sponsoredRes, revenueRes, catalogRes, apiKeysRes, teamRes, auditRes] = results;
+      const val = r => r.status === 'fulfilled' ? r.value : null;
+      const toArr = (r, key) => {
+        if (r.status !== 'fulfilled') return [];
+        const v = r.value;
+        if (Array.isArray(v)) return v;
+        if (key && Array.isArray(v?.[key])) return v[key];
+        return [];
+      };
+      const failedCount = results.filter(r => r.status === 'rejected').length;
+      if (failedCount > 0) setLiveError(`${failedCount} data source(s) failed to load. Some sections may be incomplete.`);
+      const outbreaksData = val(outbreaksRes) || {};
+      const advisoriesData = val(advisoriesRes) || {};
       setRealData({
-        users: Array.isArray(users) ? users : (users.users || []),
-        scans: Array.isArray(scansData) ? scansData : (scansData.scans || scansData.diagnoses || [])
+        overview: val(ovRes),
+        users: val(usersRes),
+        diagnoses: val(diagRes),
+        outbreaks: outbreaksRes.status === 'fulfilled' ? {
+          ...outbreaksData,
+          advisories: outbreaksData.advisories || advisoriesData.advisories || [],
+        } : null,
+        waQueue: val(waQueueRes),
+        sponsors: val(sponsorsRes),
+        sponsoredProducts: toArr(sponsoredRes, 'products'),
+        revenue: val(revenueRes),
+        catalog: val(catalogRes),
+        apiKeys: val(apiKeysRes),
+        team: val(teamRes),
       });
     } catch (err) {
       console.error('[Admin] Live fetch failed:', err);
       setLiveError(err.message || 'Failed to load live data');
-      setDemoMode(true); // Fallback to demo
+      setDemoMode(true);
     }
   };
 
@@ -295,17 +335,24 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
       {/* Main */}
       <main style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
         <AdminTopbar tab={tab} demoMode={demoMode} setDemoMode={setDemoMode} onLogout={onLogout} admin={admin} liveError={liveError} />
+        {liveError && !demoMode && (
+          <div style={{ background: '#FFF6F2', borderBottom: '1px solid #F4A062', padding: '10px 32px', display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
+            <Icon name="bell" size={14} color="#D04E2C"/>
+            <span style={{ color: '#D04E2C', fontWeight: 600 }}>{liveError}</span>
+            <button onClick={() => setLiveError(null)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#D04E2C', cursor: 'pointer', fontSize: 13 }}>Dismiss</button>
+          </div>
+        )}
         <div style={{ padding: '20px 32px 60px' }}>
-          {tab === 'overview'  && <Overview data={demoMode ? null : realData} />}
-          {tab === 'users'     && <UsersTable data={demoMode ? null : realData.users} />}
-          {tab === 'diagnoses' && <DiagnosesTab data={demoMode ? null : realData.scans} />}
-          {tab === 'outbreaks' && <OutbreaksTab demoMode={demoMode} />}
-          {tab === 'whatsapp'  && <WhatsAppOps demoMode={demoMode} />}
-          {tab === 'sponsors'  && <SponsorsTab demoMode={demoMode} />}
-          {tab === 'revenue'   && <RevenueTab demoMode={demoMode} />}
-          {tab === 'catalog'   && <CatalogTab demoMode={demoMode} />}
-          {tab === 'api'       && <ApiKeysTab />}
-          {tab === 'team'      && <TeamTab demoMode={demoMode} />}
+          {tab === 'overview'  && <Overview demoMode={demoMode} data={demoMode ? null : realData.overview} />}
+          {tab === 'users'     && <UsersTable demoMode={demoMode} data={demoMode ? null : realData.users} />}
+          {tab === 'diagnoses' && <DiagnosesTab demoMode={demoMode} data={demoMode ? null : realData.diagnoses} />}
+          {tab === 'outbreaks' && <OutbreaksTab demoMode={demoMode} data={demoMode ? null : realData.outbreaks} />}
+          {tab === 'whatsapp'  && <WhatsAppOps demoMode={demoMode} data={demoMode ? null : realData.waQueue} />}
+          {tab === 'sponsors'  && <SponsorsTab demoMode={demoMode} data={demoMode ? null : { sponsors: realData.sponsors, sponsoredProducts: realData.sponsoredProducts }} />}
+          {tab === 'revenue'   && <RevenueTab demoMode={demoMode} data={demoMode ? null : realData.revenue} />}
+          {tab === 'catalog'   && <CatalogTab demoMode={demoMode} data={demoMode ? null : realData.catalog} />}
+          {tab === 'api'       && <ApiKeysTab demoMode={demoMode} data={demoMode ? null : realData.apiKeys} refetch={fetchRealData} />}
+          {tab === 'team'      && <TeamTab demoMode={demoMode} data={demoMode ? null : realData.team} />}
         </div>
       </main>
 
@@ -324,16 +371,34 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
 // ============================================================
 // OVERVIEW
 // ============================================================
-const Overview = ({ data }) => {
-  const isLive = !!data;
+const Overview = ({ demoMode, data }) => {
+  const kpis = data?.kpis;
+  const liveHealth = data?.system_health || [];
+  const liveFeed = data?.live_feed || [];
+  const demoHealth = [
+    { pool: 'vision', provider: 'Vision AI (Gemini)', status: 'healthy', latency: 1400, calls_today: 8420 },
+    { pool: 'voice', provider: 'Voice STT (Whisper)', status: 'healthy', latency: 800, calls_today: 3240 },
+    { pool: 'voice', provider: 'Voice TTS (ElevenLabs)', status: 'degraded', latency: 2600, calls_today: 1840 },
+    { pool: 'weather', provider: 'Weather (OpenWeather)', status: 'healthy', latency: 180, calls_today: 480 },
+  ];
+  const healthRows = (demoMode || liveHealth.length === 0) ? demoHealth : liveHealth;
+  const demoFeed = [
+    { user: 'Aslam, Multan', region: 'Punjab', crop: 'Cotton', disease: 'Whitefly', time: null },
+    { user: 'Fatima, Faisalabad', region: 'Punjab', crop: 'Tomato', disease: 'Early Blight', time: null },
+    { user: 'Tariq, Bahawalpur', region: 'Punjab', crop: 'Wheat', disease: 'Yellow Rust', time: null },
+    { user: 'Sara, Lahore', region: 'Punjab', crop: 'Mango', disease: 'Anthracnose', time: null },
+    { user: 'Rashid, Hyderabad', region: 'Sindh', crop: 'Rice', disease: 'Bacterial Leaf Blight', time: null },
+    { user: 'Imran, Sahiwal', region: 'Punjab', crop: 'Cotton', disease: 'Bollworm', time: null },
+  ];
+  const feedRows = (demoMode || liveFeed.length === 0) ? demoFeed : liveFeed;
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 14, marginBottom: 16 }}>
-        <Stat label="Daily active users" value={isLive ? data.users.length : "14,328"} delta="+8.2%" icon="users" color="#2E6B3F" sub="vs. yesterday"/>
-        <Stat label="Scans today" value={isLive ? data.scans.length : "3,210"} delta="+12%" icon="camera" color="#66A64F" sub="9.4× peak this hour"/>
-        <Stat label="Diagnoses · 7d" value={isLive ? data.scans.length : "42,180"} delta="+18%" icon="flask" color="#F4A62A"/>
-        <Stat label="Avg. confidence" value="92.4%" delta="+1.1pp" icon="shield" color="#9DCB7C"/>
-        <Stat label="Burn · 24h" value="$184" delta="-6%" deltaType="down" icon="pkr" color="#1F4A6B" sub="API costs"/>
+        <Stat label="Daily active users" value={demoMode ? "14,328" : (kpis?.dau?.toLocaleString() ?? '—')} delta="+8.2%" icon="users" color="#2E6B3F" sub="vs. yesterday"/>
+        <Stat label="Scans today" value={demoMode ? "3,210" : (kpis?.scans_today?.toLocaleString() ?? '—')} delta="+12%" icon="camera" color="#66A64F" sub="9.4× peak this hour"/>
+        <Stat label="Diagnoses · 7d" value={demoMode ? "42,180" : (kpis?.scans_7d?.toLocaleString() ?? '—')} delta="+18%" icon="flask" color="#F4A62A"/>
+        <Stat label="Avg. confidence" value={demoMode ? "92.4%" : (kpis?.avg_confidence ? kpis.avg_confidence + '%' : '—')} delta="+1.1pp" icon="shield" color="#9DCB7C"/>
+        <Stat label="Burn · 24h" value={demoMode ? "$184" : (kpis?.api_burn_24h ? '$' + kpis.api_burn_24h : '—')} delta="-6%" deltaType="down" icon="pkr" color="#1F4A6B" sub="API costs"/>
       </div>
 
     <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
@@ -362,20 +427,13 @@ const Overview = ({ data }) => {
 
       <Card style={{ padding: 22 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>System health</h3>
-        {[
-          { name: 'Vision AI (Gemini)', status: 'healthy', lat: '1.4s p95', err: 0.2 },
-          { name: 'Voice STT (Whisper)', status: 'healthy', lat: '0.8s p95', err: 0.1 },
-          { name: 'Voice TTS (ElevenLabs)', status: 'degraded', lat: '2.6s p95', err: 4.1 },
-          { name: 'Weather (OpenWeather)', status: 'healthy', lat: '180ms p95', err: 0.0 },
-          { name: 'WhatsApp webhook', status: 'healthy', lat: '210ms', err: 0.0 },
-          { name: 'Supabase (DB)', status: 'healthy', lat: '40ms', err: 0.0 },
-        ].map((s, i) => (
+        {healthRows.map((s, i) => (
           <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
               <span style={{ width: 8, height: 8, borderRadius: 99, background: s.status==='healthy' ? '#66A64F' : s.status==='degraded' ? '#F4A62A' : '#D04E2C', boxShadow: '0 0 0 3px ' + (s.status==='healthy' ? 'rgba(102,166,79,0.18)' : 'rgba(244,166,42,0.18)') }}/>
-              <span style={{ fontSize: 13.5, fontWeight: 600, color: '#1F4A2C' }}>{s.name}</span>
+              <span style={{ fontSize: 13.5, fontWeight: 600, color: '#1F4A2C' }}>{s.provider || s.name}</span>
             </div>
-            <div style={{ fontSize: 12, color: '#7E7E7E' }}>{s.lat} · {s.err}% err</div>
+            <div style={{ fontSize: 12, color: '#7E7E7E' }}>{s.latency ? s.latency + 'ms' : s.lat} · {s.calls_today?.toLocaleString() ?? 0} calls</div>
           </div>
         ))}
       </Card>
@@ -404,21 +462,17 @@ const Overview = ({ data }) => {
       <Card style={{ padding: 22 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Live activity</h3>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {[
-            { who: 'Aslam, Multan', what: 'scanned cotton · whitefly detected', when: '2s' },
-            { who: 'Fatima, Faisalabad', what: 'voice query in Urdu · "wheat yellowing"', when: '8s' },
-            { who: 'Tariq, Bahawalpur', what: 'WhatsApp · sent leaf photo', when: '14s' },
-            { who: 'Sara, Lahore', what: 'tapped sponsored: Antracol 70 WP', when: '22s' },
-            { who: 'Rashid, Hyderabad', what: 'saved diagnosis to history', when: '38s' },
-            { who: 'Imran, Sahiwal', what: 'completed onboarding', when: '52s' },
-          ].map((a, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
-              <div style={{ width: 6, height: 6, borderRadius: 99, background: '#9DCB7C', flexShrink: 0 }}/>
-              <span style={{ fontWeight: 600, color: '#1F4A2C' }}>{a.who}</span>
-              <span style={{ color: '#5A5A5A' }}>{a.what}</span>
-              <span style={{ marginLeft: 'auto', fontSize: 11, color: '#A0A0A0' }}>{a.when} ago</span>
-            </div>
-          ))}
+          {feedRows.length === 0
+            ? <div style={{ color: '#7E7E7E', fontSize: 13 }}>No recent activity.</div>
+            : feedRows.map((a, i) => (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13 }}>
+                <div style={{ width: 6, height: 6, borderRadius: 99, background: '#9DCB7C', flexShrink: 0 }}/>
+                <span style={{ fontWeight: 600, color: '#1F4A2C' }}>{a.user}{a.region && a.user !== a.region ? ', ' + a.region : ''}</span>
+                <span style={{ color: '#5A5A5A' }}>{a.crop} · {a.disease || a.what}</span>
+                <span style={{ marginLeft: 'auto', fontSize: 11, color: '#A0A0A0' }}>{a.time ? new Date(a.time).toLocaleTimeString() : (a.when ? a.when + ' ago' : 'recently')}</span>
+              </div>
+            ))
+          }
         </div>
       </Card>
     </div>
@@ -435,7 +489,7 @@ const Overview = ({ data }) => {
 // ============================================================
 // USERS
 // ============================================================
-const UsersTable = ({ data }) => {
+const UsersTable = ({ demoMode, data }) => {
   const demoUsers = [
     { name: 'Muhammad Aslam', phone: '+92 300 1234567', region: 'Multan, Punjab', crops: 'Cotton, Wheat', scans: 38, lastSeen: '2h ago', channel: 'Web + WA', lang: 'ur', cohort: 'Mar 2026', risk: 'low' },
     { name: 'Fatima Bibi', phone: '+92 321 2345678', region: 'Faisalabad', crops: 'Tomato, Chili', scans: 24, lastSeen: '4h ago', channel: 'Web', lang: 'ur', cohort: 'Feb 2026', risk: 'low' },
@@ -447,28 +501,30 @@ const UsersTable = ({ data }) => {
     { name: 'Bilal Hussain', phone: '+92 334 8901234', region: 'Sukkur, Sindh', crops: 'Sugarcane, Banana', scans: 16, lastSeen: '12h ago', channel: 'Web + WA', lang: 'ur', cohort: 'Feb 2026', risk: 'high' },
   ];
 
-  const displayUsers = data ? data.map(u => ({
-    name: u.full_name || 'Farmer',
-    phone: u.phone,
-    region: u.location || 'Unknown',
-    crops: 'Common crops',
-    scans: 0,
-    lastSeen: new Date(u.last_active).toLocaleDateString(),
-    channel: 'Web',
+  const summary = data?.summary;
+  const rawUsers = data?.users || [];
+  const displayUsers = demoMode ? demoUsers : rawUsers.map(u => ({
+    name: u.name || 'Farmer',
+    phone: u.phone || '—',
+    region: u.region || 'Unknown',
+    crops: Array.isArray(u.crops) ? u.crops.join(', ') : (u.crops || '—'),
+    scans: u.scan_count || 0,
+    lastSeen: u.last_scan ? new Date(u.last_scan).toLocaleDateString() : '—',
+    channel: u.channel || 'Web',
     lang: u.language || 'ur',
-    cohort: new Date(u.created_at).toLocaleDateString(),
-    risk: 'low'
-  })) : demoUsers;
+    cohort: u.created_at ? new Date(u.created_at).toLocaleDateString() : '—',
+    risk: u.churn_risk || 'low',
+  }));
 
   const [q, setQ] = useS_Adm('');
   const [region, setRegion] = useS_Adm('all');
-  const filtered = displayUsers.filter(u => (q === '' || u.name.toLowerCase().includes(q.toLowerCase()) || u.phone.includes(q)) && (region === 'all' || u.region.includes(region)));
+  const filtered = displayUsers.filter(u => (q === '' || u.name.toLowerCase().includes(q.toLowerCase()) || String(u.phone).includes(q)) && (region === 'all' || u.region.includes(region)));
 
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <Stat label="Total users" value="184,210" delta="+1,420 this week" icon="users" color="#2E6B3F"/>
-        <Stat label="WAU" value="68,440" delta="+5.4%" icon="trend" color="#66A64F"/>
+        <Stat label="Total users" value={demoMode ? "184,210" : (summary?.total?.toLocaleString() ?? rawUsers.length.toLocaleString())} delta="+1,420 this week" icon="users" color="#2E6B3F"/>
+        <Stat label="WAU" value={demoMode ? "68,440" : (summary?.wau?.toLocaleString() ?? '—')} delta="+5.4%" icon="trend" color="#66A64F"/>
         <Stat label="Retention · D30" value="42%" delta="+3pp" icon="bookmark" color="#F4A62A"/>
         <Stat label="Avg scans / user" value="6.8" delta="+0.6" icon="camera" color="#9DCB7C"/>
       </div>
@@ -532,7 +588,7 @@ const UsersTable = ({ data }) => {
 // ============================================================
 // DIAGNOSES
 // ============================================================
-const DiagnosesTab = ({ data }) => {
+const DiagnosesTab = ({ demoMode, data }) => {
   const demoScans = [
     { id: 'D-39281', user: 'Aslam M.', crop: 'Cotton', dx: 'Whitefly', conf: 89, fb: '👍', when: '2m ago', sev: 'high' },
     { id: 'D-39280', user: 'Fatima B.', crop: 'Tomato', dx: 'Early Blight', conf: 94, fb: '👍', when: '4m ago', sev: 'med' },
@@ -544,24 +600,26 @@ const DiagnosesTab = ({ data }) => {
     { id: 'D-39274', user: 'Bilal H.', crop: 'Sugarcane', dx: 'Red Rot', conf: 67, fb: '👎', when: '22m ago', sev: 'med', flag: true },
   ];
 
-  const displayScans = data ? data.map(s => ({
-    id: s.id.slice(0, 8),
-    user: s.phone || 'User',
+  const summary = data?.summary;
+  const rawScans = data?.scans || [];
+  const displayScans = demoMode ? demoScans : rawScans.map(s => ({
+    id: 'D-' + String(s.id || '').slice(0, 5),
+    user: s.user_name || 'User',
     crop: s.crop_type || 'Unknown',
     dx: s.disease_name || 'AI Analyzing',
-    conf: Math.round(s.confidence_score * 100) || 0,
+    conf: Math.round(s.confidence || 0),
     fb: s.user_feedback === 'positive' ? '👍' : s.user_feedback === 'negative' ? '👎' : '?',
-    when: new Date(s.created_at).toLocaleTimeString(),
+    when: s.created_at ? new Date(s.created_at).toLocaleTimeString() : '—',
     sev: s.severity || 'low',
-    flag: s.confidence_score < 0.6
-  })) : demoScans;
+    flag: !!s.flagged,
+  }));
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <Stat label="Diagnoses · today" value="3,210" delta="+12%" icon="flask" color="#2E6B3F"/>
-        <Stat label="Avg confidence" value="92.4%" delta="+1.1pp" icon="shield" color="#66A64F"/>
-        <Stat label="Low-confidence queue" value="42" delta="-8" deltaType="down" icon="bell" color="#F4A62A" sub="awaiting agronomist"/>
-        <Stat label="User feedback +ve" value="91%" delta="+0.6pp" icon="star" color="#9DCB7C"/>
+        <Stat label="Diagnoses · today" value={demoMode ? "3,210" : (summary?.today?.toLocaleString() ?? '—')} delta="+12%" icon="flask" color="#2E6B3F"/>
+        <Stat label="Avg confidence" value={demoMode ? "92.4%" : (summary?.avg_confidence ? summary.avg_confidence + '%' : '—')} delta="+1.1pp" icon="shield" color="#66A64F"/>
+        <Stat label="Low-confidence queue" value={demoMode ? "42" : (summary?.flagged_queue?.toLocaleString() ?? '—')} delta="-8" deltaType="down" icon="bell" color="#F4A62A" sub="awaiting agronomist"/>
+        <Stat label="User feedback +ve" value={demoMode ? "91%" : (summary?.positive_feedback_rate ? summary.positive_feedback_rate + '%' : '—')} delta="+0.6pp" icon="star" color="#9DCB7C"/>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
@@ -612,6 +670,9 @@ const DiagnosesTab = ({ data }) => {
             </tr>
           </thead>
           <tbody>
+            {displayScans.length === 0 && (
+              <tr><td colSpan="11" style={{ padding: 24, textAlign: 'center', color: '#7E7E7E' }}>No diagnoses yet.</td></tr>
+            )}
             {displayScans.map((s, i) => (
               <tr key={i} style={{ borderBottom: '1px solid #F4F1E5', background: s.flag ? '#FFFCF1' : 'transparent' }}>
                 <td style={{ padding: '12px 14px' }}><input type="checkbox"/></td>
@@ -648,15 +709,50 @@ const DiagnosesTab = ({ data }) => {
 // ============================================================
 // OUTBREAK INTEL
 // ============================================================
-const OutbreaksTab = () => {
+const OutbreaksTab = ({ demoMode, data }) => {
   const [day, setDay] = useS_Adm(60);
+
+  const demoOutbreaks = [
+    { region: 'Multan, Punjab', issue: 'Whitefly · Cotton', trend: '+312%', cases: '1,840 farms', sev: 'critical' },
+    { region: 'Bahawalpur', issue: 'Whitefly · Cotton', trend: '+210%', cases: '920 farms', sev: 'high' },
+    { region: 'Sahiwal', issue: 'Bollworm · Cotton', trend: '+88%', cases: '420 farms', sev: 'high' },
+    { region: 'Faisalabad', issue: 'Yellow Rust · Wheat', trend: '+45%', cases: '380 farms', sev: 'med' },
+    { region: 'Hyderabad', issue: 'Anthracnose · Mango', trend: '+24%', cases: '180 farms', sev: 'med' },
+    { region: 'Sukkur', issue: 'Bacterial Leaf Blight · Rice', trend: '+12%', cases: '95 farms', sev: 'low' },
+  ];
+  const demoAdvisories = [
+    { title: 'Whitefly preventive spray · Cotton belt', regions: 'Multan, Bahawalpur, Sahiwal', sent: '2d ago', reach: '124,000', engaged: '38%', status: 'Active' },
+    { title: 'Yellow Rust early warning · Wheat', regions: 'Faisalabad, Sialkot', sent: '5d ago', reach: '88,000', engaged: '42%', status: 'Active' },
+    { title: 'Mango anthracnose seasonal alert', regions: 'Hyderabad, Sukkur', sent: '12d ago', reach: '34,000', engaged: '29%', status: 'Closed' },
+  ];
+
+  const outSummary = data?.summary;
+  const liveOutbreaks = (data?.outbreaks || []).map(o => ({
+    region: o.region || 'Unknown',
+    issue: (o.disease || 'Unknown') + (o.crop ? ' · ' + o.crop : ''),
+    trend: o.trend_pct != null ? (o.trend_pct >= 0 ? '+' : '') + o.trend_pct + '%' : '—',
+    cases: o.farm_count != null ? o.farm_count.toLocaleString() + ' farms' : '—',
+    sev: (o.pressure_level || 'low').toLowerCase(),
+  }));
+  const liveAdvisories = (data?.advisories || []).map(a => ({
+    title: a.title || 'Advisory',
+    regions: Array.isArray(a.regions) ? a.regions.join(', ') : (a.regions || '—'),
+    sent: a.sent_at ? new Date(a.sent_at).toLocaleDateString() : '—',
+    reach: '—',
+    engaged: '—',
+    status: a.status || 'Active',
+  }));
+
+  const displayOutbreaks = demoMode ? demoOutbreaks : liveOutbreaks;
+  const displayAdvisories = demoMode ? demoAdvisories : liveAdvisories;
+
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <Stat label="Active outbreaks" value="14" delta="+3" icon="bell" color="#D04E2C"/>
-        <Stat label="Districts on alert" value="22" delta="+5" icon="pin" color="#F4A62A"/>
-        <Stat label="Advisories sent · 7d" value="6" icon="bell" color="#2E6B3F"/>
-        <Stat label="Avg reach" value="84k farmers" icon="users" color="#66A64F"/>
+        <Stat label="Active outbreaks" value={demoMode ? "14" : (outSummary?.active_outbreaks?.toLocaleString() ?? liveOutbreaks.length.toLocaleString())} delta="+3" icon="bell" color="#D04E2C"/>
+        <Stat label="Districts on alert" value={demoMode ? "22" : (outSummary?.districts_on_alert?.toLocaleString() ?? '—')} delta="+5" icon="pin" color="#F4A62A"/>
+        <Stat label="Advisories sent · 7d" value={demoMode ? "6" : (outSummary?.advisories_sent_7d?.toLocaleString() ?? liveAdvisories.length.toLocaleString())} icon="bell" color="#2E6B3F"/>
+        <Stat label="Avg reach" value={demoMode ? "84k farmers" : (outSummary?.avg_reach ? outSummary.avg_reach.toLocaleString() + ' farmers' : '—')} icon="users" color="#66A64F"/>
       </div>
 
       <Card style={{ padding: 22, marginBottom: 16 }}>
@@ -711,23 +807,19 @@ const OutbreaksTab = () => {
 
           <div>
             <h4 style={{ margin: '0 0 10px', fontSize: 12, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>Top outbreaks</h4>
-            {[
-              { region: 'Multan, Punjab', issue: 'Whitefly · Cotton', trend: '+312%', cases: '1,840 farms', sev: 'critical' },
-              { region: 'Bahawalpur', issue: 'Whitefly · Cotton', trend: '+210%', cases: '920 farms', sev: 'high' },
-              { region: 'Sahiwal', issue: 'Bollworm · Cotton', trend: '+88%', cases: '420 farms', sev: 'high' },
-              { region: 'Faisalabad', issue: 'Yellow Rust · Wheat', trend: '+45%', cases: '380 farms', sev: 'med' },
-              { region: 'Hyderabad', issue: 'Anthracnose · Mango', trend: '+24%', cases: '180 farms', sev: 'med' },
-              { region: 'Sukkur', issue: 'Bacterial Leaf Blight · Rice', trend: '+12%', cases: '95 farms', sev: 'low' },
-            ].map((t, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none' }}>
-                <span style={{ width: 8, height: 8, borderRadius: 99, background: t.sev==='critical'?'#A11F0E':t.sev==='high'?'#D04E2C':t.sev==='med'?'#F4A62A':'#66A64F' }}/>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#1F4A2C' }}>{t.issue}</div>
-                  <div style={{ fontSize: 11, color: '#7E7E7E' }}>{t.region} · {t.cases}</div>
+            {displayOutbreaks.length === 0
+              ? <div style={{ padding: '20px 0', color: '#7E7E7E', fontSize: 13 }}>No outbreak data yet.</div>
+              : displayOutbreaks.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none' }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 99, background: t.sev==='critical'?'#A11F0E':t.sev==='high'?'#D04E2C':t.sev==='med'?'#F4A62A':'#66A64F' }}/>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#1F4A2C' }}>{t.issue}</div>
+                    <div style={{ fontSize: 11, color: '#7E7E7E' }}>{t.region} · {t.cases}</div>
+                  </div>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: t.sev==='critical'?'#A11F0E':t.sev==='high'?'#D04E2C':t.sev==='med'?'#F4A62A':'#66A64F' }}>{t.trend}</span>
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: t.sev==='critical'?'#A11F0E':t.sev==='high'?'#D04E2C':t.sev==='med'?'#F4A62A':'#66A64F' }}>{t.trend}</span>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
       </Card>
@@ -737,24 +829,23 @@ const OutbreaksTab = () => {
           <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Sent advisories</h3>
           <button className="btn btn-secondary btn-sm">+ New advisory</button>
         </div>
-        {[
-          { title: 'Whitefly preventive spray · Cotton belt', regions: 'Multan, Bahawalpur, Sahiwal', sent: '2d ago', reach: '124,000', engaged: '38%', status: 'Active' },
-          { title: 'Yellow Rust early warning · Wheat', regions: 'Faisalabad, Sialkot', sent: '5d ago', reach: '88,000', engaged: '42%', status: 'Active' },
-          { title: 'Mango anthracnose seasonal alert', regions: 'Hyderabad, Sukkur', sent: '12d ago', reach: '34,000', engaged: '29%', status: 'Closed' },
-        ].map((a, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none' }}>
-            <Icon name="bell" size={18} color="#F4A62A"/>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: '#1F4A2C' }}>{a.title}</div>
-              <div style={{ fontSize: 12, color: '#7E7E7E' }}>{a.regions} · sent {a.sent}</div>
+        {displayAdvisories.length === 0
+          ? <div style={{ padding: '20px 0', color: '#7E7E7E', fontSize: 13 }}>No advisories sent yet.</div>
+          : displayAdvisories.map((a, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '14px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none' }}>
+              <Icon name="bell" size={18} color="#F4A62A"/>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#1F4A2C' }}>{a.title}</div>
+                <div style={{ fontSize: 12, color: '#7E7E7E' }}>{a.regions} · sent {a.sent}</div>
+              </div>
+              <div style={{ fontSize: 12, color: '#5A5A5A', textAlign: 'right' }}>
+                <div>{a.reach} reached</div>
+                <div style={{ color: '#66A64F', fontWeight: 600 }}>{a.engaged} engaged</div>
+              </div>
+              <Pill tone={a.status === 'Active' ? 'green' : 'gray'}>{a.status}</Pill>
             </div>
-            <div style={{ fontSize: 12, color: '#5A5A5A', textAlign: 'right' }}>
-              <div>{a.reach} reached</div>
-              <div style={{ color: '#66A64F', fontWeight: 600 }}>{a.engaged} engaged</div>
-            </div>
-            <Pill tone={a.status === 'Active' ? 'green' : 'gray'}>{a.status}</Pill>
-          </div>
-        ))}
+          ))
+        }
       </Card>
     </div>
   );

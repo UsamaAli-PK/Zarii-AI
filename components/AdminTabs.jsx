@@ -5,64 +5,60 @@ const { useState: useS_Adm2, useEffect: useE_Adm2, useMemo: useM_Adm2 } = React;
 // ============================================================
 // SPONSORS & ADS
 // ============================================================
-const SponsorsTab = ({ demoMode }) => {
-  const [liveData, setLiveData] = useS_Adm2(null);
-  useE_Adm2(() => {
-    if (!demoMode) {
-      Promise.all([window.API.adminSponsors(), window.API.adminSponsoredProducts()])
-        .then(([s, p]) => setLiveData({ sponsors: s.sponsors || [], products: p.products || [], summary: s.summary || {} }))
-        .catch(() => setLiveData(null));
-    } else {
-      setLiveData(null);
-    }
-  }, [demoMode]);
-
+const SponsorsTab = ({ demoMode, data }) => {
   const demoSponsors = [
-    { name: 'Bayer Pakistan', logo: '🧪', contract: 'Jan 2026 – Dec 2026', model: 'CPM ₨480', spend: '₨ 820k', status: 'Active', products_count: 4, ctr: '4.8%' },
-    { name: 'Syngenta', logo: '🌱', contract: 'Mar 2026 – Mar 2027', model: 'Flat ₨350k/mo', spend: '₨ 1.05M', status: 'Active', products_count: 3, ctr: '6.2%' },
-    { name: 'Ali Akbar Group', logo: '🌾', contract: 'Feb 2026 – Aug 2026', model: 'CPC ₨18', spend: '₨ 380k', status: 'Active', products_count: 6, ctr: '5.1%' },
-    { name: 'FMC Pakistan', logo: '🧴', contract: 'Apr 2026 – Apr 2027', model: 'CPM ₨420', spend: '₨ 240k', status: 'Active', products_count: 2, ctr: '3.9%' },
-    { name: 'Engro Fertilizers', logo: '🌿', contract: 'Pending Q3', model: 'TBD', spend: '—', status: 'Pending', products_count: 0, ctr: '—' },
-    { name: 'FFC', logo: '🪴', contract: 'Jan 2025 – Jan 2026', model: 'Flat ₨180k/mo', spend: '₨ 540k', status: 'Ended', products_count: 0, ctr: '4.2%' },
+    { name: 'Bayer Pakistan', logo: '🧪', contract: 'Jan 2026 – Dec 2026', model: 'CPM ₨480', spend: '₨ 820k', status: 'Active', products: 4, ctr: '4.8%' },
+    { name: 'Syngenta', logo: '🌱', contract: 'Mar 2026 – Mar 2027', model: 'Flat ₨350k/mo', spend: '₨ 1.05M', status: 'Active', products: 3, ctr: '6.2%' },
+    { name: 'Ali Akbar Group', logo: '🌾', contract: 'Feb 2026 – Aug 2026', model: 'CPC ₨18', spend: '₨ 380k', status: 'Active', products: 6, ctr: '5.1%' },
+    { name: 'FMC Pakistan', logo: '🧴', contract: 'Apr 2026 – Apr 2027', model: 'CPM ₨420', spend: '₨ 240k', status: 'Active', products: 2, ctr: '3.9%' },
+    { name: 'Engro Fertilizers', logo: '🌿', contract: 'Pending Q3', model: 'TBD', spend: '—', status: 'Pending', products: 0, ctr: '—' },
+    { name: 'FFC', logo: '🪴', contract: 'Jan 2025 – Jan 2026', model: 'Flat ₨180k/mo', spend: '₨ 540k', status: 'Ended', products: 0, ctr: '4.2%' },
   ];
   const demoProducts = [
-    { name: 'Antracol 70 WP', sponsor: 'Bayer Pakistan', boost_weight: 9, regions: 'Punjab, Sindh', crops: 'Cotton, Tomato', daily_cap: 8000, impressions_today: 6420, status: 'Active' },
-    { name: 'Confidor 200 SL', sponsor: 'Bayer Pakistan', boost_weight: 8, regions: 'Punjab', crops: 'Cotton', daily_cap: 6000, impressions_today: 4180, status: 'Active' },
-    { name: 'Actara 25 WG', sponsor: 'Syngenta', boost_weight: 9, regions: 'All Pakistan', crops: 'Cotton, Veg', daily_cap: 10000, impressions_today: 8240, status: 'Active' },
-    { name: 'Karate 2.5 EC', sponsor: 'Syngenta', boost_weight: 7, regions: 'Sindh, Balochistan', crops: 'Cotton', daily_cap: 5000, impressions_today: 2010, status: 'Active' },
-    { name: 'Sarbex 5G', sponsor: 'Ali Akbar Group', boost_weight: 6, regions: 'Punjab', crops: 'Sugarcane, Rice', daily_cap: 4000, impressions_today: 3120, status: 'Active' },
-    { name: 'Nominee Gold', sponsor: 'Ali Akbar Group', boost_weight: 5, regions: 'Sindh', crops: 'Rice', daily_cap: 3000, impressions_today: 480, status: 'Paused' },
+    { name: 'Antracol 70 WP', sponsor: 'Bayer Pakistan', boost: 9, regions: 'Punjab, Sindh', crops: 'Cotton, Tomato', cap: 8000, used: 6420, status: 'Active' },
+    { name: 'Confidor 200 SL', sponsor: 'Bayer Pakistan', boost: 8, regions: 'Punjab', crops: 'Cotton', cap: 6000, used: 4180, status: 'Active' },
+    { name: 'Actara 25 WG', sponsor: 'Syngenta', boost: 9, regions: 'All Pakistan', crops: 'Cotton, Veg', cap: 10000, used: 8240, status: 'Active' },
+    { name: 'Karate 2.5 EC', sponsor: 'Syngenta', boost: 7, regions: 'Sindh, Balochistan', crops: 'Cotton', cap: 5000, used: 2010, status: 'Active' },
+    { name: 'Sarbex 5G', sponsor: 'Ali Akbar Group', boost: 6, regions: 'Punjab', crops: 'Sugarcane, Rice', cap: 4000, used: 3120, status: 'Active' },
+    { name: 'Nominee Gold', sponsor: 'Ali Akbar Group', boost: 5, regions: 'Sindh', crops: 'Rice', cap: 3000, used: 480, status: 'Paused' },
   ];
 
-  const sponsors = liveData ? liveData.sponsors.map(s => ({
-    name: s.name, logo: '🏢',
-    contract: s.contract_start && s.contract_end ? `${s.contract_start?.slice(0,7)} – ${s.contract_end?.slice(0,7)}` : s.status === 'Pending' ? 'Pending' : '—',
+  const rawSponsors = data?.sponsors?.sponsors || [];
+  const sponsorSummary = data?.sponsors?.summary;
+  const rawProducts = Array.isArray(data?.sponsoredProducts) ? data.sponsoredProducts : [];
+  const liveSponsors = rawSponsors.map(s => ({
+    name: s.name || 'Sponsor',
+    logo: '🏢',
+    contract: s.contract_start && s.contract_end
+      ? new Date(s.contract_start).toLocaleDateString('en', { month: 'short', year: 'numeric' }) + ' – ' + new Date(s.contract_end).toLocaleDateString('en', { month: 'short', year: 'numeric' })
+      : '—',
     model: s.pricing_model || '—',
-    spend: s.monthly_budget ? `₨ ${(s.monthly_budget/1000).toFixed(0)}k` : '—',
+    spend: s.monthly_budget ? '₨ ' + Number(s.monthly_budget).toLocaleString() : '—',
     status: s.status || 'Active',
-    products_count: s.products_count || 0,
+    products: s.products_count ?? 0,
     ctr: s.ctr || '—',
-  })) : demoSponsors;
-
-  const products = liveData ? liveData.products.map(p => ({
+  }));
+  const liveProducts = rawProducts.map(p => ({
     name: p.product_name || p.name || 'Product',
     sponsor: p.sponsor_name || '—',
-    boost_weight: p.boost_weight || 0,
-    regions: Array.isArray(p.target_regions) ? p.target_regions.join(', ') : '—',
-    crops: Array.isArray(p.target_crops) ? p.target_crops.join(', ') : '—',
-    daily_cap: p.daily_cap || 0,
-    impressions_today: p.impressions_today || 0,
+    boost: p.boost_weight ?? 5,
+    regions: Array.isArray(p.target_regions) ? p.target_regions.join(', ') : (p.target_regions || '—'),
+    crops: Array.isArray(p.target_crops) ? p.target_crops.join(', ') : (p.target_crops || '—'),
+    cap: p.daily_cap ?? 0,
+    used: p.impressions_today ?? 0,
     status: p.status || 'Active',
-  })) : demoProducts;
+  }));
 
-  const summary = liveData?.summary || {};
+  const sponsors = demoMode ? demoSponsors : liveSponsors;
+  const products = demoMode ? demoProducts : liveProducts;
+
 
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Sponsor revenue · MTD" value={summary.revenue_mtd ? `₨ ${(summary.revenue_mtd/1000000).toFixed(2)}M` : '₨ 2.49M'} delta="+24%" icon="pkr" color="#F4A62A"/>
-        <window.AdminStat label="Active sponsors" value={summary.active_sponsors ?? 4} delta="+1" icon="shield" color="#2E6B3F"/>
-        <window.AdminStat label="Sponsored impressions · 7d" value={summary.impressions_7d ? summary.impressions_7d.toLocaleString() : '184,210'} delta="+15%" icon="trend" color="#9DCB7C"/>
+        <window.AdminStat label="Sponsor revenue · MTD" value={demoMode ? "₨ 2.49M" : (sponsorSummary?.revenue_mtd ? '₨ ' + Number(sponsorSummary.revenue_mtd).toLocaleString() : '—')} delta="+24%" icon="pkr" color="#F4A62A"/>
+        <window.AdminStat label="Active sponsors" value={demoMode ? "4" : (sponsorSummary?.active_sponsors?.toLocaleString() ?? sponsors.filter(s=>s.status==='Active').length)} delta="+1" icon="shield" color="#2E6B3F"/>
+        <window.AdminStat label="Sponsored impressions · 7d" value={demoMode ? "184,210" : (sponsorSummary?.impressions_7d?.toLocaleString() ?? '—')} delta="+15%" icon="trend" color="#9DCB7C"/>
         <window.AdminStat label="Avg CTR" value="5.2%" delta="+0.4pp" icon="star" color="#66A64F" sub="industry avg 1.8%"/>
       </div>
 
@@ -137,7 +133,9 @@ const SponsorsTab = ({ demoMode }) => {
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
             ))}</tr>
           </thead>
-          <tbody>{sponsors.map((s, i) => (
+          <tbody>
+            {sponsors.length === 0 && <tr><td colSpan="8" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No sponsors yet.</td></tr>}
+            {sponsors.map((s, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
               <td style={{ padding: '12px 14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -170,7 +168,9 @@ const SponsorsTab = ({ demoMode }) => {
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
             ))}</tr>
           </thead>
-          <tbody>{products.map((p, i) => (
+          <tbody>
+            {products.length === 0 && <tr><td colSpan="8" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No sponsored products yet.</td></tr>}
+            {products.map((p, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
               <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1F4A2C' }}>{p.name}</td>
               <td style={{ padding: '12px 14px', color: '#5A5A5A' }}>{p.sponsor}</td>
@@ -205,37 +205,36 @@ const SponsorsTab = ({ demoMode }) => {
 // ============================================================
 // API INTEGRATIONS
 // ============================================================
-const ApiKeysTab = () => {
+const DEMO_API_KEYS = {
+  summary: { total_keys: 6, healthy: 5, degraded: 1, down: 0 },
+  pools: {
+    vision: [
+      { id: 'd1', provider: 'Google AI Studio', model_id: 'gemini-1.5-pro', key_masked: 'AIza...x8F2', priority: 1, weight: 70, calls_today: 8420, status: 'healthy' },
+      { id: 'd2', provider: 'Google AI Studio', model_id: 'gemini-1.5-flash', key_masked: 'AIza...kP9A', priority: 2, weight: 30, calls_today: 2180, status: 'healthy' },
+    ],
+    voice: [
+      { id: 'd3', provider: 'Groq', model_id: 'whisper-large-v3', key_masked: 'gsk_...mQ7X', priority: 1, weight: 60, calls_today: 3240, status: 'healthy' },
+      { id: 'd4', provider: 'ElevenLabs', model_id: 'eleven_multilingual_v2', key_masked: 'el_...nR4T', priority: 1, weight: 100, calls_today: 1840, status: 'degraded' },
+    ],
+    weather: [
+      { id: 'd5', provider: 'OpenWeather', model_id: '', key_masked: 'owm_...jK2L', priority: 1, weight: 100, calls_today: 480, status: 'healthy' },
+    ],
+  },
+};
+
+const ApiKeysTab = ({ demoMode, data: propData, refetch }) => {
   const [pool, setPool] = useS_Adm2('vision');
-  const [data, setData] = useS_Adm2(null);
-  const [loading, setLoading] = useS_Adm2(true);
-  const [error, setError] = useS_Adm2(null);
-  
-  // Modal state
-  const [modalMode, setModalMode] = useS_Adm2(null); // 'add' | 'edit' | null
+  const [mutating, setMutating] = useS_Adm2(false);
+
+  const [modalMode, setModalMode] = useS_Adm2(null);
   const [editKey, setEditKey] = useS_Adm2(null);
   const [formData, setFormData] = useS_Adm2({ provider: '', api_key: '', model_id: '', base_url: '', priority: 1, weight: 50, quota: '' });
 
-  const fetchData = async () => {
-    setLoading(true);
-    try {
-      const res = await window.API.adminApiKeys();
-      setData(res);
-      setError(null);
-    } catch (err) {
-      console.error('[ApiKeysTab] Fetch error:', err);
-      setError(err.message || 'Failed to fetch API keys');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useE_Adm2(() => {
-    fetchData();
-  }, []);
+  const data = demoMode ? DEMO_API_KEYS : (propData || DEMO_API_KEYS);
 
   const handleSave = async (e) => {
     e.preventDefault();
+    setMutating(true);
     try {
       if (modalMode === 'add') {
         await window.API.adminAddApiKey({ pool, ...formData });
@@ -243,17 +242,20 @@ const ApiKeysTab = () => {
         await window.API.adminUpdateApiKey(editKey.id, formData);
       }
       setModalMode(null);
-      fetchData();
+      if (refetch) refetch();
     } catch (err) {
       alert('Error saving API key: ' + err.message);
+    } finally {
+      setMutating(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (demoMode) return alert('Switch to Live mode to delete keys.');
     if (!confirm('Are you sure you want to delete this API key?')) return;
     try {
       await window.API.adminDeleteApiKey(id);
-      fetchData();
+      if (refetch) refetch();
     } catch (err) {
       alert('Error deleting API key: ' + err.message);
     }
@@ -269,9 +271,6 @@ const ApiKeysTab = () => {
     setFormData({ provider: k.provider, api_key: '', model_id: k.model_id || '', base_url: k.base_url || '', priority: k.priority, weight: k.weight, quota: k.daily_quota || '' });
     setModalMode('edit');
   };
-
-  if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading API Configuration...</div>;
-  if (error) return <div style={{ padding: 40, color: 'red' }}>Error: {error}</div>;
 
   const poolData = data?.pools?.[pool] || [];
   
@@ -382,34 +381,22 @@ const ApiKeysTab = () => {
 // ============================================================
 // REVENUE
 // ============================================================
-const RevenueTab = ({ demoMode }) => {
-  const [liveData, setLiveData] = useS_Adm2(null);
-  useE_Adm2(() => {
-    if (!demoMode) {
-      window.API.adminRevenue()
-        .then(d => setLiveData(d))
-        .catch(() => setLiveData(null));
-    } else {
-      setLiveData(null);
-    }
-  }, [demoMode]);
-
-  const s = liveData?.summary || {};
-  const mix = liveData?.revenue_mix || {};
-  const affiliates = liveData?.affiliate_attribution || [
-    { partner: 'Bayer Pakistan', clicks: 38420, conv_rate: '12.4%', conversions: 4764, sales: '₨ 14.2M', commission: '₨ 1.42M' },
-    { partner: 'Syngenta', clicks: 24180, conv_rate: '14.1%', conversions: 3409, sales: '₨ 9.8M', commission: '₨ 980k' },
-    { partner: 'Ali Akbar Group', clicks: 18940, conv_rate: '9.8%', conversions: 1856, sales: '₨ 4.2M', commission: '₨ 420k' },
-    { partner: 'FMC Pakistan', clicks: 11200, conv_rate: '8.2%', conversions: 918, sales: '₨ 2.1M', commission: '₨ 210k' },
-  ];
-
+const RevenueTab = ({ demoMode, data }) => {
+  const fmt = (v, prefix='₨ ') => v != null ? prefix + Number(v).toLocaleString() : '—';
+  const s = data?.summary;
+  const mrr = demoMode ? "₨ 4.8M" : fmt(s?.mrr);
+  const sponsorRev = demoMode ? "₨ 2.49M" : fmt(s?.sponsor_revenue);
+  const premiumCount = demoMode ? "2,140" : (s?.premium_subscriptions?.toLocaleString() ?? '—');
+  const affClicks = demoMode ? "14,820" : (s?.affiliate_clicks_7d?.toLocaleString() ?? '—');
+  const liveAffRows = Array.isArray(data?.affiliate_attribution) ? data.affiliate_attribution : [];
   return (
   <div>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-      <window.AdminStat label="MRR" value={s.mrr ? `₨ ${(s.mrr/1000000).toFixed(1)}M` : '₨ 4.8M'} delta="+18%" icon="pkr" color="#2E6B3F"/>
-      <window.AdminStat label="Sponsor revenue" value={s.sponsor_revenue ? `₨ ${(s.sponsor_revenue/1000000).toFixed(2)}M` : '₨ 2.49M'} delta="+24%" icon="trend" color="#F4A62A"/>
-      <window.AdminStat label="Premium subscriptions" value={s.premium_subscriptions ? s.premium_subscriptions.toLocaleString() : '2,140'} delta="+312" icon="star" color="#66A64F" sub="₨ 299/mo each"/>
-      <window.AdminStat label="Affiliate clicks · 7d" value={s.affiliate_clicks_7d ? s.affiliate_clicks_7d.toLocaleString() : '14,820'} delta="+9%" icon="leaf" color="#9DCB7C"/>
+      <window.AdminStat label="MRR" value={mrr} delta="+18%" icon="pkr" color="#2E6B3F"/>
+      <window.AdminStat label="Sponsor revenue" value={sponsorRev} delta="+24%" icon="trend" color="#F4A62A"/>
+      <window.AdminStat label="Premium subscriptions" value={premiumCount} delta="+312" icon="star" color="#66A64F" sub="₨ 299/mo each"/>
+      <window.AdminStat label="Affiliate clicks · 7d" value={affClicks} delta="+9%" icon="leaf" color="#9DCB7C"/>
+
     </div>
 
     <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
@@ -462,8 +449,13 @@ const RevenueTab = ({ demoMode }) => {
         <thead><tr style={{ borderBottom: '2px solid #F1ECDD' }}>{['Partner','Clicks','Conv. rate','Conversions','Attributed sales','Commission'].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
-          <tbody>
-          {affiliates.map((a, i) => (
+        <tbody>
+          {demoMode ? [
+            ['Bayer Pakistan', '38,420', '12.4%', '4,764', '₨ 14.2M', '₨ 1.42M'],
+            ['Syngenta', '24,180', '14.1%', '3,409', '₨ 9.8M', '₨ 980k'],
+            ['Ali Akbar Group', '18,940', '9.8%', '1,856', '₨ 4.2M', '₨ 420k'],
+            ['FMC Pakistan', '11,200', '8.2%', '918', '₨ 2.1M', '₨ 210k'],
+          ].map((row, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
               <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1F4A2C' }}>{a.partner}</td>
               <td style={{ padding: '12px 14px', color: '#1F4A2C' }}>{typeof a.clicks === 'number' ? a.clicks.toLocaleString() : a.clicks}</td>
@@ -472,7 +464,19 @@ const RevenueTab = ({ demoMode }) => {
               <td style={{ padding: '12px 14px', color: '#1F4A2C' }}>{a.sales}</td>
               <td style={{ padding: '12px 14px', fontWeight: 700, color: '#2E6B3F' }}>{a.commission}</td>
             </tr>
-          ))}
+          )) : liveAffRows.length === 0
+            ? <tr><td colSpan="6" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No affiliate data yet.</td></tr>
+            : liveAffRows.map((a, i) => (
+              <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
+                <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1F4A2C' }}>{a.partner || a.sponsor_name || '—'}</td>
+                <td style={{ padding: '12px 14px' }}>{a.clicks?.toLocaleString() ?? '—'}</td>
+                <td style={{ padding: '12px 14px' }}>{a.conv_rate != null ? a.conv_rate + '%' : '—'}</td>
+                <td style={{ padding: '12px 14px' }}>{a.conversions?.toLocaleString() ?? '—'}</td>
+                <td style={{ padding: '12px 14px' }}>{a.attributed_sales != null ? '₨ ' + Number(a.attributed_sales).toLocaleString() : '—'}</td>
+                <td style={{ padding: '12px 14px', fontWeight: 700, color: '#2E6B3F' }}>{a.commission != null ? '₨ ' + Number(a.commission).toLocaleString() : '—'}</td>
+              </tr>
+            ))
+          }
         </tbody>
       </table>
     </window.AdminCard>
@@ -483,52 +487,38 @@ const RevenueTab = ({ demoMode }) => {
 // ============================================================
 // CATALOG
 // ============================================================
-const CatalogTab = ({ demoMode }) => {
-  const [liveData, setLiveData] = useS_Adm2(null);
-  useE_Adm2(() => {
-    if (!demoMode) {
-      window.API.adminCatalog()
-        .then(d => setLiveData(d))
-        .catch(() => setLiveData(null));
-    } else {
-      setLiveData(null);
-    }
-  }, [demoMode]);
-
+const CatalogTab = ({ demoMode, data }) => {
   const demoItems = [
-    { name: 'Antracol 70 WP', category: 'Fungicide', company: 'Bayer', pkr_price: 1180, unit: '500g', dosage: '2.5 g/L water', last_price_refresh: null, is_sponsored: true, is_banned: false },
-    { name: 'Confidor 200 SL', category: 'Insecticide', company: 'Bayer', pkr_price: 980, unit: '250ml', dosage: '0.5 ml/L', last_price_refresh: null, is_sponsored: true, is_banned: false },
-    { name: 'Actara 25 WG', category: 'Insecticide', company: 'Syngenta', pkr_price: 2200, unit: '100g', dosage: '0.4 g/L', last_price_refresh: null, is_sponsored: true, is_banned: false },
-    { name: 'Ridomil Gold MZ', category: 'Fungicide', company: 'Syngenta', pkr_price: 1650, unit: '500g', dosage: '2 g/L', last_price_refresh: null, is_sponsored: false, is_banned: false },
-    { name: 'Karate 2.5 EC', category: 'Insecticide', company: 'Syngenta', pkr_price: 720, unit: '250ml', dosage: '0.8 ml/L', last_price_refresh: null, is_sponsored: true, is_banned: false },
-    { name: 'Sarbex 5G', category: 'Insecticide', company: 'Ali Akbar', pkr_price: 480, unit: '1kg', dosage: '20 kg/acre', last_price_refresh: null, is_sponsored: true, is_banned: false },
-    { name: 'Endosulfan 35 EC', category: 'Insecticide', company: 'Generic', pkr_price: null, unit: null, dosage: '—', last_price_refresh: null, is_sponsored: false, is_banned: true },
-    { name: 'Urea (46% N)', category: 'Fertilizer', company: 'Engro', pkr_price: 4200, unit: '50kg bag', dosage: '50 kg/acre', last_price_refresh: null, is_sponsored: false, is_banned: false },
-    { name: 'DAP', category: 'Fertilizer', company: 'FFC', pkr_price: 11200, unit: '50kg bag', dosage: '50 kg/acre', last_price_refresh: null, is_sponsored: false, is_banned: false },
+    { name: 'Antracol 70 WP', kind: 'Fungicide', co: 'Bayer', price: '₨ 1,180 / 500g', dose: '2.5 g/L water', updated: '2d ago', sponsored: true, banned: false },
+    { name: 'Confidor 200 SL', kind: 'Insecticide', co: 'Bayer', price: '₨ 980 / 250ml', dose: '0.5 ml/L', updated: '5d ago', sponsored: true, banned: false },
+    { name: 'Actara 25 WG', kind: 'Insecticide', co: 'Syngenta', price: '₨ 2,200 / 100g', dose: '0.4 g/L', updated: '1d ago', sponsored: true, banned: false },
+    { name: 'Ridomil Gold MZ', kind: 'Fungicide', co: 'Syngenta', price: '₨ 1,650 / 500g', dose: '2 g/L', updated: '8d ago', sponsored: false, banned: false },
+    { name: 'Karate 2.5 EC', kind: 'Insecticide', co: 'Syngenta', price: '₨ 720 / 250ml', dose: '0.8 ml/L', updated: '3d ago', sponsored: true, banned: false },
+    { name: 'Sarbex 5G', kind: 'Insecticide', co: 'Ali Akbar', price: '₨ 480 / 1kg', dose: '20 kg/acre', updated: '6d ago', sponsored: true, banned: false },
+    { name: 'Endosulfan 35 EC', kind: 'Insecticide', co: 'Generic', price: '—', dose: '—', updated: '1y ago', sponsored: false, banned: true },
+    { name: 'Urea (46% N)', kind: 'Fertilizer', co: 'Engro', price: '₨ 4,200 / 50kg bag', dose: '50 kg/acre', updated: '12h ago', sponsored: false, banned: false },
+    { name: 'DAP', kind: 'Fertilizer', co: 'FFC', price: '₨ 11,200 / 50kg bag', dose: '50 kg/acre', updated: '18h ago', sponsored: false, banned: false },
   ];
-  const demoPrmopts = [
-    { name: 'Cotton · disease diagnosis v3', category: 'Cotton', traffic_pct: 70, accuracy: '94.2%', status: 'champion' },
-    { name: 'Cotton · disease diagnosis v4 (test)', category: 'Cotton', traffic_pct: 30, accuracy: '95.8%', status: 'experiment' },
-    { name: 'Wheat · rust diagnosis v2', category: 'Wheat', traffic_pct: 100, accuracy: '92.1%', status: 'champion' },
-    { name: 'Mango · anthracnose diagnosis v1', category: 'Mango', traffic_pct: 100, accuracy: '88.4%', status: 'champion' },
-  ];
-
-  const items = liveData ? liveData.items.map(i => ({
-    name: i.name, category: i.category, company: i.company,
-    pkr_price: i.pkr_price, unit: i.unit, dosage: i.dosage,
-    last_price_refresh: i.last_price_refresh,
-    is_sponsored: i.is_sponsored, is_banned: i.is_banned,
-  })) : demoItems;
-  const prompts = liveData ? (liveData.prompts || []) : demoPrmopts;
-  const catalogSummary = liveData?.summary || {};
-
+  const catSummary = data?.summary;
+  const rawItems = Array.isArray(data?.items) ? data.items : [];
+  const liveItems = rawItems.map(p => ({
+    name: p.product_name || p.name || 'Product',
+    kind: p.category || p.type || '—',
+    co: p.company || p.manufacturer || '—',
+    price: p.pkr_price ? '₨ ' + Number(p.pkr_price).toLocaleString() : (p.price_pkr ? '₨ ' + p.price_pkr : '—'),
+    dose: p.dosage || p.dose || '—',
+    updated: p.updated_at ? new Date(p.updated_at).toLocaleDateString() : '—',
+    sponsored: !!p.is_sponsored,
+    banned: !!p.is_banned,
+  }));
+  const items = demoMode ? demoItems : liveItems;
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Catalog items" value={catalogSummary.total ?? 284} delta="+12 this month" icon="leaf" color="#2E6B3F"/>
-        <window.AdminStat label="Sponsored" value={catalogSummary.sponsored ?? 42} icon="shield" color="#F4A62A"/>
+        <window.AdminStat label="Catalog items" value={demoMode ? "284" : (catSummary?.total?.toLocaleString() ?? rawItems.length.toLocaleString())} delta="+12 this month" icon="leaf" color="#2E6B3F"/>
+        <window.AdminStat label="Sponsored" value={demoMode ? "42" : (catSummary?.sponsored?.toLocaleString() ?? liveItems.filter(i=>i.sponsored).length)} icon="shield" color="#F4A62A"/>
         <window.AdminStat label="Price last refreshed" value="< 24h" icon="refresh" color="#66A64F" sub="auto + manual"/>
-        <window.AdminStat label="Banned / restricted" value={catalogSummary.banned ?? 8} icon="bell" color="#D04E2C"/>
+        <window.AdminStat label="Banned / restricted" value={demoMode ? "8" : (catSummary?.banned?.toLocaleString() ?? liveItems.filter(i=>i.banned).length)} icon="bell" color="#D04E2C"/>
       </div>
 
       <window.AdminCard>
@@ -544,8 +534,10 @@ const CatalogTab = ({ demoMode }) => {
           <thead style={{ background: '#FAF7EC' }}><tr>{['Product','Category','Company','Pakistan price','Dosage','Last updated','Tags',''].map((h,i)=>(
             <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
           ))}</tr></thead>
-          <tbody>{items.map((p, i) => (
-            <tr key={i} style={{ borderBottom: '1px solid #F4F1E5', background: p.is_banned ? '#FFF6F2' : 'transparent' }}>
+          <tbody>
+            {items.length === 0 && <tr><td colSpan="8" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No catalog items yet.</td></tr>}
+            {items.map((p, i) => (
+            <tr key={i} style={{ borderBottom: '1px solid #F4F1E5', background: p.banned ? '#FFF6F2' : 'transparent' }}>
               <td style={{ padding: '12px 14px', fontWeight: 600, color: '#1F4A2C' }}>{p.name}</td>
               <td style={{ padding: '12px 14px' }}><window.AdminPill tone="gray">{p.category}</window.AdminPill></td>
               <td style={{ padding: '12px 14px', color: '#5A5A5A' }}>{p.company}</td>
@@ -583,44 +575,33 @@ const CatalogTab = ({ demoMode }) => {
 // ============================================================
 // WHATSAPP OPS
 // ============================================================
-const WhatsAppOps = ({ demoMode }) => {
-  const [liveData, setLiveData] = useS_Adm2(null);
-  useE_Adm2(() => {
-    if (!demoMode) {
-      window.API.adminWaQueue()
-        .then(d => setLiveData(d))
-        .catch(() => setLiveData(null));
-    } else {
-      setLiveData(null);
-    }
-  }, [demoMode]);
-
+const WhatsAppOps = ({ demoMode, data }) => {
   const demoConvos = [
-    { user: 'Aslam M.', last: 'Sent leaf photo · awaiting AI', mode: 'auto', wait: '8s', unread: 0 },
-    { user: 'Fatima B.', last: '"Mere tomato par kaale dhabbe…"', mode: 'auto', wait: '14s', unread: 0 },
-    { user: 'Tariq M.', last: '"Yeh treatment kaam nahi kar raha"', mode: 'human', wait: '4m', unread: 1 },
-    { user: 'Sara K.', last: 'Voice note received (24s)', mode: 'auto', wait: '22s', unread: 0 },
-    { user: 'Rashid A.', last: '"Confidor 200 ka rate?"', mode: 'auto', wait: '18s', unread: 0 },
-    { user: 'Bilal H.', last: '"Wapas paisa chahiye"', mode: 'human', wait: '12m', unread: 2 },
+    { user: 'Aslam M.', last: 'Sent leaf photo · awaiting AI', status: 'auto', wait: '8s', new: 0 },
+    { user: 'Fatima B.', last: '"Mere tomato par kaale dhabbe…"', status: 'auto', wait: '14s', new: 0 },
+    { user: 'Tariq M.', last: '"Yeh treatment kaam nahi kar raha"', status: 'human', wait: '4m', new: 1 },
+    { user: 'Sara K.', last: 'Voice note received (24s)', status: 'auto', wait: '22s', new: 0 },
+    { user: 'Rashid A.', last: '"Confidor 200 ka rate?"', status: 'auto', wait: '18s', new: 0 },
+    { user: 'Bilal H.', last: '"Wapas paisa chahiye"', status: 'human', wait: '12m', new: 2 },
   ];
-  const demoTemplates = [
-    { name: 'welcome_urdu', category: 'Marketing', sends: 14820, status: 'Approved' },
-    { name: 'diagnosis_ready_urdu', category: 'Utility', sends: 38200, status: 'Approved' },
-    { name: 'outbreak_alert_punjab', category: 'Marketing', sends: 124000, status: 'Approved' },
-    { name: 'reorder_reminder', category: 'Marketing', sends: 0, status: 'In review' },
-  ];
-
-  const convos = liveData ? (liveData.queue || []) : demoConvos;
-  const templates = liveData ? (liveData.templates || demoTemplates) : demoTemplates;
-  const waSummary = liveData?.summary || {};
-
+  const waSummary = data?.summary;
+  const rawConvos = Array.isArray(data?.queue) ? data.queue : [];
+  const liveConvos = rawConvos.map(c => ({
+    user: c.user_name || c.wa_phone || 'Farmer',
+    last: c.last_message || c.message || '—',
+    status: c.status === 'human_takeover' ? 'human' : 'auto',
+    wait: c.wait_time || '—',
+    new: c.unread_count ?? 0,
+  }));
+  const liveTemplates = Array.isArray(data?.templates) ? data.templates : [];
+  const convos = demoMode ? demoConvos : liveConvos;
   return (
     <div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Active conversations" value={waSummary.active_conversations ? waSummary.active_conversations.toLocaleString() : '1,284'} delta="+8%" icon="whatsapp" color="#25D366"/>
-        <window.AdminStat label="Auto-resolved" value={waSummary.auto_resolved_pct ? waSummary.auto_resolved_pct + '%' : '92.4%'} delta="+1.4pp" icon="sparkles" color="#66A64F"/>
-        <window.AdminStat label="Awaiting human" value={waSummary.awaiting_human ?? 14} icon="bell" color="#F4A62A"/>
-        <window.AdminStat label="Avg response" value={waSummary.avg_response_s ? waSummary.avg_response_s + 's' : '9.4s'} delta="-2s" deltaType="down" icon="trend" color="#2E6B3F" sub="SLO < 30s"/>
+        <window.AdminStat label="Active conversations" value={demoMode ? "1,284" : (waSummary?.active_conversations?.toLocaleString() ?? rawConvos.length.toLocaleString())} delta="+8%" icon="whatsapp" color="#25D366"/>
+        <window.AdminStat label="Auto-resolved" value={demoMode ? "92.4%" : (waSummary?.auto_resolved_pct != null ? waSummary.auto_resolved_pct + '%' : '—')} delta="+1.4pp" icon="sparkles" color="#66A64F"/>
+        <window.AdminStat label="Awaiting human" value={demoMode ? "14" : (waSummary?.awaiting_human?.toLocaleString() ?? liveConvos.filter(c=>c.status==='human').length)} icon="bell" color="#F4A62A"/>
+        <window.AdminStat label="Avg response" value={demoMode ? "9.4s" : (waSummary?.avg_response_s != null ? waSummary.avg_response_s + 's' : '—')} delta="-2s" deltaType="down" icon="trend" color="#2E6B3F" sub="SLO < 30s"/>
       </div>
 
       <window.AdminCard style={{ marginBottom: 16 }}>
@@ -632,7 +613,9 @@ const WhatsAppOps = ({ demoMode }) => {
           <thead style={{ background: '#FAF7EC' }}><tr>{['User','Last message','Mode','Wait','New',''].map((h,i)=>(
             <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
           ))}</tr></thead>
-          <tbody>{convos.map((c, i) => (
+          <tbody>
+            {convos.length === 0 && <tr><td colSpan="6" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No active conversations.</td></tr>}
+            {convos.map((c, i) => (
             <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
               <td style={{ padding: '12px 14px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -655,14 +638,29 @@ const WhatsAppOps = ({ demoMode }) => {
 
       <window.AdminCard style={{ padding: 22 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Meta-approved templates</h3>
-        {templates.map((t, i) => (
-          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 0', borderTop: i>0?'1px solid #F1ECDD':'none' }}>
-            <code style={{ background: '#F1F7E9', padding: '4px 8px', borderRadius: 6, fontSize: 12, color: '#1F4A2C' }}>{t.name}</code>
-            <window.AdminPill tone="gray">{t.category || t.cat}</window.AdminPill>
-            <span style={{ fontSize: 12, color: '#7E7E7E' }}>{(t.sends || t.uses || 0).toLocaleString()} sends</span>
-            <window.AdminPill tone={t.status==='Approved'?'green':'amber'} style={{ marginLeft: 'auto' }}>{t.status}</window.AdminPill>
-          </div>
-        ))}
+        {(() => {
+          const demoTemplates = [
+            { name: 'welcome_urdu', cat: 'Marketing', uses: 14820, status: 'Approved' },
+            { name: 'diagnosis_ready_urdu', cat: 'Utility', uses: 38200, status: 'Approved' },
+            { name: 'outbreak_alert_punjab', cat: 'Marketing', uses: 124000, status: 'Approved' },
+            { name: 'reorder_reminder', cat: 'Marketing', uses: 0, status: 'In review' },
+          ];
+          const rows = demoMode ? demoTemplates : liveTemplates.map(t => ({
+            name: t.name || t.template_name || '—',
+            cat: t.category || '—',
+            uses: t.sends || t.uses || 0,
+            status: t.status || 'Unknown',
+          }));
+          if (!demoMode && rows.length === 0) return <div style={{ color: '#7E7E7E', fontSize: 13, padding: '10px 0' }}>No templates yet.</div>;
+          return rows.map((t, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '10px 0', borderTop: i>0?'1px solid #F1ECDD':'none' }}>
+              <code style={{ background: '#F1F7E9', padding: '4px 8px', borderRadius: 6, fontSize: 12, color: '#1F4A2C' }}>{t.name}</code>
+              <window.AdminPill tone="gray">{t.cat}</window.AdminPill>
+              <span style={{ fontSize: 12, color: '#7E7E7E' }}>{t.uses.toLocaleString()} sends</span>
+              <window.AdminPill tone={t.status==='Approved'?'green':'amber'} style={{ marginLeft: 'auto' }}>{t.status}</window.AdminPill>
+            </div>
+          ));
+        })()}
       </window.AdminCard>
     </div>
   );
@@ -671,57 +669,47 @@ const WhatsAppOps = ({ demoMode }) => {
 // ============================================================
 // TEAM & AUDIT
 // ============================================================
-const TeamTab = ({ demoMode }) => {
-  const [liveData, setLiveData] = useS_Adm2(null);
-  useE_Adm2(() => {
-    if (!demoMode) {
-      window.API.adminTeam()
-        .then(d => setLiveData(d))
-        .catch(() => setLiveData(null));
-    } else {
-      setLiveData(null);
-    }
-  }, [demoMode]);
-
-  const demoMembers = [
-    { name: 'Hamza Ali', email: 'hamza@zarii.ai', role: 'Owner', tfa_enabled: true, last_active: null, _last: '2m ago' },
-    { name: 'Saira Khan', email: 'saira@zarii.ai', role: 'Ops', tfa_enabled: true, last_active: null, _last: '14m ago' },
-    { name: 'Dr. Asad Mahmood', email: 'asad@zarii.ai', role: 'Agronomist', tfa_enabled: true, last_active: null, _last: '1h ago' },
-    { name: 'Bilal Ahmad', email: 'bilal@zarii.ai', role: 'Agronomist', tfa_enabled: true, last_active: null, _last: '3h ago' },
-    { name: 'Mariam Iqbal', email: 'mariam@zarii.ai', role: 'Support', tfa_enabled: true, last_active: null, _last: '8h ago' },
-    { name: 'Tahir Rauf', email: 'tahir@zarii.ai', role: 'Support', tfa_enabled: false, last_active: null, _last: '2d ago' },
+const TeamTab = ({ demoMode, data }) => {
+  const demoTeam = [
+    { name: 'Hamza Ali', email: 'hamza@zarii.ai', role: 'Owner', tfa: true, last: '2m ago' },
+    { name: 'Saira Khan', email: 'saira@zarii.ai', role: 'Ops', tfa: true, last: '14m ago' },
+    { name: 'Dr. Asad Mahmood', email: 'asad@zarii.ai', role: 'Agronomist', tfa: true, last: '1h ago' },
+    { name: 'Bilal Ahmad', email: 'bilal@zarii.ai', role: 'Agronomist', tfa: true, last: '3h ago' },
+    { name: 'Mariam Iqbal', email: 'mariam@zarii.ai', role: 'Support', tfa: true, last: '8h ago' },
+    { name: 'Tahir Rauf', email: 'tahir@zarii.ai', role: 'Support', tfa: false, last: '2d ago' },
   ];
   const demoAudit = [
-    { admin_name: 'Hamza Ali', action: 'rotated API key', target: 'Gemini Vision (priority 1)', ip_address: '203.130.x.x', created_at: null, _when: '2m ago' },
-    { admin_name: 'Saira Khan', action: 'updated boost weight', target: 'Antracol 70 WP · 8 → 9', ip_address: '203.130.x.x', created_at: null, _when: '24m ago' },
-    { admin_name: 'Dr. Asad Mahmood', action: 'reviewed flagged diagnosis', target: 'D-39279', ip_address: '182.184.x.x', created_at: null, _when: '1h ago' },
-    { admin_name: 'Hamza Ali', action: 'sent advisory', target: 'Whitefly preventive · Cotton belt', ip_address: '203.130.x.x', created_at: null, _when: '2d ago' },
-    { admin_name: 'Saira Khan', action: 'added sponsor', target: 'Engro Fertilizers (Pending)', ip_address: '203.130.x.x', created_at: null, _when: '3d ago' },
-    { admin_name: 'Bilal Ahmad', action: 'banned product', target: 'Endosulfan 35 EC', ip_address: '182.184.x.x', created_at: null, _when: '5d ago' },
+    { who: 'Hamza Ali', what: 'rotated API key', target: 'Gemini Vision (priority 1)', ip: '203.130.x.x', when: '2m ago' },
+    { who: 'Saira Khan', what: 'updated boost weight', target: 'Antracol 70 WP · 8 → 9', ip: '203.130.x.x', when: '24m ago' },
+    { who: 'Dr. Asad Mahmood', what: 'reviewed flagged diagnosis', target: 'D-39279', ip: '182.184.x.x', when: '1h ago' },
+    { who: 'Hamza Ali', what: 'sent advisory', target: 'Whitefly preventive · Cotton belt', ip: '203.130.x.x', when: '2d ago' },
+    { who: 'Saira Khan', what: 'added sponsor', target: 'Engro Fertilizers (Pending)', ip: '203.130.x.x', when: '3d ago' },
+    { who: 'Bilal Ahmad', what: 'banned product', target: 'Endosulfan 35 EC', ip: '182.184.x.x', when: '5d ago' },
   ];
-  const demoMatrix = [
-    { capability: 'View users', Owner: true, Ops: true, Agronomist: true, Support: true },
-    { capability: 'Edit catalog', Owner: true, Ops: true, Agronomist: true, Support: false },
-    { capability: 'Manage sponsors', Owner: true, Ops: true, Agronomist: false, Support: false },
-    { capability: 'Rotate API keys', Owner: true, Ops: true, Agronomist: false, Support: false },
-    { capability: 'Send advisories', Owner: true, Ops: true, Agronomist: true, Support: false },
-    { capability: 'Take over WhatsApp', Owner: true, Ops: true, Agronomist: true, Support: true },
-    { capability: 'Invite members', Owner: true, Ops: false, Agronomist: false, Support: false },
-    { capability: 'Billing & contracts', Owner: true, Ops: false, Agronomist: false, Support: false },
-  ];
-
-  const members = liveData ? (liveData.members || []) : demoMembers;
-  const auditLog = liveData ? (liveData.audit_log || []) : demoAudit;
-  const permMatrix = liveData ? (liveData.permission_matrix || demoMatrix) : demoMatrix;
-  const teamSummary = liveData?.summary || {};
-
+  const teamSummary = data?.summary;
+  const liveTeam = (Array.isArray(data?.members) ? data.members : []).map(m => ({
+    name: m.name || m.full_name || 'Member',
+    email: m.email || '—',
+    role: m.role || 'Member',
+    tfa: !!m.two_factor_enabled,
+    last: m.last_active ? new Date(m.last_active).toLocaleString() : '—',
+  }));
+  const liveAudit = (Array.isArray(data?.audit_log) ? data.audit_log : []).map(a => ({
+    who: a.admin_name || a.who || 'Admin',
+    what: a.action || a.what || '—',
+    target: a.target || '—',
+    ip: a.ip_address || a.ip || '—',
+    when: a.created_at ? new Date(a.created_at).toLocaleString() : '—',
+  }));
+  const teamRows = demoMode ? demoTeam : liveTeam;
+  const auditRows = demoMode ? demoAudit : liveAudit;
   return (
   <div>
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-      <window.AdminStat label="Team members" value={teamSummary.total ?? members.length} icon="users" color="#2E6B3F"/>
-      <window.AdminStat label="Roles defined" value="4" icon="shield" color="#66A64F"/>
-      <window.AdminStat label="Audit events · 7d" value={teamSummary.audit_events_7d ?? 1284} icon="trend" color="#F4A62A"/>
-      <window.AdminStat label="Pending invites" value={teamSummary.pending_invites ?? 2} icon="bell" color="#9DCB7C"/>
+      <window.AdminStat label="Team members" value={demoMode ? "14" : (teamSummary?.total?.toLocaleString() ?? liveTeam.length)} icon="users" color="#2E6B3F"/>
+      <window.AdminStat label="Roles defined" value={demoMode ? "4" : (teamSummary?.roles?.toLocaleString() ?? '4')} icon="shield" color="#66A64F"/>
+      <window.AdminStat label="Audit events · 7d" value={demoMode ? "1,284" : (teamSummary?.audit_events_7d?.toLocaleString() ?? liveAudit.length)} icon="trend" color="#F4A62A"/>
+      <window.AdminStat label="Pending invites" value={demoMode ? "2" : (teamSummary?.pending_invites?.toLocaleString() ?? '—')} icon="bell" color="#9DCB7C"/>
     </div>
 
     <window.AdminCard style={{ marginBottom: 16 }}>
@@ -733,7 +721,10 @@ const TeamTab = ({ demoMode }) => {
         <thead style={{ background: '#FAF7EC' }}><tr>{['Member','Email','Role','2FA','Last active',''].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
-        <tbody>{members.map((m, i) => (
+        <tbody>{teamRows.length === 0
+          ? <tr><td colSpan="6" style={{ padding: 20, textAlign: 'center', color: '#7E7E7E' }}>No team members yet.</td></tr>
+          : teamRows.map((m, i) => (
+
           <tr key={i} style={{ borderBottom: '1px solid #F4F1E5' }}>
             <td style={{ padding: '12px 14px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -773,16 +764,20 @@ const TeamTab = ({ demoMode }) => {
         <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Audit log</h3>
         <button className="btn btn-secondary btn-sm">Export 90 days</button>
       </div>
-      {auditLog.map((a, i) => (
-        <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none', fontSize: 13 }}>
-          <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#F1F7E9', color: '#1F4A2C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{(a.admin_name||'?').split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
-          <span style={{ fontWeight: 600, color: '#1F4A2C' }}>{a.admin_name}</span>
-          <span style={{ color: '#5A5A5A' }}>{a.action}</span>
-          <code style={{ fontSize: 11, color: '#1F4A2C', background: '#F1F7E9', padding: '2px 6px', borderRadius: 4 }}>{a.target}</code>
-          <span style={{ fontSize: 11, color: '#A0A0A0', fontFamily: 'var(--font-mono)' }}>{a.ip_address}</span>
-          <span style={{ marginLeft: 'auto', fontSize: 11, color: '#A0A0A0' }}>{a._when || (a.created_at ? new Date(a.created_at).toLocaleString() : '—')}</span>
-        </div>
-      ))}
+      {auditRows.length === 0
+        ? <div style={{ padding: '12px 0', color: '#7E7E7E', fontSize: 13 }}>No audit events yet.</div>
+        : auditRows.map((a, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: i > 0 ? '1px solid #F1ECDD' : 'none', fontSize: 13 }}>
+            <div style={{ width: 26, height: 26, borderRadius: '50%', background: '#F1F7E9', color: '#1F4A2C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{a.who.split(' ').map(n=>n[0]).slice(0,2).join('')}</div>
+            <span style={{ fontWeight: 600, color: '#1F4A2C' }}>{a.who}</span>
+            <span style={{ color: '#5A5A5A' }}>{a.what}</span>
+            <code style={{ fontSize: 11, color: '#1F4A2C', background: '#F1F7E9', padding: '2px 6px', borderRadius: 4 }}>{a.target}</code>
+            <span style={{ fontSize: 11, color: '#A0A0A0', fontFamily: 'var(--font-mono)' }}>{a.ip}</span>
+            <span style={{ marginLeft: 'auto', fontSize: 11, color: '#A0A0A0' }}>{a.when}</span>
+          </div>
+        ))
+      }
+
     </window.AdminCard>
   </div>
   );
