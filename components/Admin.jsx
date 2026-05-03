@@ -314,50 +314,6 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
   );
 };
 
-const AdminTopbar = ({ tab, demoMode, setDemoMode, onLogout, admin, liveError }) => {
-  const titles = {
-    overview: ['Overview', 'Live snapshot of ZARii AI · last refreshed just now'],
-    users: ['Users', 'All farmers across web app and WhatsApp'],
-    diagnoses: ['Diagnoses & quality', 'Every scan, with confidence and feedback'],
-    outbreaks: ['Outbreak intelligence', 'Regional disease pressure across Pakistan'],
-    whatsapp: ['WhatsApp operations', 'Live conversations, templates, takeover'],
-    sponsors: ['Sponsors & Ads', 'Sponsor companies, boosted products, performance'],
-    revenue: ['Revenue', 'MRR, partner attribution, conversion'],
-    catalog: ['Catalog', 'Pesticide & fertilizer database'],
-    api: ['API integrations', 'Vision, Voice, and Weather provider rotation'],
-    team: ['Team & audit', 'Roles, permissions, and admin action log'],
-  };
-  const [t, sub] = titles[tab] || [];
-  return (
-    <div style={{
-      padding: '20px 32px', background: '#fff',
-      borderBottom: '1px solid #E6E0D1',
-      display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-      position: 'sticky', top: 0, zIndex: 10,
-    }}>
-      <div>
-        <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, color: '#1F4A2C', letterSpacing: '-0.02em' }}>{t}</h1>
-        <div style={{ fontSize: 12.5, color: '#7E7E7E', marginTop: 2 }}>{sub}</div>
-      </div>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        {/* DATA TOGGLE */}
-        <div style={{ display: 'flex', background: '#F4F2EA', padding: 3, borderRadius: 8, marginRight: 8 }}>
-          <button onClick={() => setDemoMode(true)} style={{ padding: '4px 10px', fontSize: 11, borderRadius: 6, fontWeight: 600, border: 'none', background: demoMode ? '#fff' : 'transparent', color: demoMode ? '#1F4A2C' : '#7E7E7E', boxShadow: demoMode ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>Demo</button>
-          <button onClick={() => setDemoMode(false)} style={{ padding: '4px 10px', fontSize: 11, borderRadius: 6, fontWeight: 600, border: 'none', background: !demoMode ? '#2E6B3F' : 'transparent', color: !demoMode ? '#fff' : '#7E7E7E', boxShadow: !demoMode ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' }}>Live</button>
-        </div>
-
-        <span className="tag tag-green" style={{ fontSize: 11 }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#66A64F', display: 'inline-block' }}/> All systems operational
-        </span>
-        <button className="btn btn-secondary btn-sm"><Icon name="bell" size={14}/> Alerts <span style={{ background:'#F4A62A', color:'#fff', fontSize:10, padding:'1px 6px', borderRadius:99, marginLeft:4 }}>3</span></button>
-        <button onClick={onLogout} style={{ width: 36, height: 36, borderRadius: '50%', background: '#2E6B3F', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, cursor: 'pointer', flexShrink: 0 }} title={`Logout (${admin?.email || 'Admin'})`}>
-          {admin?.name ? admin.name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase() : 'AD'}
-        </button>
-      </div>
-    </div>
-  );
-};
-
 // ============================================================
 // ADMIN LOGIN
 // ============================================================
