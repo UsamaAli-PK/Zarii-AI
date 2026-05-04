@@ -3,7 +3,7 @@ const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/catalog
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_catalog'), async (req, res) => {
   try {
     const { search, category, page = 1, limit = 50 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);

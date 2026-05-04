@@ -63,11 +63,22 @@ router.get('/me/health-score', auth, async (req, res) => {
       score = Math.round(avg);
     }
 
-    const timeline = Array.from({ length: 7 }, (_, i) => {
+    const timeline = await Promise.all(Array.from({ length: 7 }, async (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
-      return { date: d.toISOString().slice(0, 10), score: Math.max(50, score + Math.floor(Math.random() * 16 - 8)) };
-    });
+      const dayStr = d.toISOString().slice(0, 10);
+      const { data: dayScans } = await supabase
+        .from('scans')
+        .select('severity')
+        .eq('user_id', req.user.id)
+        .gte('created_at', dayStr)
+        .lt('created_at', dayStr + 'T23:59:59');
+      let dayScore = null;
+      if (dayScans && dayScans.length > 0) {
+        dayScore = Math.round(dayScans.reduce((sum, s) => sum + (sevMap[s.severity] || 60), 0) / dayScans.length);
+      }
+      return { date: dayStr, score: dayScore !== null ? dayScore : score };
+    }));
 
     res.json({ score, trend: scans && scans.length > 1 ? 'up' : 'stable', timeline });
   } catch (err) {

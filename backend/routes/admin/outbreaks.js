@@ -3,11 +3,13 @@ const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/outbreaks
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_outbreaks'), async (req, res) => {
   try {
-    const [{ data: outbreaks }, { data: advisories }] = await Promise.all([
+    const [{ data: outbreaks }, { data: advisories }, { data: activeOutbreakRegions }, { data: reachData }] = await Promise.all([
       supabase.from('outbreaks').select('*').order('pressure_level'),
       supabase.from('advisories').select('*, admin_users(name)').order('sent_at', { ascending: false }).limit(10),
+      supabase.from('outbreaks').select('region').in('pressure_level', ['Critical', 'High']),
+      supabase.from('advisories').select('reach_count'),
     ]);
 
     const sorted = (outbreaks || []).sort((a, b) => {
@@ -17,14 +19,24 @@ router.get('/', async (req, res) => {
 
     const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
 
+    // Calculate unique districts on alert (active outbreaks)
+    const uniqueDistricts = new Set((activeOutbreakRegions || []).map(r => r.region));
+    const districtsOnAlert = uniqueDistricts.size;
+
+    // Calculate average reach from advisories
+    const reachValues = (reachData || []).map(r => r.reach_count || 0);
+    const avgReach = reachValues.length > 0
+      ? Math.round(reachValues.reduce((sum, val) => sum + val, 0) / reachValues.length)
+      : 0;
+
     res.json({
       outbreaks: sorted,
       advisories: (advisories || []).map(a => ({ ...a, regions: a.regions || [], sent_by: a.admin_users?.name })),
       summary: {
         active_outbreaks: sorted.filter(o => ['Critical', 'High'].includes(o.pressure_level)).length,
-        districts_on_alert: 22,
+        districts_on_alert: districtsOnAlert,
         advisories_sent_7d: (advisories || []).filter(a => new Date(a.sent_at) > new Date(sevenDaysAgo)).length,
-        avg_reach: 84000,
+        avg_reach: avgReach,
       },
     });
   } catch (err) {
@@ -34,7 +46,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/admin/outbreaks
-router.post('/', async (req, res) => {
+router.post('/', requirePermission('manage_outbreaks'), async (req, res) => {
   try {
     const { region, disease, crop, pressure_level, farm_count, trend_pct } = req.body;
     const { data } = await supabase.from('outbreaks').insert({ region, disease, crop, pressure_level, farm_count, trend_pct }).select('id').single();
@@ -67,7 +79,7 @@ router.post('/advisories', requirePermission('send_advisories'), async (req, res
 });
 
 // GET /api/admin/advisories
-router.get('/advisories', async (req, res) => {
+router.get('/advisories', requirePermission('view_outbreaks'), async (req, res) => {
   try {
     const { data: advisories } = await supabase.from('advisories').select('*').order('sent_at', { ascending: false });
     res.json({ advisories: (advisories || []).map(a => ({ ...a, regions: a.regions || [] })) });

@@ -26,7 +26,7 @@ function maskKey(key) {
 }
 
 // GET /api/admin/api-keys
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_system'), async (req, res) => {
   try {
     const [{ data: keys }, { data: failovers }] = await Promise.all([
       supabase.from('api_keys').select('*').order('pool').order('priority'),
@@ -127,7 +127,7 @@ router.post('/:id/test', requirePermission('rotate_keys'), async (req, res) => {
 });
 
 // GET /api/admin/api-keys/failovers
-router.get('/failovers', async (req, res) => {
+router.get('/failovers', requirePermission('view_system'), async (req, res) => {
   try {
     const { data: events } = await supabase.from('failover_events').select('*').order('created_at', { ascending: false }).limit(20);
     res.json({ events: events || [] });

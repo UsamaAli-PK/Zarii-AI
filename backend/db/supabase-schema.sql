@@ -302,6 +302,271 @@ CREATE TABLE IF NOT EXISTS prompts (
 );
 
 -- ============================================================
+-- WAITLIST
+-- ============================================================
+CREATE TABLE IF NOT EXISTS waitlist (
+  id          BIGSERIAL PRIMARY KEY,
+  user_id     BIGINT REFERENCES users(id) ON DELETE SET NULL,
+  contact     TEXT,
+  feature     TEXT NOT NULL DEFAULT 'whatsapp',
+  created_at  TIMESTAMPTZ DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_waitlist_feature ON waitlist(feature);
+
+-- ============================================================
+-- ROW-LEVEL SECURITY (RLS) POLICIES
+-- ============================================================
+
+-- Enable RLS on all tables
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE otp_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE scans ENABLE ROW LEVEL SECURITY;
+ALTER TABLE voice_queries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE catalog ENABLE ROW LEVEL SECURITY;
+ALTER TABLE treatments ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sponsors ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sponsored_products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE outbreaks ENABLE ROW LEVEL SECURITY;
+ALTER TABLE advisories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE wa_conversations ENABLE ROW LEVEL SECURITY;
+ALTER TABLE api_keys ENABLE ROW LEVEL SECURITY;
+ALTER TABLE api_usage ENABLE ROW LEVEL SECURITY;
+ALTER TABLE failover_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE admin_users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE audit_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE revenue_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE prompts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
+
+-- ── USERS TABLE ──────────────────────────────────────────
+-- Farmers can only see and update their own row
+DROP POLICY IF EXISTS "users_select_own" ON users;
+CREATE POLICY "users_select_own" ON users
+  FOR SELECT USING (auth.uid()::bigint = id);
+
+DROP POLICY IF EXISTS "users_update_own" ON users;
+CREATE POLICY "users_update_own" ON users
+  FOR UPDATE USING (auth.uid()::bigint = id);
+
+DROP POLICY IF EXISTS "users_insert_deny" ON users;
+CREATE POLICY "users_insert_deny" ON users
+  FOR INSERT WITH CHECK (false);
+
+DROP POLICY IF EXISTS "users_delete_deny" ON users;
+CREATE POLICY "users_delete_deny" ON users
+  FOR DELETE USING (false);
+
+-- ── SCANS TABLE ──────────────────────────────────────────
+-- Farmers can only see and insert their own scans
+DROP POLICY IF EXISTS "scans_select_own" ON scans;
+CREATE POLICY "scans_select_own" ON scans
+  FOR SELECT USING (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "scans_insert_own" ON scans;
+CREATE POLICY "scans_insert_own" ON scans
+  FOR INSERT WITH CHECK (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "scans_update_own" ON scans;
+CREATE POLICY "scans_update_own" ON scans
+  FOR UPDATE USING (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "scans_delete_deny" ON scans;
+CREATE POLICY "scans_delete_deny" ON scans
+  FOR DELETE USING (false);
+
+-- ── VOICE_QUERIES TABLE ──────────────────────────────────
+-- Farmers can only see and insert their own voice queries
+DROP POLICY IF EXISTS "voice_select_own" ON voice_queries;
+CREATE POLICY "voice_select_own" ON voice_queries
+  FOR SELECT USING (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "voice_insert_own" ON voice_queries;
+CREATE POLICY "voice_insert_own" ON voice_queries
+  FOR INSERT WITH CHECK (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "voice_delete_deny" ON voice_queries;
+CREATE POLICY "voice_delete_deny" ON voice_queries
+  FOR DELETE USING (false);
+
+-- ── OTP_SESSIONS TABLE ───────────────────────────────────
+-- Public can insert (for login), but cannot read/update/delete
+DROP POLICY IF EXISTS "otp_insert_public" ON otp_sessions;
+CREATE POLICY "otp_insert_public" ON otp_sessions
+  FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "otp_deny_all" ON otp_sessions;
+CREATE POLICY "otp_deny_all" ON otp_sessions
+  FOR SELECT USING (false);
+
+-- ── CATALOG TABLE ────────────────────────────────────────
+-- Public can read catalog (products/diseases)
+DROP POLICY IF EXISTS "catalog_select_public" ON catalog;
+CREATE POLICY "catalog_select_public" ON catalog
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "catalog_deny_write" ON catalog;
+CREATE POLICY "catalog_deny_write" ON catalog
+  FOR INSERT WITH CHECK (false);
+
+-- ── TREATMENTS TABLE ─────────────────────────────────────
+-- Farmers can only see treatments for their own scans
+DROP POLICY IF EXISTS "treatments_select_own" ON treatments;
+CREATE POLICY "treatments_select_own" ON treatments
+  FOR SELECT USING (
+    scan_id IN (
+      SELECT id FROM scans WHERE auth.uid()::bigint = user_id
+    )
+  );
+
+DROP POLICY IF EXISTS "treatments_deny_write" ON treatments;
+CREATE POLICY "treatments_deny_write" ON treatments
+  FOR INSERT WITH CHECK (false);
+
+-- ── SPONSORS TABLE ───────────────────────────────────────
+-- Public can read sponsors
+DROP POLICY IF EXISTS "sponsors_select_public" ON sponsors;
+CREATE POLICY "sponsors_select_public" ON sponsors
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "sponsors_deny_write" ON sponsors;
+CREATE POLICY "sponsors_deny_write" ON sponsors
+  FOR INSERT WITH CHECK (false);
+
+-- ── SPONSORED_PRODUCTS TABLE ─────────────────────────────
+-- Public can read sponsored products
+DROP POLICY IF EXISTS "sponsored_products_select_public" ON sponsored_products;
+CREATE POLICY "sponsored_products_select_public" ON sponsored_products
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "sponsored_products_deny_write" ON sponsored_products;
+CREATE POLICY "sponsored_products_deny_write" ON sponsored_products
+  FOR INSERT WITH CHECK (false);
+
+-- ── OUTBREAKS TABLE ──────────────────────────────────────
+-- Public can read outbreaks (disease alerts)
+DROP POLICY IF EXISTS "outbreaks_select_public" ON outbreaks;
+CREATE POLICY "outbreaks_select_public" ON outbreaks
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "outbreaks_deny_write" ON outbreaks;
+CREATE POLICY "outbreaks_deny_write" ON outbreaks
+  FOR INSERT WITH CHECK (false);
+
+-- ── ADVISORIES TABLE ─────────────────────────────────────
+-- Public can read advisories
+DROP POLICY IF EXISTS "advisories_select_public" ON advisories;
+CREATE POLICY "advisories_select_public" ON advisories
+  FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "advisories_deny_write" ON advisories;
+CREATE POLICY "advisories_deny_write" ON advisories
+  FOR INSERT WITH CHECK (false);
+
+-- ── WA_CONVERSATIONS TABLE ───────────────────────────────
+-- Farmers can only see their own conversations
+DROP POLICY IF EXISTS "wa_conversations_select_own" ON wa_conversations;
+CREATE POLICY "wa_conversations_select_own" ON wa_conversations
+  FOR SELECT USING (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "wa_conversations_deny_write" ON wa_conversations;
+CREATE POLICY "wa_conversations_deny_write" ON wa_conversations
+  FOR INSERT WITH CHECK (false);
+
+-- ── API_KEYS TABLE ───────────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "api_keys_deny_all" ON api_keys;
+CREATE POLICY "api_keys_deny_all" ON api_keys
+  FOR ALL USING (false);
+
+-- ── API_USAGE TABLE ──────────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "api_usage_deny_all" ON api_usage;
+CREATE POLICY "api_usage_deny_all" ON api_usage
+  FOR ALL USING (false);
+
+-- ── FAILOVER_EVENTS TABLE ────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "failover_events_deny_all" ON failover_events;
+CREATE POLICY "failover_events_deny_all" ON failover_events
+  FOR ALL USING (false);
+
+-- ── ADMIN_USERS TABLE ────────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "admin_users_deny_all" ON admin_users;
+CREATE POLICY "admin_users_deny_all" ON admin_users
+  FOR ALL USING (false);
+
+-- ── AUDIT_LOG TABLE ──────────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "audit_log_deny_all" ON audit_log;
+CREATE POLICY "audit_log_deny_all" ON audit_log
+  FOR ALL USING (false);
+
+-- ── REVENUE_EVENTS TABLE ─────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "revenue_events_deny_all" ON revenue_events;
+CREATE POLICY "revenue_events_deny_all" ON revenue_events
+  FOR ALL USING (false);
+
+-- ── SUBSCRIPTIONS TABLE ──────────────────────────────────
+-- Farmers can only see their own subscriptions
+DROP POLICY IF EXISTS "subscriptions_select_own" ON subscriptions;
+CREATE POLICY "subscriptions_select_own" ON subscriptions
+  FOR SELECT USING (auth.uid()::bigint = user_id);
+
+DROP POLICY IF EXISTS "subscriptions_deny_write" ON subscriptions;
+CREATE POLICY "subscriptions_deny_write" ON subscriptions
+  FOR INSERT WITH CHECK (false);
+
+-- ── PROMPTS TABLE ────────────────────────────────────────
+-- Admin only (deny all public access)
+DROP POLICY IF EXISTS "prompts_deny_all" ON prompts;
+CREATE POLICY "prompts_deny_all" ON prompts
+  FOR ALL USING (false);
+
+-- ── WAITLIST TABLE ───────────────────────────────────────
+-- Public can insert (for signup), but cannot read/update/delete
+DROP POLICY IF EXISTS "waitlist_insert_public" ON waitlist;
+CREATE POLICY "waitlist_insert_public" ON waitlist
+  FOR INSERT WITH CHECK (true);
+
+DROP POLICY IF EXISTS "waitlist_deny_read" ON waitlist;
+CREATE POLICY "waitlist_deny_read" ON waitlist
+  FOR SELECT USING (false);
+
+-- ============================================================
+-- FOREIGN KEY CONSTRAINTS (Missing)
+-- ============================================================
+
+-- Add missing FK to outbreaks (user_id column doesn't exist, but we can add it for future use)
+-- ALTER TABLE outbreaks ADD COLUMN user_id BIGINT REFERENCES users(id) ON DELETE CASCADE;
+
+-- Add missing FK to advisories (created_by → admin_users)
+ALTER TABLE advisories ADD CONSTRAINT advisories_created_by_fkey
+  FOREIGN KEY (created_by) REFERENCES admin_users(id) ON DELETE SET NULL;
+
+-- Add missing FK to revenue_events (user_id → users)
+ALTER TABLE revenue_events ADD CONSTRAINT revenue_events_user_id_fkey
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL;
+
+-- ============================================================
+-- CHECK CONSTRAINTS (Missing)
+-- ============================================================
+
+-- Add CHECK constraint for users.region
+ALTER TABLE users ADD CONSTRAINT users_region_check
+  CHECK (region IN ('Punjab', 'Sindh', 'KPK', 'Balochistan', 'GB', 'AJK', 'FATA', NULL));
+
+-- Add CHECK constraint for subscriptions.plan
+ALTER TABLE subscriptions ADD CONSTRAINT subscriptions_plan_check
+  CHECK (plan IN ('free', 'premium', 'enterprise'));
+
+-- Add CHECK constraint for outbreaks.pressure_level (standardize values)
+ALTER TABLE outbreaks ADD CONSTRAINT outbreaks_pressure_level_check
+  CHECK (pressure_level IN ('Low', 'Moderate', 'High', 'Critical'));
+
+-- ============================================================
 -- SUPABASE STORAGE — create bucket for farmer scans
 -- ============================================================
 -- Run this separately in Supabase Dashboard > Storage:

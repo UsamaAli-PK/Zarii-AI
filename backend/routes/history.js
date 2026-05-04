@@ -102,11 +102,21 @@ router.get('/analytics', auth, async (req, res) => {
 
     const moneySaved = (totalScans || 0) * 1100;
 
-    const weekly = Array.from({ length: 7 }, (_, i) => {
+    const sevMap2 = sevMap;
+    const weekly = await Promise.all(Array.from({ length: 7 }, async (_, i) => {
       const d = new Date();
       d.setDate(d.getDate() - (6 - i));
-      return { date: d.toISOString().slice(0, 10), scans: 0, health: Math.max(50, healthScore + Math.floor(Math.random() * 16 - 8)) };
-    });
+      const dayStr = d.toISOString().slice(0, 10);
+      const [{ count: dayScanCount }, { data: dayScans }] = await Promise.all([
+        supabase.from('scans').select('*', { count: 'exact', head: true }).eq('user_id', userId).gte('created_at', dayStr).lt('created_at', dayStr + 'T23:59:59'),
+        supabase.from('scans').select('severity').eq('user_id', userId).gte('created_at', dayStr).lt('created_at', dayStr + 'T23:59:59'),
+      ]);
+      let dayHealth = healthScore;
+      if (dayScans && dayScans.length > 0) {
+        dayHealth = Math.round(dayScans.reduce((sum, s) => sum + (sevMap2[s.severity] || 60), 0) / dayScans.length);
+      }
+      return { date: dayStr, scans: dayScanCount || 0, health: dayHealth };
+    }));
 
     res.json({
       total_scans: totalScans || 0,

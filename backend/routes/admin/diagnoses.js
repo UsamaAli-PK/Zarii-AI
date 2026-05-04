@@ -1,8 +1,9 @@
 const router = require('express').Router();
 const supabase = require('../../supabase');
+const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/diagnoses
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_diagnoses'), async (req, res) => {
   try {
     const { filter, page = 1, limit = 20 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -27,7 +28,24 @@ router.get('/', async (req, res) => {
 
     const avgConf = confData && confData.length > 0
       ? confData.reduce((s, r) => s + (r.confidence || 0), 0) / confData.length
-      : 92.4;
+      : null;
+
+    // Compute confusion pairs from negative-feedback scans
+    const { data: negScans } = await supabase
+      .from('scans')
+      .select('disease_name')
+      .eq('user_feedback', 'negative')
+      .not('disease_name', 'is', null);
+    const pairCount = {};
+    (negScans || []).forEach(s => {
+      if (s.disease_name) {
+        pairCount[s.disease_name] = (pairCount[s.disease_name] || 0) + 1;
+      }
+    });
+    const confusionPairs = Object.entries(pairCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name, count]) => ({ a: name, b: 'Misidentified', count }));
 
     res.json({
       scans: (scans || []).map(s => ({
@@ -39,17 +57,12 @@ router.get('/', async (req, res) => {
       })),
       pagination: { page: parseInt(page), limit: lim, total: total || 0 },
       summary: {
-        today: Math.max(diagsToday || 0, 3210),
-        avg_confidence: parseFloat((avgConf || 92.4).toFixed(1)),
-        flagged_queue: Math.max(flagged || 0, 42),
-        positive_feedback_rate: (withFb || 0) > 0 ? Math.round(((positiveFb || 0) / (withFb || 1)) * 100) : 91,
+        today: diagsToday || 0,
+        avg_confidence: avgConf !== null ? parseFloat(avgConf.toFixed(1)) : null,
+        flagged_queue: flagged || 0,
+        positive_feedback_rate: (withFb || 0) > 0 ? Math.round(((positiveFb || 0) / (withFb || 1)) * 100) : 0,
       },
-      confusion_pairs: [
-        { a: 'Early Blight', b: 'Late Blight', count: 34 },
-        { a: 'Yellow Rust', b: 'Brown Rust', count: 28 },
-        { a: 'Whitefly', b: 'Aphid', count: 19 },
-        { a: 'Anthracnose', b: 'Powdery Mildew', count: 12 },
-      ],
+      confusion_pairs: confusionPairs,
     });
   } catch (err) {
     console.error('admin diagnoses error:', err);

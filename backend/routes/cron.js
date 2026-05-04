@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const { startCronJobs } = require('../services/cronJobs');
+const { 
+  runOutbreakDetection, 
+  runWeatherAlerts, 
+  runChurnCalculation, 
+  runDailyResets, 
+  runAnalyticsAggregation 
+} = require('../services/cronJobs');
 
 /**
  * Vercel Cron Trigger
@@ -8,7 +14,6 @@ const { startCronJobs } = require('../services/cronJobs');
  * Secured by checking for the Vercel-specific CRON header.
  */
 router.get('/cron', async (req, res) => {
-  // In development, allow manual trigger. In production, check header.
   const isVercelCron = req.headers['x-vercel-cron'] === '1';
   const isDev = process.env.NODE_ENV !== 'production';
 
@@ -18,18 +23,19 @@ router.get('/cron', async (req, res) => {
 
   console.log('[Cron] Manual trigger received');
   
-  // startCronJobs contains the logic for outbreaks and counters.
-  // We call the logic directly if needed, or trigger the existing interval-based jobs.
-  // Since Vercel is serverless, we should probably run the jobs IMMEDIATELY here.
-  
   try {
-    // Note: We might need to export individual job functions from services/cronJobs
-    // For now, we'll just log and assume the standard startCronJobs is running
-    // in the background if the instance stays alive.
-    // Better: Run a specific 'sync' task.
+    // Run all tasks in parallel
+    await Promise.all([
+      runOutbreakDetection(),
+      runWeatherAlerts(),
+      runChurnCalculation(),
+      runDailyResets(),
+      runAnalyticsAggregation()
+    ]);
     
-    res.json({ status: 'success', message: 'Cron logic triggered' });
+    res.json({ status: 'success', message: 'All cron tasks completed' });
   } catch (err) {
+    console.error('[Cron] Handler error:', err);
     res.status(500).json({ error: err.message });
   }
 });

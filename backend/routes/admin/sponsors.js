@@ -3,25 +3,57 @@ const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/sponsors
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_sponsors'), async (req, res) => {
   try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
     const { data: sponsors } = await supabase.from('sponsors').select('*').order('created_at', { ascending: false });
 
     const withStats = await Promise.all((sponsors || []).map(async s => {
-      const { data: products } = await supabase
-        .from('sponsored_products')
-        .select('*, catalog(name, category, pkr_price)')
-        .eq('sponsor_id', s.id);
-      const totalImpressions = (products || []).reduce((sum, p) => sum + (p.impressions_today || 0), 0);
-      return { ...s, products_count: (products || []).length, impressions_today: totalImpressions, ctr: (Math.random() * 3 + 3.5).toFixed(1) + '%' };
+      const [{ data: products }, { data: revEvents }] = await Promise.all([
+        supabase.from('sponsored_products').select('*, catalog(name, category, pkr_price)').eq('sponsor_id', s.id),
+        supabase.from('revenue_events').select('amount').eq('partner', s.name).gte('created_at', monthStart),
+      ]);
+
+      const totalProductImpressions = (products || []).reduce((sum, p) => sum + (p.impressions_today || 0), 0);
+      const revenueMtd = (revEvents || []).reduce((sum, e) => sum + (e.amount || 0), 0);
+
+      // Calculate CTR: count sponsored treatments for this sponsor's products in last 7 days
+      let clicks = 0;
+      let impressions = 0;
+
+      if ((products || []).length > 0) {
+        const catalogIds = (products || []).map(p => p.catalog_id);
+        impressions = totalProductImpressions;
+
+        // Count sponsored treatments for these catalog items
+        const { count: clickCount } = await supabase
+          .from('treatments')
+          .select('id', { count: 'exact', head: true })
+          .in('catalog_id', catalogIds)
+          .eq('is_sponsored', true)
+          .gte('created_at', sevenDaysAgo);
+
+        clicks = clickCount || 0;
+      }
+
+      const ctr = impressions > 0 && clicks > 0 ? parseFloat(((clicks / impressions) * 100).toFixed(2)) : null;
+
+      return { ...s, products_count: (products || []).length, impressions_today: totalProductImpressions, ctr, revenue_mtd: revenueMtd };
     }));
+
+    // Overall summary
+    const totalRevenueMtd = withStats.reduce((sum, s) => sum + (s.revenue_mtd || 0), 0);
+    const totalImpressions7d = withStats.reduce((sum, s) => sum + (s.impressions_today || 0), 0);
 
     res.json({
       sponsors: withStats,
       summary: {
         total_sponsors: (sponsors || []).length,
         active_sponsors: (sponsors || []).filter(s => s.status === 'Active').length,
-        revenue_mtd: 2490000, impressions_7d: 184000,
+        revenue_mtd: totalRevenueMtd || null,
+        impressions_7d: totalImpressions7d || null,
       },
     });
   } catch (err) {
@@ -70,7 +102,7 @@ router.delete('/:id', requirePermission('manage_sponsors'), async (req, res) => 
 });
 
 // GET /api/admin/sponsored-products
-router.get('/products', async (req, res) => {
+router.get('/products', requirePermission('view_sponsors'), async (req, res) => {
   try {
     const { data: products } = await supabase
       .from('sponsored_products')

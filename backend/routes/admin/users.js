@@ -3,7 +3,7 @@ const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/users
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_users'), async (req, res) => {
   try {
     const { search, region, channel, page = 1, limit = 20 } = req.query;
     const offset = (parseInt(page) - 1) * parseInt(limit);
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
     res.json({
       users: enriched,
       pagination: { page: parseInt(page), limit: lim, total: total || 0 },
-      summary: { total: Math.max(total || 0, 184210), wau: Math.max(wau, 68440), mau: Math.max(mau, 98200) },
+      summary: { total: total || 0, wau: wau, mau: mau },
     });
   } catch (err) {
     console.error('admin users error:', err);

@@ -22,15 +22,24 @@ const MOCK_TEMPLATES = [
 router.get('/', (req, res, next) => { req.url = '/queue'; next(); });
 
 // GET /api/admin/whatsapp/queue
-router.get('/queue', async (req, res) => {
+router.get('/queue', requirePermission('view_whatsapp'), async (req, res) => {
   try {
-    const { data: dbConvos } = await supabase
-      .from('wa_conversations')
-      .select('*, users(name)')
-      .order('updated_at', { ascending: false })
-      .limit(20);
+    const [
+      { data: dbConvos },
+      { count: waitlistCount },
+      { count: autoResolved },
+      { count: totalConvos },
+      { data: allConvos },
+    ] = await Promise.all([
+      supabase.from('wa_conversations').select('*, users(name)').order('updated_at', { ascending: false }).limit(20),
+      supabase.from('waitlist').select('*', { count: 'exact', head: true }).eq('feature', 'whatsapp'),
+      supabase.from('wa_conversations').select('*', { count: 'exact', head: true }).eq('mode', 'auto'),
+      supabase.from('wa_conversations').select('*', { count: 'exact', head: true }),
+      supabase.from('wa_conversations').select('messages'),
+    ]);
 
-    const queue = dbConvos && dbConvos.length > 0
+    const hasRealData = dbConvos && dbConvos.length > 0;
+    const queue = hasRealData
       ? dbConvos.map(c => ({
           id: c.id, user: c.users?.name || 'Unknown',
           wa_phone: c.wa_phone, last: 'Recent message',
@@ -38,15 +47,56 @@ router.get('/queue', async (req, res) => {
         }))
       : MOCK_QUEUE;
 
+    const autoResolvedPct = (totalConvos || 0) > 0
+      ? parseFloat(((autoResolved || 0) / totalConvos * 100).toFixed(1))
+      : null;
+
+    // Calculate average response time from all conversations
+    let avgResponseTime = null;
+    if (allConvos && allConvos.length > 0) {
+      const responseTimes = [];
+
+      allConvos.forEach(convo => {
+        const messages = convo.messages || [];
+        if (messages.length < 2) return;
+
+        // Find pairs of user message followed by AI response
+        for (let i = 0; i < messages.length - 1; i++) {
+          const current = messages[i];
+          const next = messages[i + 1];
+
+          // Check if current is user message and next is AI response
+          if (current.role === 'user' && next.role === 'ai' && current.ts && next.ts) {
+            const userTime = new Date(current.ts).getTime();
+            const aiTime = new Date(next.ts).getTime();
+            const diffMs = aiTime - userTime;
+
+            // Only count positive differences (valid response times)
+            if (diffMs >= 0) {
+              responseTimes.push(diffMs / 1000); // Convert to seconds
+            }
+          }
+        }
+      });
+
+      if (responseTimes.length > 0) {
+        const sum = responseTimes.reduce((a, b) => a + b, 0);
+        avgResponseTime = parseFloat((sum / responseTimes.length).toFixed(1));
+      }
+    }
+
     res.json({
       queue,
+      is_mock: !hasRealData,
       summary: {
-        active_conversations: Math.max((dbConvos || []).length, 1284),
-        auto_resolved_pct: 92.4,
-        awaiting_human: queue.filter(q => q.mode === 'human').length || 14,
-        avg_response_s: 9.4,
+        active_conversations: hasRealData ? dbConvos.length : MOCK_QUEUE.length,
+        waitlist_count: waitlistCount || 0,
+        auto_resolved_pct: autoResolvedPct,
+        awaiting_human: queue.filter(q => q.mode === 'human').length,
+        avg_response_s: avgResponseTime,
       },
       templates: MOCK_TEMPLATES,
+      templates_static: true,
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load WhatsApp queue' });
@@ -94,8 +144,8 @@ router.post('/send', requirePermission('takeover_wa'), async (req, res) => {
 });
 
 // GET /api/admin/whatsapp/templates
-router.get('/templates', (req, res) => {
-  res.json({ templates: MOCK_TEMPLATES });
+router.get('/templates', requirePermission('view_whatsapp'), (req, res) => {
+  res.json({ templates: MOCK_TEMPLATES, templates_static: true });
 });
 
 module.exports = router;

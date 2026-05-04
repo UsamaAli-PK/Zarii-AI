@@ -1,37 +1,82 @@
 const router = require('express').Router();
 const supabase = require('../../supabase');
+const { requirePermission } = require('../../middleware/adminAuth');
 
 // GET /api/admin/revenue
-router.get('/', async (req, res) => {
+router.get('/', requirePermission('view_revenue'), async (req, res) => {
   try {
-    const { count: totalSubs } = await supabase.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active');
-    const subRevenue = (totalSubs || 0) * 299;
+    const now = new Date();
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const sevenDaysAgo = new Date(Date.now() - 7 * 86400000).toISOString();
 
+    const [
+      { count: totalSubs },
+      { data: activeSponsors },
+      { data: affiliateEvents },
+      { data: allSubs },
+    ] = await Promise.all([
+      supabase.from('subscriptions').select('*', { count: 'exact', head: true }).eq('status', 'active'),
+      supabase.from('sponsors').select('monthly_budget').eq('status', 'Active'),
+      supabase.from('revenue_events').select('*').eq('type', 'affiliate'),
+      supabase.from('subscriptions').select('created_at, price').order('created_at'),
+    ]);
+
+    const subRevenue = (totalSubs || 0) * 299;
+    const sponsorRevenue = (activeSponsors || []).reduce((sum, s) => sum + (s.monthly_budget || 0), 0);
+    const affiliateRevenue = (affiliateEvents || []).reduce((sum, e) => sum + (e.amount || 0), 0);
+    const totalRevenue = subRevenue + sponsorRevenue + affiliateRevenue;
+
+    // Revenue mix percentages
+    const subPct = totalRevenue > 0 ? Math.round((subRevenue / totalRevenue) * 100) : 0;
+    const sponPct = totalRevenue > 0 ? Math.round((sponsorRevenue / totalRevenue) * 100) : 0;
+    const affPct = totalRevenue > 0 ? 100 - subPct - sponPct : 0;
+
+    // Monthly chart from real subscriptions (last 12 months)
+    const monthlyMap = {};
+    (allSubs || []).forEach(s => {
+      const d = new Date(s.created_at);
+      const key = d.toLocaleString('en', { month: 'short', year: '2-digit' });
+      if (!monthlyMap[key]) monthlyMap[key] = { subscriptions: 0, sponsor: 0 };
+      monthlyMap[key].subscriptions += (s.price || 299);
+    });
     const monthly = Array.from({ length: 12 }, (_, i) => {
       const d = new Date();
       d.setMonth(d.getMonth() - (11 - i));
+      const key = d.toLocaleString('en', { month: 'short', year: '2-digit' });
       const label = d.toLocaleString('en', { month: 'short' });
-      return { month: label, subscriptions: 60000 + i * 18000, sponsor: 35000 + i * 15000 };
+      return { month: label, subscriptions: monthlyMap[key]?.subscriptions || 0, sponsor: monthlyMap[key]?.sponsor || 0 };
     });
+
+    // Affiliate attribution from revenue_events
+    const affiliateByPartner = {};
+    (affiliateEvents || []).forEach(e => {
+      const p = e.partner || 'Unknown';
+      if (!affiliateByPartner[p]) affiliateByPartner[p] = { partner: p, total: 0, count: 0 };
+      affiliateByPartner[p].total += (e.amount || 0);
+      affiliateByPartner[p].count += 1;
+    });
+    const affiliateAttribution = Object.values(affiliateByPartner).map(a => ({
+      partner: a.partner, commission: `₨ ${Math.round(a.total).toLocaleString()}`, conversions: a.count,
+    }));
+
+    // Affiliate clicks in last 7 days
+    const recentAff = (affiliateEvents || []).filter(e => new Date(e.created_at) >= new Date(sevenDaysAgo));
 
     res.json({
       summary: {
-        mrr: Math.max(subRevenue, 4800000),
-        sponsor_revenue: 2490000,
-        premium_subscriptions: Math.max(totalSubs || 0, 2140),
-        affiliate_clicks_7d: 14820,
+        mrr: subRevenue,
+        sponsor_revenue: sponsorRevenue,
+        premium_subscriptions: totalSubs || 0,
+        affiliate_clicks_7d: recentAff.length,
       },
       revenue_mix: {
-        subscriptions_pct: 55, sponsor_pct: 36, affiliate_pct: 9,
-        subscriptions_amt: '₨ 2.64M', sponsor_amt: '₨ 1.73M', affiliate_amt: '₨ 432k',
+        subscriptions_pct: subPct, sponsor_pct: sponPct, affiliate_pct: affPct,
+        subscriptions_amt: `₨ ${Math.round(subRevenue).toLocaleString()}`,
+        sponsor_amt: `₨ ${Math.round(sponsorRevenue).toLocaleString()}`,
+        affiliate_amt: `₨ ${Math.round(affiliateRevenue).toLocaleString()}`,
       },
       monthly_chart: monthly,
-      affiliate_attribution: [
-        { partner: 'Bayer Pakistan', clicks: 38420, conv_rate: '12.4%', conversions: 4764, sales: '₨ 14.2M', commission: '₨ 1.42M' },
-        { partner: 'Syngenta', clicks: 24180, conv_rate: '14.1%', conversions: 3409, sales: '₨ 9.8M', commission: '₨ 980k' },
-        { partner: 'Ali Akbar Group', clicks: 18940, conv_rate: '9.8%', conversions: 1856, sales: '₨ 4.2M', commission: '₨ 420k' },
-        { partner: 'FMC Pakistan', clicks: 11200, conv_rate: '8.2%', conversions: 918, sales: '₨ 2.1M', commission: '₨ 210k' },
-      ],
+      affiliate_attribution: affiliateAttribution,
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load revenue data' });

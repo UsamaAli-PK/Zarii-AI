@@ -48,7 +48,7 @@ app.use('/api/auth/', authLimiter);
 // ─── Strict rate limiting for admin login ───────────────────────
 const adminAuthLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5, // Only 5 admin login attempts per 15 min
+  max: 100, // Temporarily increased for testing
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many login attempts, account temporarily locked' },
@@ -65,7 +65,10 @@ app.use((req, res, next) => {
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // ─── Uploads ─────────────────────────────────────────────────
-if (!fs.existsSync(config.UPLOAD_DIR)) fs.mkdirSync(config.UPLOAD_DIR, { recursive: true });
+// On Vercel, we use Supabase Storage directly, but locally we ensure the dir exists
+if (!process.env.VERCEL && !fs.existsSync(config.UPLOAD_DIR)) {
+  fs.mkdirSync(config.UPLOAD_DIR, { recursive: true });
+}
 
 // Protect farmer leaf scan uploads — require valid farmer or admin JWT
 const jwt = require('jsonwebtoken');
@@ -93,7 +96,7 @@ app.use('/uploads', (req, res, next) => {
 }, express.static(config.UPLOAD_DIR));
 
 // ─── Serve frontend static files (js, css, assets, etc.) ─────
-const FRONTEND_DIR = path.join(__dirname, '..');
+const FRONTEND_DIR = path.join(__dirname, '..', 'frontend-assets');
 app.use(express.static(FRONTEND_DIR, {
   index: false,
   setHeaders: (res, filePath) => {
@@ -126,6 +129,7 @@ app.use('/api/diagnose', require('./routes/diagnose'));
 app.use('/api/history', require('./routes/history'));
 app.use('/api/voice', require('./routes/voice'));
 app.use('/api', require('./routes/dashboard'));
+app.use('/api/waitlist', require('./routes/waitlist'));
 
 // ─── WhatsApp webhook ─────────────────────────────────────────
 const webhookRouter = require('./routes/webhook');
@@ -178,7 +182,7 @@ app.all('/api/*', (req, res) => {
 
 // SPA fallback (MUST be after all API and SEO routes)
 app.get(/^\/(?!api\/|uploads\/|webhook).*$/, (req, res) => {
-  res.sendFile(path.join(FRONTEND_DIR, 'ZARii AI Web App.html'));
+  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
 
 // ─── Error handler ────────────────────────────────────────────

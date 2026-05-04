@@ -11,7 +11,8 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password required' });
 
-    const { data: admin } = await supabase.from('admin_users').select('*').eq('email', email).single();
+    const { data: admin, error } = await supabase.from('admin_users').select('*').eq('email', email).single();
+    console.log('[LOGIN] Query result:', { email, admin, error });
     if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
 
     const valid = await bcrypt.compare(password, admin.password_hash);
@@ -64,7 +65,12 @@ router.get('/', async (req, res) => {
     res.json({
       members: (members || []).map(m => ({ ...m, tfa_enabled: !!m.tfa_enabled })),
       audit_log: (auditLog || []).map(a => ({ ...a, admin_name: a.admin_users?.name || a.admin_name })),
-      summary: { total: (members || []).length, roles: { Owner: 1, Ops: 2, Agronomist: 2, Support: 4 }, pending_invites: 2, audit_events_7d: (auditLog || []).length },
+      summary: {
+        total: (members || []).length,
+        roles: (members || []).reduce((acc, m) => { acc[m.role] = (acc[m.role] || 0) + 1; return acc; }, {}),
+        pending_invites: (members || []).filter(m => !m.last_active || m.last_active === m.created_at).length,
+        audit_events_7d: (auditLog || []).length,
+      },
       permission_matrix: [
         { capability: 'View users',         Owner: true, Ops: true, Agronomist: true, Support: true },
         { capability: 'Edit catalog',       Owner: true, Ops: true, Agronomist: true, Support: false },

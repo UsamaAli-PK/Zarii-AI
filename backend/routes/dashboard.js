@@ -65,20 +65,26 @@ router.get('/alerts', auth, async (req, res) => {
 // GET /api/platform-stats — public homepage stats
 router.get('/platform-stats', async (req, res) => {
   try {
-    const [{ count: farmers }, { count: diagnoses }, { data: diseaseRows }] = await Promise.all([
+    const [{ count: farmers }, { count: diagnoses }, { data: diseaseRows }, { data: confData }, { data: regionRows }] = await Promise.all([
       supabase.from('users').select('*', { count: 'exact', head: true }),
       supabase.from('scans').select('*', { count: 'exact', head: true }),
       supabase.from('scans').select('disease_name'),
+      supabase.from('scans').select('confidence'),
+      supabase.from('users').select('region'),
     ]);
 
-    const uniqueDiseases = new Set((diseaseRows || []).map(r => r.disease_name)).size;
+    const uniqueDiseases = new Set((diseaseRows || []).map(r => r.disease_name).filter(Boolean)).size;
+    const avgConf = confData && confData.length > 0
+      ? (confData.reduce((s, r) => s + (r.confidence || 0), 0) / confData.length).toFixed(1) + '%'
+      : null;
+    const districts = new Set((regionRows || []).map(r => r.region).filter(Boolean)).size;
 
     res.json({
-      farmers_helped: Math.max(farmers || 0, 40000),
-      diseases_detected: Math.max(uniqueDiseases, 120),
-      diagnoses_total: Math.max(diagnoses || 0, 250000),
-      accuracy: '94.2%',
-      districts_covered: 140,
+      farmers_helped: farmers || 0,
+      diseases_detected: uniqueDiseases,
+      diagnoses_total: diagnoses || 0,
+      accuracy: avgConf,
+      districts_covered: districts,
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to load platform stats' });
