@@ -68,6 +68,42 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
   }
 });
 
+// GET /api/admin/auth/verify - Verify token and show setup page
+router.get('/verify', async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).send('Missing verification token');
+
+  const { data: admin } = await supabase
+    .from('admin_users')
+    .select('id, name, email')
+    .eq('verification_token', token)
+    .gte('verification_exp', new Date().toISOString())
+    .single();
+
+  if (!admin) return res.status(400).send('Invalid or expired verification link');
+
+  res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Set Admin Password - ZARii AI</title>
+<style>body{font-family:system-ui,sans-serif;background:#f0fdf4;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}
+.box{background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;width:100%}
+h2{color:#166534;margin:0 0 1rem}label{display:block;margin-bottom:0.5rem;color:#374151}
+input,select{width:100%;padding:0.75rem;margin-bottom:1rem;border:1px solid #d1d5db;border-radius:8px;box-sizing:border-box}
+button{width:100%;background:#16a34a;color:white;border:none;padding:1rem;border-radius:8px;font-weight:600;cursor:pointer}
+button:hover{background:#15803d}.error{color:#dc2626;font-size:0.875rem;margin-bottom:1rem}</style></head>
+<body>
+<div class="box"><h2>Set Your Admin Password</h2><p>Welcome, ${admin.name}!</p><form id="f">
+<input type="hidden" name="token" value="${token}">
+<label>Password (8+ chars, uppercase, lowercase, number, special)</label>
+<input type="password" name="password" required minlength="8">
+<label>Confirm Password</label>
+<input type="password" name="confirm" required>
+<div class="error" id="e"></div>
+<button type="submit">Set Password</button></form></div>
+<script>document.getElementById('f').onsubmit=async e=>{e.preventDefault();const p=document.querySelector('[name=password]').value,c=document.querySelector('[name=confirm]').value,t=document.querySelector('[name=token]').value;if(p!==c){document.getElementById('e').textContent='Passwords mismatch';return}const r=await fetch('/api/admin/auth/verify-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:t,password:p})});const d=await r.json();if(d.error){document.getElementById('e').textContent=d.error}else{alert('Password set! Login at /admin');window.location.href='/'}};</script>
+</body></html>`);
+});
+
 // POST /api/admin/auth/verify-email
 router.post('/verify-email', async (req, res) => {
   try {
