@@ -46,7 +46,13 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
       role,
       verification_token: verificationToken,
       verification_exp: verificationExp,
-      email_verified: !sendInvite, // auto-verify if not sending invite
+      email_verified: false, // Always require verification
+    }).select().single();
+
+    if (error) throw error;
+
+    // Generate direct verification link
+    const verifyLink = `${APP_URL}/api/admin/auth/verify?token=${verificationToken}`;
     }).select().single();
 
     if (error) throw error;
@@ -59,8 +65,10 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
     }
 
     res.status(201).json({ 
-      message: sendInvite ? 'Invitation sent' : 'Admin created',
-      admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role }
+      message: 'Admin created successfully',
+      admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role },
+      verification_link: verifyLink,
+      instructions: 'Share this link with the new admin to set their password'
     });
   } catch (err) {
     console.error('admin register error:', err);
