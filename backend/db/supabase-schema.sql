@@ -572,3 +572,22 @@ ALTER TABLE outbreaks ADD CONSTRAINT outbreaks_pressure_level_check
 -- Run this separately in Supabase Dashboard > Storage:
 -- CREATE BUCKET scans (public: false)
 -- Or use the Storage tab to create a private bucket named "scans"
+
+-- ============================================================
+-- SPEC COMPLIANCE MIGRATIONS (2026-05-05)
+-- Weather/location context, two-step AI tracking, Punjabi support
+-- ============================================================
+
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS weather_temp REAL;
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS weather_humidity INTEGER;
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS weather_condition TEXT;
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS input_lang TEXT DEFAULT 'ur';
+ALTER TABLE scans ADD COLUMN IF NOT EXISTS solution_provider TEXT;
+
+ALTER TABLE voice_queries ADD COLUMN IF NOT EXISTS input_format TEXT DEFAULT 'voice';
+ALTER TABLE voice_queries ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE voice_queries ADD COLUMN IF NOT EXISTS weather_context TEXT;
+
+ALTER TABLE users ADD COLUMN IF NOT EXISTS detected_city TEXT;
+ALTER TABLE users ADD COLUMN IF NOT EXISTS lang_preference TEXT DEFAULT 'ur';

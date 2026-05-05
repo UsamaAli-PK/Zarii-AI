@@ -62,7 +62,7 @@ router.post(['/', '/whatsapp'], async (req, res) => {
           disease_name: diagnosis.disease_name, disease_name_ur: diagnosis.disease_name_ur,
           pathogen: diagnosis.pathogen, confidence: diagnosis.confidence, severity: diagnosis.severity,
           symptoms: diagnosis.symptoms || [], prevention: diagnosis.prevention || [],
-          ai_provider: diagnosis.ai_provider, processing_ms: diagnosis.processing_ms,
+          ai_provider: diagnosis.ai_provider, solution_provider: diagnosis.solution_provider, processing_ms: diagnosis.processing_ms,
         });
 
         messages.push({ role: 'bot', text: reply, ts: new Date().toISOString() });

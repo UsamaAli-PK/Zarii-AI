@@ -106,16 +106,21 @@ app.use(express.static(FRONTEND_DIR, {
 }));
 
 // ─── Health check ─────────────────────────────────────────────
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const apiKeys = require('./services/apiKeys');
+  const visionKey = await apiKeys.getServiceKey('vision');
+  const voiceKey = await apiKeys.getServiceKey('voice');
+  const weatherKey = await apiKeys.getServiceKey('weather');
+
   res.json({
     status: 'ok',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     features: {
-      vision_ai: !!(config.AI.GEMINI_API_KEY || config.AI.OPENAI_API_KEY),
-      voice_stt: !!config.AI.OPENAI_API_KEY,
-      tts: !!config.AI.ELEVENLABS_API_KEY,
-      weather: !!config.WEATHER.OPENWEATHER_API_KEY,
+      vision_ai: !!(visionKey && visionKey.api_key && visionKey.api_key !== '[decryption error]'),
+      voice_stt: !!(voiceKey && voiceKey.api_key && voiceKey.api_key !== '[decryption error]'),
+      tts: !!(voiceKey && voiceKey.api_key && voiceKey.api_key !== '[decryption error]'),
+      weather: !!(weatherKey && weatherKey.api_key && weatherKey.api_key !== '[decryption error]'),
       whatsapp: !!config.WHATSAPP.ACCESS_TOKEN,
     },
   });
