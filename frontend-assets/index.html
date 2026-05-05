@@ -73,12 +73,14 @@
 </head>
 <body>
   <div id="root">
-    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:#f8f9fa;font-family:Inter,sans-serif;color:#666;">
-      <div style="text-align:center;">
-        <img src="assets/zarii-logo.png" alt="ZARii AI" style="width:120px;margin-bottom:20px;" onerror="this.style.display='none'" />
-        <div style="font-size:14px;">Loading ZARii AI...</div>
+    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a4d1a 0%,#2d6a2d 50%,#3d8b3d 100%);font-family:Inter,sans-serif;">
+      <div style="text-align:center;animation:pulse 2s ease-in-out infinite;">
+        <img src="assets/zarii-full-logo.png" alt="ZARii AI" style="width:280px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));" onerror="this.style.display='none'" />
+        <div style="color:#fff;font-size:18px;font-weight:600;letter-spacing:1px;margin-bottom:8px;">ZARii AI</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:13px;">Loading...</div>
       </div>
     </div>
+    <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}</style>
   </div>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
