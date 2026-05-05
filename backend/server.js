@@ -186,6 +186,18 @@ app.use('/', require('./seo/seoRoutes'));
 // Redirect /admin to the SPA's admin entry point
 app.get('/admin', (req, res) => res.redirect('/#admin'));
 
+// SEO placeholder routes (for programmatic SEO)
+app.get('/diseases', (req, res) => res.redirect('/'));
+app.get('/diseases/:slug', (req, res) => res.redirect('/'));
+app.get('/pesticides', (req, res) => res.redirect('/'));
+app.get('/pesticides/:slug', (req, res) => res.redirect('/'));
+app.get('/farmers', (req, res) => res.redirect('/'));
+app.get('/farmers/:slug', (req, res) => res.redirect('/'));
+app.get('/learn', (req, res) => res.redirect('/'));
+app.get('/learn/:slug', (req, res) => res.redirect('/'));
+app.get('/sitemap.xml', (req, res) => res.redirect('/'));
+app.get('/robots.txt', (req, res) => res.send('User-agent: *\nAllow: /'));
+
 // Explicit 404 for API routes to prevent falling through to SPA HTML
 app.all('/api/*', (req, res) => {
   res.status(404).json({ error: `API route ${req.method} ${req.url} not found` });
