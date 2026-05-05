@@ -51,3 +51,12 @@ claude.md
 DOCUMENTATION_OLD.md
 *.tmp
 temp/
+
+# Internal / Dev Files (not for public repo)
+wiki/
+raw/
+AGENTS.md
+CLAUDE.md
+start.bat
+.replit
+.config/
