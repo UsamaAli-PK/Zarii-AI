@@ -44,6 +44,22 @@ const Voice = ({ lang, navigate }) => {
 
   const mediaRecorder = useR_V(null);
   const chunks = useR_V([]);
+  const voiceAudio = useR_V(null);
+
+  const getAudioDuration = (blob) => {
+    return new Promise((resolve) => {
+      const audio = new Audio(URL.createObjectURL(blob));
+      audio.onloadedmetadata = () => resolve(Math.round(audio.duration));
+      audio.onerror = () => resolve(0);
+    });
+  };
+
+  const formatDuration = (seconds) => {
+    if (!seconds) return "0:00";
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const startListen = async () => {
     console.log("Mic clicked, state:", state);
@@ -81,11 +97,21 @@ const Voice = ({ lang, navigate }) => {
     }
   };
 
-  const stopListen = () => {
+  const stopListen = async () => {
     console.log("stopListen called, recorder state:", mediaRecorder.current?.state);
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
-      // Don't stop tracks here - let onstop handler do it
+      // Stop stream tracks immediately after stopping recorder
+      setTimeout(() => {
+        if (mediaRecorder.current && mediaRecorder.current.stream) {
+          mediaRecorder.current.stream.getTracks().forEach(t => t.stop());
+        }
+      }, 100);
+    } else if (!mediaRecorder.current || mediaRecorder.current.state === "inactive") {
+      // If recorder not active, process whatever we have
+      if (chunks.current.length > 0) {
+        processAudio(null);
+      }
     }
   };
 
@@ -105,6 +131,21 @@ const Voice = ({ lang, navigate }) => {
     setState("thinking");
     console.log("Creating audio blob...");
     const blob = new Blob(chunks.current, { type: "audio/webm" });
+    
+    // Create audio URL for playback (like WhatsApp voice message)
+    const audioUrl = URL.createObjectURL(blob);
+    const audioDuration = await getAudioDuration(blob);
+    
+    // Show user's voice message in chat immediately (like WhatsApp)
+    setConversation((c) => [...c, { 
+      role: "user", 
+      en: "🎤 Voice message", 
+      ur: "🎤 آواز کا پیغام",
+      isVoice: true,
+      audioUrl: audioUrl,
+      duration: audioDuration
+    }]);
+
     const formData = new FormData();
     formData.append("audio", blob, "audio.webm");
     formData.append("lang", lang);
@@ -115,7 +156,11 @@ const Voice = ({ lang, navigate }) => {
       console.log("STT result:", t);
       if (!t) throw new Error("No transcript");
       setTranscript(t);
-      setConversation((c) => [...c, { role: "user", en: t, ur: t }]);
+      
+      // Update the voice message with actual transcript
+      setConversation((c) => c.map((msg, i) => 
+        i === c.length - 1 ? { ...msg, en: t, ur: t, isVoice: false } : msg
+      ));
 
       console.log("Calling AI...");
       const { answer, query_id } = await window.API.askQuestion(t, lang);
@@ -305,8 +350,51 @@ const Voice = ({ lang, navigate }) => {
                 borderTopRightRadius: msg.role === "user" ? 4 : 16,
               }}
             >
-              {lang === "ur" ? msg.ur : msg.en}
-              {msg.role === "assistant" && i > 0 && (
+              {msg.isVoice && msg.audioUrl ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 200 }}>
+                  <button
+                    onClick={() => {
+                      if (voiceAudio.current) {
+                        if (voiceAudio.current.paused) {
+                          voiceAudio.current.play();
+                        } else {
+                          voiceAudio.current.pause();
+                        }
+                      } else {
+                        voiceAudio.current = new Audio(msg.audioUrl);
+                        voiceAudio.current.onended = () => {};
+                        voiceAudio.current.play();
+                      }
+                    }}
+                    style={{
+                      width: 36, height: 36, borderRadius: '50%',
+                      background: 'rgba(255,255,255,0.3)', border: 'none',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      cursor: 'pointer', flexShrink: 0
+                    }}
+                  >
+                    <Icon name="play" size={16} color="#fff" />
+                  </button>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ 
+                      height: 24, display: 'flex', alignItems: 'center', gap: 2,
+                      background: 'rgba(255,255,255,0.2)', borderRadius: 4, padding: '4px 8px'
+                    }}>
+                      {[...Array(12)].map((_, j) => (
+                        <div key={j} style={{
+                          width: 3, height: 8 + Math.random() * 12,
+                          background: 'rgba(255,255,255,0.7)', borderRadius: 2
+                        }} />
+                      ))}
+                    </div>
+                  </div>
+                  <span style={{ fontSize: 12, opacity: 0.8 }}>{formatDuration(msg.duration)}</span>
+                </div>
+              ) : (
+                <>
+                  {lang === "ur" ? msg.ur : msg.en}
+                </>
+              )}
                 <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
                   <button
                     className="btn btn-sm"

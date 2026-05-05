@@ -75,68 +75,28 @@ const Landing = ({ lang, setLang, navigate }) => {
         WebkitBackdropFilter: 'blur(14px)',
         borderBottom: '1px solid var(--line-soft)',
       }}>
-        <div className="landing-header" style={{
-          maxWidth: 1240, margin: '0 auto', padding: '14px 20px',
+<div style={{
+          maxWidth: 1240, margin: '0 auto', padding: '14px 32px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <Logo size={36} lang={lang} />
-          <nav className="landing-nav" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <a href="#how" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+          <Logo size={42} lang={lang} />
+          <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+            <a href="#how" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">طریقہ کار</span> : 'How it works'}
             </a>
-            <a href="#features" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+            <a href="#features" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">خصوصیات</span> : 'Features'}
             </a>
-            <a href="#farmers" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+            <a href="#farmers" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">کسان</span> : 'Farmers'}
             </a>
             <LangToggle lang={lang} setLang={setLang} />
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('onboarding')} style={{ padding: '10px 16px', fontSize: 14 }}>
-              {lang === 'ur' ? <span className="urdu-inline">شروع</span> : 'Start'}
-              <Icon name="arrow-right" size={14} />
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('onboarding')}>
+              {lang === 'ur' ? <span className="urdu-inline">شروع کریں</span> : 'Get started'}
+              <Icon name="arrow-right" size={16} />
             </button>
           </nav>
         </div>
-<style>{`
-          .landing-header { flex-wrap: wrap; }
-          .landing-nav { flex-wrap: wrap; justify-content: center; }
-          
-          .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; padding: 48px 20px 40px !important; }
-          .hero-title { font-size: 32px !important; line-height: 1.2 !important; }
-          .hero-desc { font-size: 15px !important; }
-          .hero-buttons { flex-direction: column !important; gap: 10px !important; }
-          .hero-buttons button { width: 100% !important; }
-          
-          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; padding: 20px !important; }
-          .stats-grid > div:first-child { border: none !important; padding: 0 !important; }
-          
-          .steps-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
-          
-          @media (min-width: 640px) {
-            .hero-grid { grid-template-columns: 1.05fr 1fr !important; gap: 40px !important; padding: 48px 24px 40px !important; }
-            .hero-title { font-size: 42px !important; }
-            .hero-desc { font-size: 16px !important; }
-            .stats-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 20px !important; padding: 24px !important; }
-            .stats-grid > div { border-left: 1px solid rgba(255,255,255,0.18) !important; padding-left: 16px !important; }
-            .stats-grid > div:first-child { border: none !important; padding: 0 !important; }
-            .steps-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
-          }
-          
-          @media (min-width: 1024px) {
-            .hero-grid { grid-template-columns: 1.05fr 1fr !important; gap: 60px !important; padding: 80px 32px 60px !important; }
-            .hero-title { font-size: 56px !important; }
-            .hero-desc { font-size: 18px !important; max-width: 500px; }
-            .stats-grid { padding: 32px 40px !important; gap: 32px !important; }
-            .steps-grid { gap: 20px !important; }
-          }
-          
-          @media (max-width: 639px) {
-            .landing-header { padding: 12px 16px !important; }
-            .landing-nav { gap: 8px !important; }
-          }
-        `}</style>
-      </header>
-
       {/* HERO */}
       <section style={{ position: 'relative', overflow: 'hidden' }}>
         <LeafDeco style={{ position: 'absolute', top: -40, right: -20, transform: 'rotate(10deg)' }} opacity={0.18} />
