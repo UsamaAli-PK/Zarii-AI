@@ -105,6 +105,12 @@ app.use(express.static(FRONTEND_DIR, {
   },
 }));
 
+// ─── Serve project assets (logos, images) ───────────────────────
+const ASSETS_DIR = path.join(__dirname, '..', 'assets');
+app.use('/assets', express.static(ASSETS_DIR, {
+  setHeaders: (res) => res.setHeader('Cache-Control', 'public, max-age=31536000'),
+}));
+
 // ─── Health check ─────────────────────────────────────────────
 app.get('/api/health', async (req, res) => {
   const apiKeys = require('./services/apiKeys');
