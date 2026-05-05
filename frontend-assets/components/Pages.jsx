@@ -60,10 +60,21 @@ const Voice = ({ lang, navigate }) => {
       mediaRecorder.current.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.current.push(e.data);
       };
-      mediaRecorder.current.onstop = processAudio;
+      mediaRecorder.current.onstop = () => {
+        console.log("Recording stopped, processing audio...");
+        processAudio(stream);
+      };
       mediaRecorder.current.start();
       setState("listening");
       console.log("Now listening...");
+      
+      // Auto-stop after 15 seconds
+      setTimeout(() => {
+        if (state === "listening") {
+          console.log("Auto-stopping after 15 seconds");
+          stopListen();
+        }
+      }, 15000);
     } catch (err) {
       console.error("Mic error:", err);
       alert("Microphone error: " + err.message);
@@ -71,46 +82,72 @@ const Voice = ({ lang, navigate }) => {
   };
 
   const stopListen = () => {
+    console.log("stopListen called, recorder state:", mediaRecorder.current?.state);
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
-      mediaRecorder.current.stream.getTracks().forEach((t) => t.stop());
-      setState("thinking");
+      // Don't stop tracks here - let onstop handler do it
     }
   };
 
-  const processAudio = async () => {
+  const processAudio = async (stream) => {
+    console.log("processAudio called");
+    // Stop the stream tracks
+    if (stream) {
+      stream.getTracks().forEach((t) => t.stop());
+    }
+    
+    if (chunks.current.length === 0) {
+      console.log("No audio recorded");
+      setState("idle");
+      return;
+    }
+    
+    setState("thinking");
+    console.log("Creating audio blob...");
     const blob = new Blob(chunks.current, { type: "audio/webm" });
     const formData = new FormData();
-    formData.append("audio", blob);
+    formData.append("audio", blob, "audio.webm");
     formData.append("lang", lang);
 
     try {
+      console.log("Calling STT API...");
       const { transcript: t } = await window.API.transcribeAudio(formData);
+      console.log("STT result:", t);
       if (!t) throw new Error("No transcript");
       setTranscript(t);
       setConversation((c) => [...c, { role: "user", en: t, ur: t }]);
 
+      console.log("Calling AI...");
       const { answer, query_id } = await window.API.askQuestion(t, lang);
+      console.log("AI answer:", answer);
       setConversation((c) => [
         ...c,
         { role: "assistant", en: answer, ur: answer },
       ]);
 
-      setState("thinking");
+      console.log("Calling TTS...");
       const { audio_url } = await window.API.textToSpeech(
         answer,
         lang,
         query_id,
       );
+      console.log("TTS result:", audio_url);
       if (audio_url) {
         const audio = new Audio(audio_url);
         audio.onended = () => {
+          console.log("Audio finished playing");
+          setState("idle");
+          setTranscript("");
+        };
+        audio.onerror = (e) => {
+          console.error("Audio play error:", e);
           setState("idle");
           setTranscript("");
         };
         audio.play();
         setState("speaking");
       } else {
+        console.log("No audio URL, showing text only");
         setState("idle");
         setTranscript("");
       }
@@ -332,26 +369,26 @@ const Voice = ({ lang, navigate }) => {
       >
         <button
           type="button"
-          onClick={(e) => { e.preventDefault(); console.log("Button clicked!"); startListen(); }}
-          disabled={state !== "idle"}
+          onClick={(e) => { e.preventDefault(); console.log("Button clicked! state:", state); startListen(); }}
           className="mic-btn"
           style={{
             width: 88,
             height: 88,
             borderRadius: "50%",
-            background: state === "listening" ? "var(--amber)" : "var(--green-700)",
+            background: state === "listening" ? "var(--amber)" : state === "thinking" ? "var(--gray-400)" : "var(--green-700)",
             color: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            cursor: state === "idle" ? "pointer" : "default",
+            cursor: "pointer",
             border: "none",
             transition: "all .2s",
             animation: state === "listening" ? "pulseRing 1.5s infinite" : "none",
-            boxShadow: state === "idle" ? "0 10px 24px rgba(46,107,63,0.32)" : "0 10px 24px rgba(244,166,42,0.4)",
+            boxShadow: "0 10px 24px rgba(46,107,63,0.32)",
             flexShrink: 0,
             position: "relative",
-            zIndex: 10
+            zIndex: 10,
+            opacity: state === "thinking" || state === "speaking" ? 0.6 : 1
           }}
         >
           {state === "listening" ? (
