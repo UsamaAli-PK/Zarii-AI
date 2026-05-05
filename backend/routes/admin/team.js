@@ -76,7 +76,166 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
   }
 });
 
-// GET /api/admin/auth/verify - Verify token and show setup page
+// GET /admin/accept-invite - Accept Supabase invite and set password
+router.get('/accept-invite', async (req, res) => {
+  const { token } = req.query;
+  
+  // If no token, show instructions
+  if (!token) {
+    return res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>ZARii AI - Admin Invite</title>
+<style>body{font-family:system-ui,sans-serif;background:#f0fdf4;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}
+.box{background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;text-align:center}
+h1{color:#16a34a;margin-bottom:1rem}</style></head>
+<body>
+<div class="box"><h1>🌾 ZARii AI</h1><p>Invalid invite link.</p></div>
+</body></html>`);
+  }
+
+  // Try to verify the Supabase token
+  try {
+    const supabaseAuth = require('@supabase/supabase-js').createClient(
+      process.env.SUPABASE_URL || 'https://unbibbdoksruvwudxcwc.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuYmliYmRva3NydXZ3dWR4Y3djIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzczNDU1OCwiZXhwIjoyMDkzMzEwNTU4fQ.-Y2RZqtc63VnXCCOI9fpFjpzzy5RxtkC8BnAPugElYU'
+    );
+    
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+    
+    if (authError || !user) {
+      return res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>ZARii AI - Admin Invite</title>
+<style>body{font-family:system-ui,sans-serif;background:#f0fdf4;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}
+.box{background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;text-align:center}
+h1{color:#dc2626;margin-bottom:1rem}</style></head>
+<body>
+<div class="box"><h1>⚠️ Invalid Link</h1><p>This invite link is invalid or has expired.</p></div>
+</body></html>`);
+    }
+
+    // Check if user already has admin record
+    const { data: existing } = await supabase.from('admin_users')
+      .select('id, name, email, role, email_verified')
+      .eq('email', user.email.toLowerCase())
+      .single();
+
+    if (existing?.email_verified && existing.password_hash) {
+      return res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>ZARii AI - Admin Invite</title>
+<style>body{font-family:system-ui,sans-serif;background:#f0fdf4;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}
+.box{background:white;padding:2rem;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.1);max-width:400px;text-align:center}
+h1{color:#16a34a}</style></head>
+<body>
+<div class="box"><h1>✅ Account Ready!</h1><p>You already have an admin account. <a href="/admin">Go to Admin Panel</a></p></div>
+</body></html>`);
+    }
+
+    // Show password setup form
+    const email = user.email;
+    const name = existing?.name || user.user_metadata?.full_name || user.email.split('@')[0];
+    const role = existing?.role || 'Support';
+    
+    res.send(`<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Set Admin Password - ZARii AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>body{font-family:system-ui,sans-serif;background:#f0fdf4;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:20px}
+.box{background:white;padding:2rem;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,0.1);max-width:420px;width:100%}
+.header{text-align:center;margin-bottom:2rem}.header h1{color:#16a34a;font-size:28px;margin:0}.header p{color:#6b7280;margin:8px 0 0}
+label{display:block;margin-bottom:8px;color:#374151;font-weight:500}
+input,select{width:100%;padding:12px;margin-bottom:16px;border:1px solid #d1d5db;border-radius:10px;box-sizing:border-box;font-size:16px}
+input:focus,select:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,0.1)}
+button{width:100%;background:#16a34a;color:white;border:none;padding:16px;border-radius:10px;font-weight:600;font-size:16px;cursor:pointer;transition:background 0.2s}
+button:hover{background:#15803d}.error{color:#dc2626;font-size:14px;margin-bottom:16px;display:none}
+.success{background:#dcfce7;color:#166534;padding:12px;border-radius:8px;margin-bottom:16px;display:none}
+@media (max-width:480px){.box{padding:1.5rem}}</style></head>
+<body>
+<div class="box">
+  <div class="header"><h1>🌾 ZARii AI</h1><p>Complete your admin account setup</p></div>
+  <div class="success" id="success">✅ Password set! Redirecting to login...</div>
+  <div class="error" id="error"></div>
+  <form id="f">
+    <input type="hidden" name="email" value="${email}">
+    <input type="hidden" name="token" value="${token}">
+    <label>Your Name</label>
+    <input type="text" name="name" value="${name}" required>
+    <label>Role</label>
+    <select name="role">
+      <option value="Support" ${role === 'Support' ? 'selected' : ''}>Support</option>
+      <option value="Ops" ${role === 'Ops' ? 'selected' : ''}>Ops</option>
+      <option value="Agronomist" ${role === 'Agronomist' ? 'selected' : ''}>Agronomist</option>
+      <option value="Owner" ${role === 'Owner' ? 'selected' : ''}>Owner</option>
+    </select>
+    <label>Password (8+ chars: uppercase, lowercase, number, special)</label>
+    <input type="password" name="password" required minlength="8" placeholder="e.g. MyP@ssw0rd">
+    <label>Confirm Password</label>
+    <input type="password" name="confirm" required placeholder="Repeat password">
+    <button type="submit" id="btn">Set Password & Activate Account</button>
+  </form>
+  <p style="text-align:center;margin-top:16px;color:#9ca3af;font-size:14px">After setting password, you can login at /admin</p>
+</div>
+<script>document.getElementById('f').onsubmit=async e=>{e.preventDefault();const p=document.querySelector('[name=password]').value,c=document.querySelector('[name=confirm]').value;if(p!==c){document.getElementById('error').style.display='block';document.getElementById('error').textContent='⚠️ Passwords do not match';return}if(p.length<8){document.getElementById('error').style.display='block';document.getElementById('error').textContent='⚠️ Password must be 8+ characters';return}const btn=document.getElementById('btn');btn.disabled=true;btn.textContent='Setting up...';const r=await fetch('/api/admin/auth/accept-invite',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:'${token}',email:'${email}',password:p,name:document.querySelector('[name=name]').value,role:document.querySelector('[name=role]').value})});const d=await r.json();if(d.error){document.getElementById('error').style.display='block';document.getElementById('error').textContent='⚠️ '+d.error;btn.disabled=false;btn.textContent='Set Password & Activate Account'}else{document.getElementById('success').style.display='block';document.getElementById('f').style.display='none';setTimeout(()=>window.location.href='/admin',2000)}};</script>
+</body></html>`);
+  } catch (err) {
+    console.error('Accept invite error:', err);
+    res.status(500).send('Error processing invite');
+  }
+});
+
+// POST /api/admin/auth/accept-invite - Save password for invited user
+router.post('/accept-invite', async (req, res) => {
+  try {
+    const { token, email, password, name, role } = req.body;
+    if (!token || !email || !password) return res.status(400).json({ error: 'Missing required fields' });
+
+    const pwErrors = validatePassword(password);
+    if (pwErrors.length > 0) return res.status(400).json({ error: pwErrors.join(', ') });
+
+    // Verify the Supabase token
+    const supabaseAuth = require('@supabase/supabase-js').createClient(
+      process.env.SUPABASE_URL || 'https://unbibbdoksruvwudxcwc.supabase.co',
+      process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVuYmliYmRva3NydXZ3dWR4Y3djIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NzczNDU1OCwiZXhwIjoyMDkzMzEwNTU4fQ.-Y2RZqtc63VnXCCOI9fpFjpzzy5RxtkC8BnAPugElYU'
+    );
+    
+    const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+    if (authError || !user) return res.status(400).json({ error: 'Invalid or expired invite' });
+
+    // Check or create admin record
+    const { data: existing } = await supabase.from('admin_users').select('id').eq('email', email.toLowerCase()).single();
+
+    const password_hash = await bcrypt.hash(password, 12);
+    
+    if (existing) {
+      await supabase.from('admin_users').update({
+        name: name || existing.name,
+        role: role || existing.role,
+        password_hash,
+        email_verified: true,
+      }).eq('id', existing.id);
+    } else {
+      await supabase.from('admin_users').insert({
+        name: name || email.split('@')[0],
+        email: email.toLowerCase(),
+        role: role || 'Support',
+        password_hash,
+        email_verified: true,
+        supabase_uid: user.id,
+      });
+    }
+
+    // Confirm user's email in Supabase Auth
+    await supabaseAuth.auth.admin.updateUserById(user.id, { email_confirm: true });
+
+    res.json({ success: true, message: 'Admin account activated! You can now login.' });
+  } catch (err) {
+    console.error('accept invite error:', err);
+    res.status(500).json({ error: 'Failed to set up admin account' });
+  }
+});
+
+// GET /api/admin/auth/verify - Legacy verify endpoint (keep for backward compatibility)
 router.get('/verify', async (req, res) => {
   const { token } = req.query;
   if (!token) return res.status(400).send('Missing verification token');

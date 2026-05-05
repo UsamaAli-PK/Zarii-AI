@@ -72,6 +72,20 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Supabase Auth Invite Handler -->
+  <script>
+  (function() {
+    const hash = window.location.hash;
+    if (hash && hash.includes('access_token=')) {
+      const params = new URLSearchParams(hash.substring(1));
+      const token = params.get('access_token');
+      if (token) {
+        window.location.href = '/api/admin/auth/accept-invite?token=' + encodeURIComponent(token);
+        return;
+      }
+    }
+  })();
+  </script>
   <div id="root">
     <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a4d1a 0%,#2d6a2d 50%,#3d8b3d 100%);font-family:Inter,sans-serif;">
       <div style="text-align:center;animation:pulse 2s ease-in-out infinite;">

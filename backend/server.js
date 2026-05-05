@@ -159,6 +159,22 @@ app.get('/api/admin/auth/me', (req, res, next) => {
   teamRouter(req, res, next);
 });
 
+// Invite accept (public - for Supabase invite links)
+app.get('/api/admin/auth/accept-invite', (req, res, next) => {
+  req.url = '/accept-invite';
+  teamRouter(req, res, next);
+});
+app.post('/api/admin/auth/accept-invite', (req, res, next) => {
+  req.url = '/accept-invite';
+  teamRouter(req, res, next);
+});
+
+// Verify (public - legacy)
+app.get('/api/admin/auth/verify', (req, res, next) => {
+  req.url = '/verify';
+  teamRouter(req, res, next);
+});
+
 // ─── Admin routes (JWT-protected) ────────────────────────────
 const { adminAuthMiddleware } = require('./middleware/adminAuth');
 app.use('/api/admin/overview',   adminAuthMiddleware, require('./routes/admin/overview'));
