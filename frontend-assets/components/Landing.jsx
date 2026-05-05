@@ -75,28 +75,66 @@ const Landing = ({ lang, setLang, navigate }) => {
         WebkitBackdropFilter: 'blur(14px)',
         borderBottom: '1px solid var(--line-soft)',
       }}>
-        <div style={{
-          maxWidth: 1240, margin: '0 auto', padding: '14px 32px',
+        <div className="landing-header" style={{
+          maxWidth: 1240, margin: '0 auto', padding: '14px 20px',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         }}>
-          <Logo size={42} lang={lang} />
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-            <a href="#how" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+          <Logo size={36} lang={lang} />
+          <nav className="landing-nav" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <a href="#how" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">طریقہ کار</span> : 'How it works'}
             </a>
-            <a href="#features" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+            <a href="#features" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">خصوصیات</span> : 'Features'}
             </a>
-            <a href="#farmers" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
+            <a href="#farmers" className="hide-mobile" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">کسان</span> : 'Farmers'}
             </a>
             <LangToggle lang={lang} setLang={setLang} />
-            <button className="btn btn-primary btn-sm" onClick={() => navigate('onboarding')}>
-              {lang === 'ur' ? <span className="urdu-inline">شروع کریں</span> : 'Get started'}
-              <Icon name="arrow-right" size={16} />
+            <button className="btn btn-primary btn-sm" onClick={() => navigate('onboarding')} style={{ padding: '10px 16px', fontSize: 14 }}>
+              {lang === 'ur' ? <span className="urdu-inline">شروع</span> : 'Start'}
+              <Icon name="arrow-right" size={14} />
             </button>
           </nav>
         </div>
+<style>{`
+          .landing-header { flex-wrap: wrap; }
+          .landing-nav { flex-wrap: wrap; justify-content: center; }
+          
+          .hero-grid { grid-template-columns: 1fr !important; gap: 32px !important; padding: 48px 20px 40px !important; }
+          .hero-title { font-size: 32px !important; line-height: 1.2 !important; }
+          .hero-desc { font-size: 15px !important; }
+          .hero-buttons { flex-direction: column !important; gap: 10px !important; }
+          .hero-buttons button { width: 100% !important; }
+          
+          .stats-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 16px !important; padding: 20px !important; }
+          .stats-grid > div:first-child { border: none !important; padding: 0 !important; }
+          
+          .steps-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
+          
+          @media (min-width: 640px) {
+            .hero-grid { grid-template-columns: 1.05fr 1fr !important; gap: 40px !important; padding: 48px 24px 40px !important; }
+            .hero-title { font-size: 42px !important; }
+            .hero-desc { font-size: 16px !important; }
+            .stats-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 20px !important; padding: 24px !important; }
+            .stats-grid > div { border-left: 1px solid rgba(255,255,255,0.18) !important; padding-left: 16px !important; }
+            .stats-grid > div:first-child { border: none !important; padding: 0 !important; }
+            .steps-grid { grid-template-columns: repeat(3, 1fr) !important; gap: 16px !important; }
+          }
+          
+          @media (min-width: 1024px) {
+            .hero-grid { grid-template-columns: 1.05fr 1fr !important; gap: 60px !important; padding: 80px 32px 60px !important; }
+            .hero-title { font-size: 56px !important; }
+            .hero-desc { font-size: 18px !important; max-width: 500px; }
+            .stats-grid { padding: 32px 40px !important; gap: 32px !important; }
+            .steps-grid { gap: 20px !important; }
+          }
+          
+          @media (max-width: 639px) {
+            .landing-header { padding: 12px 16px !important; }
+            .landing-nav { gap: 8px !important; }
+          }
+        `}</style>
       </header>
 
       {/* HERO */}
@@ -104,24 +142,24 @@ const Landing = ({ lang, setLang, navigate }) => {
         <LeafDeco style={{ position: 'absolute', top: -40, right: -20, transform: 'rotate(10deg)' }} opacity={0.18} />
         <LeafDeco style={{ position: 'absolute', bottom: 40, left: -60, transform: 'scaleX(-1) rotate(15deg)' }} opacity={0.14} color="#66A64F" />
 
-        <div style={{
-          maxWidth: 1240, margin: '0 auto', padding: '80px 32px 60px',
-          display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 60, alignItems: 'center',
+        <div className="hero-grid" style={{
+          maxWidth: 1240, margin: '0 auto', padding: '48px 20px 40px',
+          display: 'grid', gridTemplateColumns: '1.05fr 1fr', gap: 40, alignItems: 'center',
         }}>
           <div>
-            <div className="tag tag-cream" style={{ marginBottom: 20 }}>
+            <div className="tag tag-cream" style={{ marginBottom: 16 }}>
               <Icon name="sparkles" size={14} color="#F4A62A" />
               {lang === 'ur'
                 ? <span className="urdu-inline">پاکستان کے کسانوں کے لیے بنایا گیا</span>
                 : 'Built for Pakistani farmers'}
             </div>
 
-            <h1 style={{
-              margin: '0 0 8px', fontSize: 64, lineHeight: 1.04,
-              fontWeight: 800, color: 'var(--green-900)', letterSpacing: '-0.035em',
+            <h1 className="hero-title" style={{
+              margin: '0 0 8px', fontSize: 56, lineHeight: 1.1,
+              fontWeight: 800, color: 'var(--green-900)', letterSpacing: '-0.02em',
             }}>
               {lang === 'ur' ? (
-                <span className="urdu-inline" style={{ fontSize: 56, lineHeight: 1.5 }}>
+                <span className="urdu-inline" style={{ fontSize: 44, lineHeight: 1.6 }}>
                   آپ کے فصلوں کا<br/>
                   <span style={{ color: 'var(--green-500)' }}>ذہین ساتھی</span>
                 </span>
@@ -132,43 +170,43 @@ const Landing = ({ lang, setLang, navigate }) => {
               )}
             </h1>
 
-            <p style={{
-              fontSize: 18, lineHeight: 1.6, color: 'var(--ink-soft)',
-              maxWidth: 540, marginTop: 24,
+            <p className="hero-desc" style={{
+              fontSize: 16, lineHeight: 1.6, color: 'var(--ink-soft)',
+              marginTop: 16,
               fontFamily: lang === 'ur' ? 'var(--font-ur)' : 'inherit',
               direction: lang === 'ur' ? 'rtl' : 'ltr',
             }}>
               {lang === 'ur'
-                ? 'پتے کی تصویر کھینچیں یا اردو میں سوال کریں — ZARii AI لمحوں میں بیماری پہچانتا ہے، اور پاکستانی بازار میں دستیاب دوا، قیمت اور مقدار بتاتا ہے۔'
-                : 'Snap a leaf or ask in Urdu — ZARii AI diagnoses disease in seconds and tells you exactly which pesticide to buy in Pakistan, the company, the PKR price, and the dosage.'}
+                ? 'پتے کی تصویر کھینچیں یا اردو میں سوال کریں — ZARii AI لمحوں میں بیماری پہچانتا ہے'
+                : 'Snap a leaf or ask in Urdu — ZARii AI diagnoses disease in seconds'}
             </p>
 
-            <div style={{ display: 'flex', gap: 14, marginTop: 36, flexWrap: 'wrap' }}>
-              <button className="btn btn-primary btn-lg" onClick={() => navigate('onboarding')}>
+            <div className="hero-buttons" style={{ display: 'flex', gap: 12, marginTop: 24, flexWrap: 'wrap' }}>
+              <button className="btn btn-primary btn-lg" onClick={() => navigate('onboarding')} style={{ flex: '1 1 auto', minWidth: '200px' }}>
                 <Icon name="leaf" size={18} />
-                {lang === 'ur' ? <span className="urdu-inline">ابھی فصل چیک کریں</span> : 'Check your crop now'}
+                {lang === 'ur' ? <span className="urdu-inline">ابھی چیک کریں</span> : 'Check crop now'}
               </button>
-              <button className="btn btn-wa btn-lg" onClick={() => navigate('whatsapp-coming-soon')}>
+              <button className="btn btn-wa btn-lg" onClick={() => navigate('whatsapp-coming-soon')} style={{ flex: '1 1 auto', minWidth: '200px' }}>
                 <Icon name="whatsapp" size={18} />
-                {lang === 'ur' ? <span className="urdu-inline">واٹس ایپ پر چیک کریں</span> : 'Check on WhatsApp'}
+                {lang === 'ur' ? <span className="urdu-inline">واٹس ایپ</span> : 'WhatsApp'}
               </button>
             </div>
 
-            <div style={{ display: 'flex', gap: 14, marginTop: 28, alignItems: 'center', color: 'var(--ink-mute)', fontSize: 13 }}>
+            <div className="hero-stats" style={{ display: 'flex', gap: 14, marginTop: 24, alignItems: 'center', color: 'var(--ink-mute)', fontSize: 12, flexWrap: 'wrap' }}>
               <div style={{ display: 'flex' }}>
                 {[1,2,3,4].map(i => (
                   <div key={i} style={{
-                    width: 28, height: 28, borderRadius: '50%',
+                    width: 26, height: 26, borderRadius: '50%',
                     background: ['#F4A62A','#66A64F','#9DCB7C','#2E6B3F'][i-1],
                     border: '2px solid var(--bg)', marginLeft: i > 1 ? -8 : 0,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: '#fff', fontSize: 11, fontWeight: 700,
+                    color: '#fff', fontSize: 10, fontWeight: 700,
                   }}>{['MA','FB','TM','SK'][i-1]}</div>
                 ))}
               </div>
               <span style={{ fontFamily: lang === 'ur' ? 'var(--font-ur)' : 'inherit' }}>
                 {lang === 'ur'
-                  ? <span className="urdu-inline">اس ہفتے 1,200+ کسانوں نے فصل چیک کی</span>
+                  ? <span className="urdu-inline">1,200+ کسانوں نے چیک کیا</span>
                   : '1,200+ farmers checked their crops this week'}
               </span>
             </div>
@@ -179,27 +217,25 @@ const Landing = ({ lang, setLang, navigate }) => {
         </div>
 
         {/* Stats strip */}
-        <div style={{
-          maxWidth: 1240, margin: '40px auto 0', padding: '0 32px',
-        }}>
-          <div style={{
+        <div style={{ maxWidth: 1240, margin: '32px auto 0', padding: '0 20px' }}>
+          <div className="stats-grid" style={{
             background: 'var(--green-700)',
             borderRadius: 'var(--radius-xl)',
-            padding: '32px 40px',
-            display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: 32, color: '#fff',
+            padding: '24px 24px',
+            display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)',
+            gap: 20, color: '#fff',
             position: 'relative', overflow: 'hidden',
           }}>
             <div style={{ position: 'absolute', right: -40, top: -40, opacity: 0.08 }}>
-              <Icon name="leaf-fill" size={220} color="#fff" />
+              <Icon name="leaf-fill" size={160} color="#fff" />
             </div>
             {stats.map((s, i) => (
-              <div key={i} style={{ position: 'relative', borderLeft: i > 0 ? '1px solid rgba(255,255,255,0.18)' : 'none', paddingLeft: i > 0 ? 24 : 0 }}>
+              <div key={i} style={{ position: 'relative', borderLeft: i > 1 ? 'none' : i > 0 ? '1px solid rgba(255,255,255,0.18)' : 'none', paddingLeft: i > 0 && i < 2 ? 16 : 0 }}>
                 <div style={{
-                  fontSize: 40, fontWeight: 800, letterSpacing: '-0.03em',
+                  fontSize: 28, fontWeight: 800, letterSpacing: '-0.02em',
                   fontFamily: typeof s.num === 'string' && /[\u0600-\u06FF]/.test(s.num) ? 'var(--font-ur)' : 'inherit',
                 }}>{s.num}</div>
-                <div style={{ fontSize: 14, opacity: 0.85, marginTop: 6,
+                <div style={{ fontSize: 12, opacity: 0.85, marginTop: 4,
                   fontFamily: lang === 'ur' ? 'var(--font-ur)' : 'inherit',
                   direction: lang === 'ur' ? 'rtl' : 'ltr',
                 }}>{lang === 'ur' ? s.ur : s.en}</div>
@@ -210,8 +246,8 @@ const Landing = ({ lang, setLang, navigate }) => {
       </section>
 
       {/* HOW IT WORKS */}
-      <section id="how" style={{ padding: '90px 32px', maxWidth: 1240, margin: '0 auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 40, gap: 40 }}>
+      <section id="how" style={{ padding: '48px 20px', maxWidth: 1240, margin: '0 auto' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 32, gap: 20, flexWrap: 'wrap' }}>
           <SectionTitle
             eyebrow={lang === 'ur' ? 'تین قدم' : 'Three steps'}
             en={'From "I think it\'s sick" to "Here\'s exactly what to spray."'}
@@ -219,7 +255,7 @@ const Landing = ({ lang, setLang, navigate }) => {
             lang={lang}
           />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+        <div className="steps-grid" style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
           {[
             { n: '01', icon: 'camera',
               en: { t: 'Snap or speak', d: 'Take a photo of the affected leaf, or hold the mic and just describe it in Urdu.' },

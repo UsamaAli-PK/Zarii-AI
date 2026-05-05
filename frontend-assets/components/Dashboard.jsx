@@ -19,10 +19,12 @@ const AppShell = ({ user, lang, setLang, navigate, current, children }) => {
 
   return (
     <div
+      className="app-shell"
       style={{ minHeight: "100vh", display: "flex", background: "var(--bg)" }}
     >
       {/* Sidebar */}
       <aside
+        className="app-sidebar"
         style={{
           width: 260,
           flexShrink: 0,
@@ -177,7 +179,7 @@ const AppShell = ({ user, lang, setLang, navigate, current, children }) => {
       </aside>
 
       {/* Main content */}
-      <main style={{ flex: 1, minWidth: 0, overflow: "auto" }}>{children}</main>
+      <main className="app-main" style={{ flex: 1, minWidth: 0, overflow: "auto" }}>{children}</main>
     </div>
   );
 };
