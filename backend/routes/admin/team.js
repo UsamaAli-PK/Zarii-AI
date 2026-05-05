@@ -2,9 +2,16 @@ const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
-const { ADMIN_JWT_SECRET, JWT_EXPIRY, APP_URL } = require('../../config');
+const { ADMIN_JWT_SECRET, JWT_EXPIRY, APP_URL, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = require('../../config');
+
+// Create Supabase auth client
+const getSupabaseAuth = () => createClient(
+  SUPABASE_URL || 'https://unbibbdoksruvwudxcwc.supabase.co',
+  SUPABASE_SERVICE_ROLE_KEY
+);
 
 // Password strength validation
 const validatePassword = (password) => {
@@ -17,10 +24,21 @@ const validatePassword = (password) => {
   return errors;
 };
 
-// Email validation
+// Email validation (stricter)
 const isValidEmail = (email) => {
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   return re.test(email);
+};
+
+// Sanitize input - prevent XSS
+const sanitizeInput = (str) => {
+  if (typeof str !== 'string') return '';
+  return str.trim().replace(/[<>\"'&]/g, '').substring(0, 100);
+};
+
+// Validate role
+const isValidRole = (role) => {
+  return ['Owner', 'Ops', 'Agronomist', 'Support'].includes(role?.trim());
 };
 
 // POST /api/admin/auth/register (Admin only - create new admin/operator)
@@ -28,8 +46,15 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
   try {
     const { name, email, role, sendInvite } = req.body;
     if (!name || !email || !role) return res.status(400).json({ error: 'name, email, role required' });
-    if (!isValidEmail(email)) return res.status(400).json({ error: 'Invalid email format' });
-    if (!['Owner', 'Ops', 'Agronomist', 'Support'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+    
+    // Sanitize inputs
+    const sanitizedName = sanitizeInput(name);
+    const sanitizedEmail = email.toLowerCase().trim();
+    const sanitizedRole = role.trim();
+    
+    if (!sanitizedName || sanitizedName.length < 2) return res.status(400).json({ error: 'Invalid name (min 2 chars)' });
+    if (!isValidEmail(sanitizedEmail)) return res.status(400).json({ error: 'Invalid email format' });
+    if (!isValidRole(sanitizedRole)) return res.status(400).json({ error: 'Invalid role' });
 
     // Check if email exists
     const { data: existing } = await supabase.from('admin_users').select('id').eq('email', email).single();
@@ -41,9 +66,9 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
 
     // Create admin user (password set later via invite)
     const { data: admin, error } = await supabase.from('admin_users').insert({
-      name,
-      email: email.toLowerCase(),
-      role,
+      name: sanitizedName,
+      email: sanitizedEmail,
+      role: sanitizedRole,
       verification_token: verificationToken,
       verification_exp: verificationExp,
       email_verified: false, // Always require verification
@@ -53,9 +78,6 @@ router.post('/register', requirePermission('Manage admins'), async (req, res) =>
 
     // Generate direct verification link
     const verifyLink = `${APP_URL}/api/admin/auth/verify?token=${verificationToken}`;
-    }).select().single();
-
-    if (error) throw error;
 
     // Send invite email (if sendInvite is true)
     if (sendInvite) {

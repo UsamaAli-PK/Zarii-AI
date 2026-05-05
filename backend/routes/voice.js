@@ -22,41 +22,61 @@ router.post("/stt", auth, upload.single("audio"), async (req, res) => {
     let provider = "mock";
 
     if (req.file) {
+      // Try ElevenLabs STT first
       const keyObj = await apiKeys.getServiceKey(
         "voice",
         (k) =>
           k.provider.toLowerCase().includes("stt") ||
-          k.provider.toLowerCase().includes("groq") ||
-          k.provider.toLowerCase().includes("openai"),
+          k.provider.toLowerCase().includes("eleven") ||
+          k.provider.toLowerCase().includes("scribe"),
       );
 
       if (keyObj && keyObj.api_key) {
         try {
-          const { OpenAI } = require("openai");
-          // If Groq is used, base_url is required. If OpenAI, it uses default.
-          const client = new OpenAI({
-            apiKey: keyObj.api_key,
-            baseURL: keyObj.base_url || undefined,
+          const fetch = require("node-fetch");
+          const FormData = require("form-data");
+          
+          const form = new FormData();
+          form.append("file", req.file.buffer, {
+            filename: "audio.webm",
+            contentType: "audio/webm",
           });
-          const { toFile } = require("openai");
-          const file = await toFile(req.file.buffer, "audio.webm", {
-            type: "audio/webm",
-          });
-          const response = await client.audio.transcriptions.create({
-            file,
-            model: keyObj.model_id || "whisper-large-v3-turbo", // groq default
-            language: lang === "ur" ? "ur" : "en",
-          });
-          transcript = response.text;
-          provider = keyObj.provider;
-          await apiKeys.reportUsage(keyObj.id, true);
+          form.append("model_id", keyObj.model_id || "scribe_v2");
+          
+          // Map language codes for ElevenLabs
+          const langMap = { ur: "ur", pa: "pnb", en: "en" };
+          form.append("language_code", langMap[lang] || "en");
+
+          const response = await fetch(
+            keyObj.base_url || "https://api.elevenlabs.io/v1/speech-to-text",
+            {
+              method: "POST",
+              headers: {
+                "xi-api-key": keyObj.api_key,
+                ...form.getHeaders(),
+              },
+              body: form,
+            }
+          );
+
+          if (response.ok) {
+            const result = await response.json();
+            transcript = result.text;
+            provider = "ElevenLabs Scribe";
+            await apiKeys.reportUsage(keyObj.id, true);
+          } else {
+            const errText = await response.text();
+            console.error("ElevenLabs STT error:", response.status, errText);
+            await apiKeys.reportUsage(keyObj.id, false);
+          }
         } catch (err) {
           console.error("STT error:", err.message);
-          await apiKeys.reportUsage(keyObj.id, false);
+          if (keyObj.id) await apiKeys.reportUsage(keyObj.id, false);
         }
       }
     }
 
+    // Fallback to mock if no transcript
     if (!transcript) {
       const mockTranscripts = {
         ur: "میرے گندم کے پتے پیلے ہو رہے ہیں، کیا مسئلہ ہے؟",

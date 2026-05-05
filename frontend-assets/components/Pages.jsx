@@ -5,6 +5,7 @@ const { useState: useS_V, useEffect: useE_V, useRef: useR_V } = React;
 // VOICE ASSISTANT
 // ============================================================
 const Voice = ({ lang, navigate }) => {
+  console.log("Voice component rendered, lang:", lang);
   const [state, setState] = useS_V("idle"); // idle, listening, thinking, speaking
   const [conversation, setConversation] = useS_V([
     {
@@ -45,12 +46,15 @@ const Voice = ({ lang, navigate }) => {
   const chunks = useR_V([]);
 
   const startListen = async () => {
+    console.log("Mic clicked, state:", state);
     if (state === "listening") {
       stopListen();
       return;
     }
     try {
+      console.log("Requesting microphone access...");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      console.log("Microphone access granted");
       mediaRecorder.current = new MediaRecorder(stream);
       chunks.current = [];
       mediaRecorder.current.ondataavailable = (e) => {
@@ -59,8 +63,10 @@ const Voice = ({ lang, navigate }) => {
       mediaRecorder.current.onstop = processAudio;
       mediaRecorder.current.start();
       setState("listening");
+      console.log("Now listening...");
     } catch (err) {
       console.error("Mic error:", err);
+      alert("Microphone error: " + err.message);
     }
   };
 
@@ -325,27 +331,27 @@ const Voice = ({ lang, navigate }) => {
         style={{ padding: 28, display: "flex", alignItems: "center", gap: 24 }}
       >
         <button
-          onClick={startListen}
+          type="button"
+          onClick={(e) => { e.preventDefault(); console.log("Button clicked!"); startListen(); }}
           disabled={state !== "idle"}
+          className="mic-btn"
           style={{
             width: 88,
             height: 88,
             borderRadius: "50%",
-            background:
-              state === "listening" ? "var(--amber)" : "var(--green-700)",
+            background: state === "listening" ? "var(--amber)" : "var(--green-700)",
             color: "#fff",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             cursor: state === "idle" ? "pointer" : "default",
+            border: "none",
             transition: "all .2s",
-            animation:
-              state === "listening" ? "pulseRing 1.5s infinite" : "none",
-            boxShadow:
-              state === "idle"
-                ? "0 10px 24px rgba(46,107,63,0.32)"
-                : "0 10px 24px rgba(244,166,42,0.4)",
+            animation: state === "listening" ? "pulseRing 1.5s infinite" : "none",
+            boxShadow: state === "idle" ? "0 10px 24px rgba(46,107,63,0.32)" : "0 10px 24px rgba(244,166,42,0.4)",
             flexShrink: 0,
+            position: "relative",
+            zIndex: 10
           }}
         >
           {state === "listening" ? (

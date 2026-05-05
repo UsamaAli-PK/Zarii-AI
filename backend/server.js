@@ -220,9 +220,9 @@ app.all('/api/*', (req, res) => {
   res.status(404).json({ error: `API route ${req.method} ${req.url} not found` });
 });
 
-// SPA fallback - redirect any unknown route to home (case-insensitive)
+// SPA fallback - serve index.html for client-side routes
 app.get(/^\/(?!api\/|uploads\/|webhook|assets).*$/i, (req, res) => {
-  res.redirect('/');
+  res.sendFile(path.join(FRONTEND_DIR, 'index.html'));
 });
 
 // ─── Error handler ────────────────────────────────────────────
