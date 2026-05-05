@@ -25,6 +25,7 @@ module.exports = {
   JWT_SECRET: requireSecret('JWT_SECRET'),
   JWT_EXPIRY: '7d',
   ADMIN_JWT_SECRET: requireSecret('ADMIN_JWT_SECRET'),
+  APP_URL: process.env.APP_URL || (IS_VERCEL ? 'https://zarii-ai.vercel.app' : 'http://localhost:5173'),
 
   AI: {
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || '',

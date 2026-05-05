@@ -237,15 +237,20 @@ CREATE TABLE IF NOT EXISTS failover_events (
 -- ADMIN USERS
 -- ============================================================
 CREATE TABLE IF NOT EXISTS admin_users (
-  id            BIGSERIAL PRIMARY KEY,
-  name          TEXT NOT NULL,
-  email         TEXT NOT NULL UNIQUE,
-  password_hash TEXT NOT NULL,
-  role          TEXT NOT NULL DEFAULT 'Support',
-  tfa_enabled   BOOLEAN DEFAULT false,
-  last_active   TIMESTAMPTZ DEFAULT NOW(),
-  created_at    TIMESTAMPTZ DEFAULT NOW()
+  id                  BIGSERIAL PRIMARY KEY,
+  supabase_uid        TEXT UNIQUE,
+  name                TEXT NOT NULL,
+  email               TEXT NOT NULL UNIQUE,
+  password_hash       TEXT,
+  role                TEXT NOT NULL DEFAULT 'Support',
+  tfa_enabled         BOOLEAN DEFAULT false,
+  email_verified      BOOLEAN DEFAULT false,
+  verification_token  TEXT,
+  verification_exp    TIMESTAMPTZ,
+  last_active         TIMESTAMPTZ DEFAULT NOW(),
+  created_at          TIMESTAMPTZ DEFAULT NOW()
 );
+CREATE INDEX IF NOT EXISTS idx_admin_supabase_uid ON admin_users(supabase_uid);
 
 -- ============================================================
 -- AUDIT LOG

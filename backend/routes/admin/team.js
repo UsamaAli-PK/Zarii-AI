@@ -1,9 +1,105 @@
 const router = require('express').Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 const supabase = require('../../supabase');
 const { requirePermission } = require('../../middleware/adminAuth');
-const { ADMIN_JWT_SECRET, JWT_EXPIRY } = require('../../config');
+const { ADMIN_JWT_SECRET, JWT_EXPIRY, APP_URL } = require('../../config');
+
+// Password strength validation
+const validatePassword = (password) => {
+  const errors = [];
+  if (password.length < 8) errors.push('Minimum 8 characters');
+  if (!/[A-Z]/.test(password)) errors.push('At least 1 uppercase letter');
+  if (!/[a-z]/.test(password)) errors.push('At least 1 lowercase letter');
+  if (!/[0-9]/.test(password)) errors.push('At least 1 number');
+  if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) errors.push('At least 1 special character (!@#$%^&*...)');
+  return errors;
+};
+
+// Email validation
+const isValidEmail = (email) => {
+  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return re.test(email);
+};
+
+// POST /api/admin/auth/register (Admin only - create new admin/operator)
+router.post('/register', requirePermission('Manage admins'), async (req, res) => {
+  try {
+    const { name, email, role, sendInvite } = req.body;
+    if (!name || !email || !role) return res.status(400).json({ error: 'name, email, role required' });
+    if (!isValidEmail(email)) return res.status(400).json({ error: 'Invalid email format' });
+    if (!['Owner', 'Ops', 'Agronomist', 'Support'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
+
+    // Check if email exists
+    const { data: existing } = await supabase.from('admin_users').select('id').eq('email', email).single();
+    if (existing) return res.status(400).json({ error: 'Email already registered' });
+
+    // Generate verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const verificationExp = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    // Create admin user (password set later via invite)
+    const { data: admin, error } = await supabase.from('admin_users').insert({
+      name,
+      email: email.toLowerCase(),
+      role,
+      verification_token: verificationToken,
+      verification_exp: verificationExp,
+      email_verified: !sendInvite, // auto-verify if not sending invite
+    }).select().single();
+
+    if (error) throw error;
+
+    // Send invite email (if sendInvite is true)
+    if (sendInvite) {
+      // TODO: Send email with verification link
+      // const verifyLink = `${APP_URL}/admin/verify/${verificationToken}`;
+      console.log(`[INVITE] Would send invite to ${email}: /admin/verify/${verificationToken}`);
+    }
+
+    res.status(201).json({ 
+      message: sendInvite ? 'Invitation sent' : 'Admin created',
+      admin: { id: admin.id, name: admin.name, email: admin.email, role: admin.role }
+    });
+  } catch (err) {
+    console.error('admin register error:', err);
+    res.status(500).json({ error: 'Registration failed' });
+  }
+});
+
+// POST /api/admin/auth/verify-email
+router.post('/verify-email', async (req, res) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) return res.status(400).json({ error: 'token and password required' });
+
+    const pwErrors = validatePassword(password);
+    if (pwErrors.length > 0) return res.status(400).json({ error: pwErrors.join(', ') });
+
+    const { data: admin } = await supabase
+      .from('admin_users')
+      .select('*')
+      .eq('verification_token', token)
+      .gte('verification_exp', new Date().toISOString())
+      .single();
+
+    if (!admin) return res.status(400).json({ error: 'Invalid or expired token' });
+
+    const password_hash = await bcrypt.hash(password, 12);
+    await supabase.from('admin_users').update({
+      password_hash,
+      email_verified: true,
+      verification_token: null,
+      verification_exp: null,
+    }).eq('id', admin.id);
+
+    res.json({ message: 'Email verified and password set successfully' });
+  } catch (err) {
+    console.error('verify email error:', err);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
 
 // POST /api/admin/auth/login
 router.post('/login', async (req, res) => {
@@ -11,9 +107,18 @@ router.post('/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) return res.status(400).json({ error: 'email and password required' });
 
-    const { data: admin, error } = await supabase.from('admin_users').select('*').eq('email', email).single();
+    const { data: admin, error } = await supabase.from('admin_users').select('*').eq('email', email.toLowerCase()).single();
     console.log('[LOGIN] Query result:', { email, admin, error });
     if (!admin) return res.status(401).json({ error: 'Invalid credentials' });
+
+    // Check email verification
+    if (!admin.email_verified) {
+      return res.status(403).json({ error: 'Email not verified. Check your inbox or request a new verification link.' });
+    }
+
+    if (!admin.password_hash) {
+      return res.status(401).json({ error: 'Password not set. Complete setup via verification link.' });
+    }
 
     const valid = await bcrypt.compare(password, admin.password_hash);
     if (!valid) return res.status(401).json({ error: 'Invalid credentials' });
