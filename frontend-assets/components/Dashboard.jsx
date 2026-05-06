@@ -3,6 +3,7 @@ const { useState: useS_D, useEffect: useE_D, useRef: useR_D } = React;
 
 // Shared app shell with sidebar
 const AppShell = ({ user, lang, setLang, navigate, current, children }) => {
+  const [sidebarOpen, setSidebarOpen] = useS_D(false);
   const items = [
     { id: "dashboard", en: "Dashboard", ur: "ڈیش بورڈ", icon: "home" },
     { id: "analyze", en: "Analyze crop", ur: "فصل کی تشخیص", icon: "camera" },
@@ -22,6 +23,114 @@ const AppShell = ({ user, lang, setLang, navigate, current, children }) => {
       className="app-shell"
       style={{ minHeight: "100vh", display: "flex", background: "var(--bg)" }}
     >
+      {/* Mobile hamburger button */}
+      <button
+        className="mobile-menu-toggle"
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        style={{
+          display: "none",
+          position: "fixed",
+          top: 12,
+          left: 12,
+          zIndex: 1001,
+          width: 44,
+          height: 44,
+          borderRadius: 12,
+          background: "var(--paper)",
+          border: "1px solid var(--line-soft)",
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+          boxShadow: "var(--shadow-sm)",
+        }}
+      >
+        <Icon name={sidebarOpen ? "x" : "menu"} size={22} color="var(--green-900)" />
+      </button>
+
+      {/* Mobile menu dropdown overlay */}
+      {sidebarOpen && (
+        <div
+          className="mobile-sidebar-overlay"
+          onClick={() => setSidebarOpen(false)}
+          style={{
+            display: "none",
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 999,
+          }}
+        />
+      )}
+      {sidebarOpen && (
+        <aside
+          className="mobile-sidebar"
+          style={{
+            display: "none",
+            position: "fixed",
+            left: 0,
+            top: 0,
+            bottom: 0,
+            width: 280,
+            background: "var(--paper)",
+            zIndex: 1000,
+            padding: "24px 16px",
+            flexDirection: "column",
+            boxShadow: "var(--shadow-lg)",
+            overflow: "auto",
+          }}
+        >
+          <div style={{ padding: "0 8px 24px", borderBottom: "1px solid var(--line-soft)", marginBottom: 16 }}>
+            <div onClick={() => { navigate("landing"); setSidebarOpen(false); }} style={{ cursor: "pointer" }}>
+              <Logo size={36} lang={lang} />
+            </div>
+          </div>
+          <nav style={{ display: "flex", flexDirection: "column", gap: 4, flex: 1 }}>
+            {items.map((it) => (
+              <button
+                key={it.id}
+                onClick={() => { navigate(it.id); setSidebarOpen(false); }}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 12,
+                  padding: "14px 16px",
+                  borderRadius: 12,
+                  background: current === it.id ? "var(--green-50)" : "transparent",
+                  color: current === it.id ? "var(--green-900)" : "var(--ink-soft)",
+                  fontWeight: current === it.id ? 600 : 500,
+                  fontSize: 15,
+                  textAlign: "left",
+                  width: "100%",
+                }}
+              >
+                <Icon name={it.icon} size={20} color={current === it.id ? "var(--green-700)" : "var(--ink-mute)"} />
+                <span style={{ fontFamily: lang === "ur" ? "var(--font-ur)" : "inherit" }}>
+                  {lang === "ur" ? it.ur : it.en}
+                </span>
+              </button>
+            ))}
+          </nav>
+          <div style={{ borderTop: "1px solid var(--line-soft)", paddingTop: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "10px 12px", borderRadius: 12, background: "var(--green-50)", marginBottom: 10 }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "var(--green-700)", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: 14 }}>
+                {(user?.name || "U").split(" ").map((n) => n[0]).slice(0, 2).join("")}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 600, fontSize: 13, color: "var(--green-900)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {user?.name || "Farmer"}
+                </div>
+              </div>
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <LangToggle lang={lang} setLang={setLang} />
+              <button onClick={() => navigate("landing")} style={{ padding: 8, borderRadius: 8, color: "var(--ink-mute)" }}>
+                <Icon name="logout" size={18} />
+              </button>
+            </div>
+          </div>
+        </aside>
+      )}
+
       {/* Sidebar */}
       <aside
         className="app-sidebar"

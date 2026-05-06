@@ -444,10 +444,10 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
               </div>
               <button
                 className="btn btn-primary btn-lg"
-                style={{ marginTop: 32, width: "100%" }}
+                style={{ marginTop: 32, width: "100%", minHeight: 52, justifyContent: "center" }}
                 onClick={() => setStep(1)}
               >
-                Continue <Icon name="arrow-right" size={16} />
+                Continue <Icon name="arrow-right" size={18} />
               </button>
             </div>
           )}
@@ -544,6 +544,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
                   disabled={!valid || loading}
                   style={{
                     flex: 1,
+                    minHeight: 52,
                     opacity: valid && !loading ? 1 : 0.5,
                     cursor: valid && !loading ? "pointer" : "not-allowed",
                   }}
@@ -556,7 +557,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
                   ) : (
                     "Send code"
                   )}{" "}
-                  {!loading && <Icon name="arrow-right" size={16} />}
+                  {!loading && <Icon name="arrow-right" size={18} />}
                 </button>
               </div>
             </div>
@@ -784,13 +785,14 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
                   className="btn btn-primary btn-lg"
                   style={{
                     flex: 1,
+                    minHeight: 52,
                     opacity: otp.join("").length === 4 && !loading ? 1 : 0.5,
                   }}
                   disabled={otp.join("").length !== 4 || loading}
                   onClick={handleVerifyOTP}
                 >
                   {loading ? "Verifying…" : "Verify"}{" "}
-                  {!loading && <Icon name="check" size={16} />}
+                  {!loading && <Icon name="check" size={18} />}
                 </button>
               </div>
             </div>

@@ -242,6 +242,7 @@ const Voice = ({ lang, navigate }) => {
 
   return (
     <div
+      className="voice-page-container"
       style={{
         padding: "32px 40px",
         maxWidth: 1100,
@@ -286,6 +287,7 @@ const Voice = ({ lang, navigate }) => {
 
       {/* Conversation */}
         <div
+          className="card conversation-container"
           className="card conversation-container"
           style={{
             flex: 1,
@@ -617,7 +619,7 @@ const History = ({ lang, navigate }) => {
   const filtered = items.filter((i) => filter === "all" || i.type === filter);
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
+    <div className="history-page-container" style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
       <div
         style={{
           display: "flex",
@@ -918,7 +920,7 @@ const Analytics = ({ lang, navigate }) => {
   ];
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1320, margin: "0 auto" }}>
+    <div className="analytics-page-container" style={{ padding: "32px 40px", maxWidth: 1320, margin: "0 auto" }}>
       <div style={{ marginBottom: 24 }}>
         <h1
           style={{
@@ -1580,7 +1582,7 @@ const Analytics = ({ lang, navigate }) => {
 // ============================================================
 const WhatsAppView = ({ lang, navigate, user }) => {
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
+    <div className="whatsapp-page-container" style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
       <div
         style={{
           marginBottom: 16,
