@@ -433,6 +433,7 @@ const AdminTopbar = ({
   const [t, sub] = titles[tab] || [];
   return (
     <div
+      className="admin-topbar"
       style={{
         padding: "20px 32px",
         background: "#fff",
@@ -724,6 +725,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
     <div style={{ minHeight: "100vh", display: "flex", background: "#F4F2EA" }}>
       {/* Dark sidebar */}
       <aside
+        className="admin-sidebar"
         style={{
           width: 248,
           flexShrink: 0,
@@ -883,7 +885,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
       </aside>
 
       {/* Main */}
-      <main style={{ flex: 1, minWidth: 0, overflow: "auto" }}>
+      <main className="admin-main" style={{ flex: 1, minWidth: 0, overflow: "auto" }}>
         <AdminTopbar
           tab={tab}
           demoMode={demoMode}
@@ -923,7 +925,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
             </button>
           </div>
         )}
-        <div style={{ padding: "20px 32px 60px" }}>
+        <div className="admin-content" style={{ padding: "20px 32px 60px" }}>
           {tab === "overview" && (
             <Overview
               demoMode={demoMode}

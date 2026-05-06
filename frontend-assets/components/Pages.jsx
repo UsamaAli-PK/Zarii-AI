@@ -285,18 +285,18 @@ const Voice = ({ lang, navigate }) => {
       </div>
 
       {/* Conversation */}
-      <div
-        className="card"
-        style={{
-          flex: 1,
-          padding: 28,
-          marginBottom: 18,
-          display: "flex",
-          flexDirection: "column",
-          gap: 16,
-          minHeight: 360,
-        }}
-      >
+        <div
+          className="card conversation-container"
+          style={{
+            flex: 1,
+            padding: 28,
+            marginBottom: 18,
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            minHeight: 360,
+          }}
+        >
         {conversation.map((msg, i) => (
           <div
             key={i}
@@ -450,11 +450,11 @@ const Voice = ({ lang, navigate }) => {
         )}
       </div>
 
-      {/* Mic */}
-      <div
-        className="card"
-        style={{ padding: 28, display: "flex", alignItems: "center", gap: 24 }}
-      >
+       {/* Mic */}
+       <div
+         className="card voice-input-area"
+         style={{ padding: 28, display: 'flex', alignItems: 'center', gap: 24 }}
+       >
         <button
           type="button"
           onClick={(e) => { e.preventDefault(); console.log("Button clicked! state:", state); startListen(); }}
@@ -697,6 +697,7 @@ const History = ({ lang, navigate }) => {
       </div>
 
       <div
+        className="history-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(2, 1fr)",
@@ -729,7 +730,7 @@ const History = ({ lang, navigate }) => {
           items.map((it, i) => (
             <div
               key={i}
-              className="card"
+              className="card history-item"
               onClick={() =>
                 it.type === "scan" && navigate("analyze", { scanId: it.id })
               }
@@ -944,9 +945,10 @@ const Analytics = ({ lang, navigate }) => {
 
       {/* KPI cards */}
       <div
+        className="analytics-kpi-grid"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
+          display: 'grid',
+          gridTemplateColumns: 'repeat(4, 1fr)',
           gap: 16,
           marginBottom: 18,
         }}
@@ -1007,9 +1009,10 @@ const Analytics = ({ lang, navigate }) => {
       </div>
 
       <div
+        className="analytics-split-view"
         style={{
-          display: "grid",
-          gridTemplateColumns: "1.6fr 1fr",
+          display: 'grid',
+          gridTemplateColumns: '1.6fr 1fr',
           gap: 16,
           marginBottom: 18,
         }}
@@ -1515,13 +1518,14 @@ const Analytics = ({ lang, navigate }) => {
         >
           Most asked questions in Pakistan
         </h3>
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(2, 1fr)",
-            gap: 10,
-          }}
-        >
+         <div
+           className="analytics-top-questions-grid"
+           style={{
+             display: "grid",
+             gridTemplateColumns: "repeat(2, 1fr)",
+             gap: 10,
+           }}
+         >
           {(data.top_diseases && data.top_diseases.length > 0
             ? data.top_diseases.map((d) => ({
                 q: "How to treat " + d.disease_name + "?",
@@ -1606,6 +1610,7 @@ const WhatsAppView = ({ lang, navigate, user }) => {
       </div>
 
       <div
+        className="whatsapp-layout"
         style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 24 }}
       >
         {/* Left: explanation */}
@@ -1755,6 +1760,7 @@ const WhatsAppView = ({ lang, navigate, user }) => {
 const WhatsAppPhone = ({ lang, user }) => (
   <div style={{ display: "flex", justifyContent: "center" }}>
     <div
+      className="whatsapp-phone-mock"
       style={{
         width: 380,
         background: "#1a2a1f",

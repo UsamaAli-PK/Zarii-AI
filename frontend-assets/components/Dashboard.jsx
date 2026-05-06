@@ -294,15 +294,16 @@ const Dashboard = ({ user, lang, navigate }) => {
         </div>
       </div>
 
-      {/* Big actions */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1.4fr 1fr",
-          gap: 18,
-          marginBottom: 18,
-        }}
-      >
+       {/* Big actions */}
+       <div
+         className="action-cards-row"
+         style={{
+           display: "grid",
+           gridTemplateColumns: "1.4fr 1fr",
+           gap: 18,
+           marginBottom: 18,
+         }}
+       >
         {/* Analyze hero card */}
         <div
           onClick={() => navigate("analyze")}
@@ -435,24 +436,26 @@ const Dashboard = ({ user, lang, navigate }) => {
         </div>
       </div>
 
-      {/* 3-col strip */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "1fr 1fr 1fr",
-          gap: 18,
-          marginBottom: 24,
-        }}
-      >
+       {/* 3-col strip */}
+       <div
+         className="three-col-strip"
+         style={{
+           display: "grid",
+           gridTemplateColumns: "1fr 1fr 1fr",
+           gap: 18,
+           marginBottom: 24,
+         }}
+       >
         <WeatherCard lang={lang} user={user} />
         <AlertCard lang={lang} user={user} />
         <FarmHealthCard lang={lang} />
       </div>
 
-      {/* Recent + suggestions */}
-      <div
-        style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 18 }}
-      >
+       {/* Recent + suggestions */}
+       <div
+         className="recent-suggestions-row"
+         style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 18 }}
+       >
         <RecentScans lang={lang} navigate={navigate} />
         <QuickAsk lang={lang} navigate={navigate} />
       </div>

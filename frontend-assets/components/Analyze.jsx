@@ -161,6 +161,7 @@ const Analyze = ({ lang, navigate, user }) => {
 
       {stage === "upload" && (
         <div
+          className="analyze-upload-row"
           style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 20 }}
         >
           <div className="card" style={{ padding: 32 }}>
@@ -819,15 +820,16 @@ const ResultView = ({
     }
   };
 
-  return (
-    <div
-      style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1.4fr",
-        gap: 18,
-        animation: "fadeUp .4s",
-      }}
-    >
+   return (
+     <div
+       className="split-view"
+       style={{
+         display: 'grid',
+         gridTemplateColumns: '1fr 1.4fr',
+         gap: 18,
+         animation: 'fadeUp .4s',
+       }}
+     >
       {isDemo && (
         <div
           style={{
@@ -1221,7 +1223,7 @@ const ResultView = ({
               "Alternative products"
             )}
           </h4>
-          <div style={{ display: "flex", flexDirection: "column" }}>
+          <div className="alternatives-list" style={{ display: "flex", flexDirection: "column" }}>
             {altTx.map((a, i) => (
               <div
                 key={i}
@@ -1307,7 +1309,8 @@ const ResultView = ({
             )}
           </h4>
           <div
-            style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}
+            className="prevention-grid"
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}
           >
             {(typeof prevention[0] === "string"
               ? prevention.map((p) => ({ i: "sprout", en: p }))

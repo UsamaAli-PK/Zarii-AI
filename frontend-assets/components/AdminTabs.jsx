@@ -55,7 +55,7 @@ const SponsorsTab = ({ demoMode, data }) => {
 
   return (
     <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+      <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
         <window.AdminStat label="Sponsor revenue · MTD" value={demoMode ? "₨ 2.49M" : (sponsorSummary?.revenue_mtd ? '₨ ' + Number(sponsorSummary.revenue_mtd).toLocaleString() : '—')} delta="+24%" icon="pkr" color="#F4A62A"/>
         <window.AdminStat label="Active sponsors" value={demoMode ? "4" : (sponsorSummary?.active_sponsors?.toLocaleString() ?? sponsors.filter(s=>s.status==='Active').length)} delta="+1" icon="shield" color="#2E6B3F"/>
         <window.AdminStat label="Sponsored impressions · 7d" value={demoMode ? "184,210" : (sponsorSummary?.impressions_7d?.toLocaleString() ?? '—')} delta="+15%" icon="trend" color="#9DCB7C"/>
@@ -155,14 +155,14 @@ const SponsorsTab = ({ demoMode, data }) => {
         </table>
       </window.AdminCard>
 
-      {/* Sponsored products */}
-      <window.AdminCard>
-        <div style={{ padding: 16, display: 'flex', alignItems: 'center', borderBottom: '1px solid #F1ECDD' }}>
-          <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Sponsored products & boost weights</h3>
-          <div style={{ marginLeft: 12, fontSize: 12, color: '#7E7E7E' }}>Boost 1–10. Higher boost = more likely to surface as recommended treatment.</div>
-          <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }}>+ Boost product</button>
-        </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+       {/* Sponsored products */}
+       <window.AdminCard>
+         <div style={{ padding: 16, display: 'flex', alignItems: 'center', borderBottom: '1px solid #F1ECDD' }}>
+           <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Sponsored products & boost weights</h3>
+           <div style={{ marginLeft: 12, fontSize: 12, color: '#7E7E7E' }}>Boost 1–10. Higher boost = more likely to surface as recommended treatment.</div>
+           <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }}>+ Boost product</button>
+         </div>
+         <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead style={{ background: '#FAF7EC' }}>
             <tr>{['Product','Sponsor','Boost','Targeting','Daily cap','Used today','Status',''].map((h,i)=>(
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
@@ -274,12 +274,12 @@ const ApiKeysTab = ({ demoMode, data: propData, refetch }) => {
 
   const poolData = data?.pools?.[pool] || [];
   
-  return (
-    <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Total API Keys" value={data?.summary?.total_keys || 0} icon="sparkles" color="#2E6B3F"/>
-        <window.AdminStat label="Healthy keys" value={data?.summary?.healthy || 0} icon="shield" color="#66A64F" />
-        <window.AdminStat label="Degraded keys" value={data?.summary?.degraded || 0} icon="alert-triangle" color="#F4A62A" />
+   return (
+     <div>
+       <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+         <window.AdminStat label="Total API Keys" value={data?.summary?.total_keys || 0} icon="sparkles" color="#2E6B3F"/>
+         <window.AdminStat label="Healthy keys" value={data?.summary?.healthy || 0} icon="shield" color="#66A64F" />
+         <window.AdminStat label="Degraded keys" value={data?.summary?.degraded || 0} icon="alert-triangle" color="#F4A62A" />
         <window.AdminStat label="Down keys" value={data?.summary?.down || 0} icon="x-circle" color="#D04E2C" />
       </div>
 
@@ -389,17 +389,17 @@ const RevenueTab = ({ demoMode, data }) => {
   const premiumCount = demoMode ? "2,140" : (s?.premium_subscriptions?.toLocaleString() ?? '—');
   const affClicks = demoMode ? "14,820" : (s?.affiliate_clicks_7d?.toLocaleString() ?? '—');
   const liveAffRows = Array.isArray(data?.affiliate_attribution) ? data.affiliate_attribution : [];
-  return (
-  <div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-      <window.AdminStat label="MRR" value={mrr} delta="+18%" icon="pkr" color="#2E6B3F"/>
-      <window.AdminStat label="Sponsor revenue" value={sponsorRev} delta="+24%" icon="trend" color="#F4A62A"/>
-      <window.AdminStat label="Premium subscriptions" value={premiumCount} delta="+312" icon="star" color="#66A64F" sub="₨ 299/mo each"/>
-      <window.AdminStat label="Affiliate clicks · 7d" value={affClicks} delta="+9%" icon="leaf" color="#9DCB7C"/>
+   return (
+   <div>
+     <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+       <window.AdminStat label="MRR" value={mrr} delta="+18%" icon="pkr" color="#2E6B3F"/>
+       <window.AdminStat label="Sponsor revenue" value={sponsorRev} delta="+24%" icon="trend" color="#F4A62A"/>
+       <window.AdminStat label="Premium subscriptions" value={premiumCount} delta="+312" icon="star" color="#66A64F" sub="₨ 299/mo each"/>
+       <window.AdminStat label="Affiliate clicks · 7d" value={affClicks} delta="+9%" icon="leaf" color="#9DCB7C"/>
 
     </div>
 
-    <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
+    <div className="admin-split-view" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
       <window.AdminCard style={{ padding: 22 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Revenue · 12 months</h3>
         <svg viewBox="0 0 600 220" style={{ width: '100%', height: 220 }}>
@@ -445,7 +445,7 @@ const RevenueTab = ({ demoMode, data }) => {
 
     <window.AdminCard style={{ padding: 22 }}>
       <h3 style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Affiliate attribution · last 30 days</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead><tr style={{ borderBottom: '2px solid #F1ECDD' }}>{['Partner','Clicks','Conv. rate','Conversions','Attributed sales','Commission'].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
@@ -512,14 +512,14 @@ const CatalogTab = ({ demoMode, data }) => {
     banned: !!p.is_banned,
   }));
   const items = demoMode ? demoItems : liveItems;
-  return (
-    <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Catalog items" value={demoMode ? "284" : (catSummary?.total?.toLocaleString() ?? rawItems.length.toLocaleString())} delta="+12 this month" icon="leaf" color="#2E6B3F"/>
-        <window.AdminStat label="Sponsored" value={demoMode ? "42" : (catSummary?.sponsored?.toLocaleString() ?? liveItems.filter(i=>i.sponsored).length)} icon="shield" color="#F4A62A"/>
-        <window.AdminStat label="Price last refreshed" value="< 24h" icon="refresh" color="#66A64F" sub="auto + manual"/>
-        <window.AdminStat label="Banned / restricted" value={demoMode ? "8" : (catSummary?.banned?.toLocaleString() ?? liveItems.filter(i=>i.banned).length)} icon="bell" color="#D04E2C"/>
-      </div>
+   return (
+     <div>
+       <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+         <window.AdminStat label="Catalog items" value={demoMode ? "284" : (catSummary?.total?.toLocaleString() ?? rawItems.length.toLocaleString())} delta="+12 this month" icon="leaf" color="#2E6B3F"/>
+         <window.AdminStat label="Sponsored" value={demoMode ? "42" : (catSummary?.sponsored?.toLocaleString() ?? liveItems.filter(i=>i.sponsored).length)} icon="shield" color="#F4A62A"/>
+         <window.AdminStat label="Price last refreshed" value="< 24h" icon="refresh" color="#66A64F" sub="auto + manual"/>
+         <window.AdminStat label="Banned / restricted" value={demoMode ? "8" : (catSummary?.banned?.toLocaleString() ?? liveItems.filter(i=>i.banned).length)} icon="bell" color="#D04E2C"/>
+       </div>
 
       <window.AdminCard>
         <div style={{ padding: 16, display: 'flex', alignItems: 'center', gap: 10, borderBottom: '1px solid #F1ECDD' }}>
@@ -530,7 +530,7 @@ const CatalogTab = ({ demoMode, data }) => {
           <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>+ Add product</button>
           <button className="btn btn-secondary btn-sm">Bulk price refresh</button>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
           <thead style={{ background: '#FAF7EC' }}><tr>{['Product','Category','Company','Pakistan price','Dosage','Last updated','Tags',''].map((h,i)=>(
             <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
           ))}</tr></thead>
@@ -595,14 +595,14 @@ const WhatsAppOps = ({ demoMode, data }) => {
   }));
   const liveTemplates = Array.isArray(data?.templates) ? data.templates : [];
   const convos = demoMode ? demoConvos : liveConvos;
-  return (
-    <div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-        <window.AdminStat label="Active conversations" value={demoMode ? "1,284" : (waSummary?.active_conversations?.toLocaleString() ?? rawConvos.length.toLocaleString())} delta="+8%" icon="whatsapp" color="#25D366"/>
-        <window.AdminStat label="Auto-resolved" value={demoMode ? "92.4%" : (waSummary?.auto_resolved_pct != null ? waSummary.auto_resolved_pct + '%' : '—')} delta="+1.4pp" icon="sparkles" color="#66A64F"/>
-        <window.AdminStat label="Awaiting human" value={demoMode ? "14" : (waSummary?.awaiting_human?.toLocaleString() ?? liveConvos.filter(c=>c.status==='human').length)} icon="bell" color="#F4A62A"/>
-        <window.AdminStat label="Avg response" value={demoMode ? "9.4s" : (waSummary?.avg_response_s != null ? waSummary.avg_response_s + 's' : '—')} delta="-2s" deltaType="down" icon="trend" color="#2E6B3F" sub="SLO < 30s"/>
-      </div>
+   return (
+     <div>
+       <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+         <window.AdminStat label="Active conversations" value={demoMode ? "1,284" : (waSummary?.active_conversations?.toLocaleString() ?? rawConvos.length.toLocaleString())} delta="+8%" icon="whatsapp" color="#25D366"/>
+         <window.AdminStat label="Auto-resolved" value={demoMode ? "92.4%" : (waSummary?.auto_resolved_pct != null ? waSummary.auto_resolved_pct + '%' : '—')} delta="+1.4pp" icon="sparkles" color="#66A64F"/>
+         <window.AdminStat label="Awaiting human" value={demoMode ? "14" : (waSummary?.awaiting_human?.toLocaleString() ?? liveConvos.filter(c=>c.status==='human').length)} icon="bell" color="#F4A62A"/>
+         <window.AdminStat label="Avg response" value={demoMode ? "9.4s" : (waSummary?.avg_response_s != null ? waSummary.avg_response_s + 's' : '—')} delta="-2s" deltaType="down" icon="trend" color="#2E6B3F" sub="SLO < 30s"/>
+       </div>
 
       <window.AdminCard style={{ marginBottom: 16 }}>
         <div style={{ padding: 16, display: 'flex', alignItems: 'center', borderBottom: '1px solid #F1ECDD' }}>
@@ -703,21 +703,21 @@ const TeamTab = ({ demoMode, data }) => {
   }));
   const teamRows = demoMode ? demoTeam : liveTeam;
   const auditRows = demoMode ? demoAudit : liveAudit;
-  return (
-  <div>
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
-      <window.AdminStat label="Team members" value={demoMode ? "14" : (teamSummary?.total?.toLocaleString() ?? liveTeam.length)} icon="users" color="#2E6B3F"/>
-      <window.AdminStat label="Roles defined" value={demoMode ? "4" : (teamSummary?.roles?.toLocaleString() ?? '4')} icon="shield" color="#66A64F"/>
-      <window.AdminStat label="Audit events · 7d" value={demoMode ? "1,284" : (teamSummary?.audit_events_7d?.toLocaleString() ?? liveAudit.length)} icon="trend" color="#F4A62A"/>
-      <window.AdminStat label="Pending invites" value={demoMode ? "2" : (teamSummary?.pending_invites?.toLocaleString() ?? '—')} icon="bell" color="#9DCB7C"/>
-    </div>
+   return (
+   <div>
+     <div className="admin-kpi-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 16 }}>
+       <window.AdminStat label="Team members" value={demoMode ? "14" : (teamSummary?.total?.toLocaleString() ?? liveTeam.length)} icon="users" color="#2E6B3F"/>
+       <window.AdminStat label="Roles defined" value={demoMode ? "4" : (teamSummary?.roles?.toLocaleString() ?? '4')} icon="shield" color="#66A64F"/>
+       <window.AdminStat label="Audit events · 7d" value={demoMode ? "1,284" : (teamSummary?.audit_events_7d?.toLocaleString() ?? liveAudit.length)} icon="trend" color="#F4A62A"/>
+       <window.AdminStat label="Pending invites" value={demoMode ? "2" : (teamSummary?.pending_invites?.toLocaleString() ?? '—')} icon="bell" color="#9DCB7C"/>
+     </div>
 
     <window.AdminCard style={{ marginBottom: 16 }}>
       <div style={{ padding: 16, display: 'flex', borderBottom: '1px solid #F1ECDD' }}>
         <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Team</h3>
         <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>+ Invite member</button>
-      </div>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        </div>
+        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
         <thead style={{ background: '#FAF7EC' }}><tr>{['Member','Email','Role','2FA','Last active',''].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>

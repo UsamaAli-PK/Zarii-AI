@@ -53,17 +53,18 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
 
   const stepLabels = ["Language", "Profile", "Verify", "Ready"];
 
-  return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        background:
-          "linear-gradient(135deg, #F1F7E9 0%, #FBFAF4 50%, #FCD58A22 100%)",
-        position: "relative",
-        overflow: "hidden",
-      }}
-    >
+   return (
+     <div
+       className="onboarding-container"
+       style={{
+         minHeight: "100vh",
+         display: "flex",
+         background:
+           "linear-gradient(135deg, #F1F7E9 0%, #FBFAF4 50%, #FCD58A22 100%)",
+         position: "relative",
+         overflow: "hidden",
+       }}
+     >
       <LeafDeco
         style={{
           position: "absolute",
@@ -86,6 +87,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
 
       {/* Left brand panel */}
       <div
+        className="onboarding-left"
         style={{
           flex: "1 1 50%",
           padding: "48px 56px",
@@ -240,6 +242,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
 
       {/* Right form panel */}
       <div
+        className="onboarding-right"
         style={{
           flex: "1 1 50%",
           padding: "48px 56px",
@@ -265,6 +268,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
 
         {/* Stepper */}
         <div
+          className="stepper"
           style={{
             marginTop: 40,
             display: "flex",
@@ -372,13 +376,14 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
               >
                 اپنی زبان منتخب کریں
               </p>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 14,
-                }}
-              >
+               <div
+                 className="lang-options"
+                 style={{
+                   display: "grid",
+                   gridTemplateColumns: "1fr 1fr",
+                   gap: 14,
+                 }}
+               >
                 {[
                   {
                     code: "en",
@@ -671,6 +676,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
               </div>
 
               <div
+                className="otp-inputs"
                 style={{ display: "flex", gap: 12, justifyContent: "center" }}
               >
                 {[0, 1, 2, 3].map((i) => (
