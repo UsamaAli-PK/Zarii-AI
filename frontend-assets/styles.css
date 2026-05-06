@@ -1747,3 +1747,48 @@ a, button, input, textarea, select {
     max-width: 100% !important;
   }
 }
+
+/* =============================================
+   ONBOARDING — MOBILE RESPONSIVE
+   ============================================= */
+@media (max-width: 768px) {
+  .onboarding-container {
+    flex-direction: column !important;
+  }
+  /* Hide the decorative left brand panel on mobile */
+  .onboarding-left {
+    display: none !important;
+  }
+  /* Right form panel takes full screen */
+  .onboarding-right {
+    flex: 1 1 100% !important;
+    padding: 24px 20px 32px !important;
+    min-height: 100vh;
+  }
+  /* Stepper: shrink labels so they don't overflow */
+  .stepper {
+    gap: 4px !important;
+    margin-top: 20px !important;
+  }
+  .stepper span {
+    font-size: 11px !important;
+  }
+  /* Form area max-width full on mobile */
+  .onboarding-right > div:last-child {
+    max-width: 100% !important;
+  }
+  /* Language option cards: stack on very small screens */
+  .lang-options {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  /* OTP boxes row */
+  .otp-inputs {
+    gap: 8px !important;
+  }
+  .otp-inputs input {
+    width: 52px !important;
+    height: 58px !important;
+    font-size: 22px !important;
+  }
+}

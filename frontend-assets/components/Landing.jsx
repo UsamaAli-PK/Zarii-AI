@@ -88,7 +88,6 @@ const Landing = ({ lang, setLang, navigate }) => {
             <a href="#farmers" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">کسان</span> : 'Farmers'}
             </a>
-            <LangToggle lang={lang} setLang={setLang} />
             <button className="btn btn-primary btn-sm" onClick={() => navigate('onboarding')}>
               {lang === 'ur' ? <span className="urdu-inline">شروع کریں</span> : 'Get started'}
               <Icon name="arrow-right" size={16} />
