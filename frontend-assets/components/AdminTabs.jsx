@@ -71,7 +71,7 @@ const SponsorsTab = ({ demoMode, data }) => {
           </div>
           <window.AdminPill tone="red">🚨 3 Critical Spikes</window.AdminPill>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+        <div className="admin-three-col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
           {[
             { region: 'Multan', disease: 'Cotton Whitefly', pressure: 'Critical', trend: '+420%', sponsor_match: 'Antracol 70 WP' },
             { region: 'Rahim Yar Khan', disease: 'Wheat Rust', pressure: 'High', trend: '+180%', sponsor_match: 'Ridomil Gold' },
@@ -102,7 +102,7 @@ const SponsorsTab = ({ demoMode, data }) => {
           <div style={{ flex: 1 }}>
             <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Compliance & disclosure rules</h3>
             <div style={{ fontSize: 13, color: '#5A5A5A', marginTop: 4, marginBottom: 12 }}>Trust-first defaults. Farmers always see why a product is being recommended.</div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
+            <div className="admin-three-col" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
               <div>
                 <div style={{ fontSize: 11, color: '#7E7E7E', fontWeight: 600, textTransform: 'uppercase' }}>Max sponsored items per diagnosis</div>
                 <div style={{ fontSize: 22, fontWeight: 800, color: '#1F4A2C', marginTop: 4 }}>1 of 3 <span style={{ fontSize: 12, color: '#7E7E7E', fontWeight: 500 }}>alternatives</span></div>
@@ -127,7 +127,8 @@ const SponsorsTab = ({ demoMode, data }) => {
           <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Sponsor companies</h3>
           <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>+ Add sponsor</button>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 680 }}>
           <thead style={{ background: '#FAF7EC' }}>
             <tr>{['Sponsor','Contract','Model','Spend MTD','CTR','Products','Status',''].map((h,i)=>(
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
@@ -153,6 +154,7 @@ const SponsorsTab = ({ demoMode, data }) => {
             </tr>
           ))}</tbody>
         </table>
+        </div>
       </window.AdminCard>
 
        {/* Sponsored products */}
@@ -162,7 +164,8 @@ const SponsorsTab = ({ demoMode, data }) => {
            <div style={{ marginLeft: 12, fontSize: 12, color: '#7E7E7E' }}>Boost 1–10. Higher boost = more likely to surface as recommended treatment.</div>
            <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }}>+ Boost product</button>
          </div>
-         <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+         <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+         <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 700 }}>
           <thead style={{ background: '#FAF7EC' }}>
             <tr>{['Product','Sponsor','Boost','Targeting','Daily cap','Used today','Status',''].map((h,i)=>(
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
@@ -197,6 +200,7 @@ const SponsorsTab = ({ demoMode, data }) => {
             </tr>
           ))}</tbody>
         </table>
+        </div>
       </window.AdminCard>
     </div>
   );
@@ -315,7 +319,8 @@ const ApiKeysTab = ({ demoMode, data: propData, refetch }) => {
           </div>
         </div>
 
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 680 }}>
           <thead style={{ background: '#FAF7EC' }}>
             <tr>{['Provider','Model ID','Key','Priority','Weight','Used','Status','Actions'].map((h,i)=>(
               <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
@@ -350,6 +355,7 @@ const ApiKeysTab = ({ demoMode, data: propData, refetch }) => {
             </tr>
           ))}</tbody>
         </table>
+        </div>
       </window.AdminCard>
 
       {/* Modal */}
@@ -399,7 +405,7 @@ const RevenueTab = ({ demoMode, data }) => {
 
     </div>
 
-    <div className="admin-split-view" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
+    <div className="admin-split-view admin-two-col" style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: 14, marginBottom: 16 }}>
       <window.AdminCard style={{ padding: 22 }}>
         <h3 style={{ margin: '0 0 12px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Revenue · 12 months</h3>
         <svg viewBox="0 0 600 220" style={{ width: '100%', height: 220 }}>
@@ -445,7 +451,8 @@ const RevenueTab = ({ demoMode, data }) => {
 
     <window.AdminCard style={{ padding: 22 }}>
       <h3 style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 700, color: '#1F4A2C' }}>Affiliate attribution · last 30 days</h3>
-      <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+      <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+      <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 600 }}>
         <thead><tr style={{ borderBottom: '2px solid #F1ECDD' }}>{['Partner','Clicks','Conv. rate','Conversions','Attributed sales','Commission'].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
@@ -479,6 +486,7 @@ const RevenueTab = ({ demoMode, data }) => {
           }
         </tbody>
       </table>
+      </div>
     </window.AdminCard>
   </div>
   );
@@ -530,7 +538,8 @@ const CatalogTab = ({ demoMode, data }) => {
           <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>+ Add product</button>
           <button className="btn btn-secondary btn-sm">Bulk price refresh</button>
         </div>
-        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 720 }}>
           <thead style={{ background: '#FAF7EC' }}><tr>{['Product','Category','Company','Pakistan price','Dosage','Last updated','Tags',''].map((h,i)=>(
             <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
           ))}</tr></thead>
@@ -552,6 +561,7 @@ const CatalogTab = ({ demoMode, data }) => {
             </tr>
           ))}</tbody>
         </table>
+        </div>
       </window.AdminCard>
 
       <window.AdminCard style={{ padding: 22, marginTop: 16 }}>
@@ -609,7 +619,8 @@ const WhatsAppOps = ({ demoMode, data }) => {
           <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Live conversation queue</h3>
           <button className="btn btn-secondary btn-sm" style={{ marginLeft: 'auto' }}>Manage canned replies</button>
         </div>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 560 }}>
           <thead style={{ background: '#FAF7EC' }}><tr>{['User','Last message','Mode','Wait','New',''].map((h,i)=>(
             <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
           ))}</tr></thead>
@@ -634,6 +645,7 @@ const WhatsAppOps = ({ demoMode, data }) => {
             </tr>
           ))}</tbody>
         </table>
+        </div>
       </window.AdminCard>
 
       <window.AdminCard style={{ padding: 22 }}>
@@ -717,7 +729,8 @@ const TeamTab = ({ demoMode, data }) => {
         <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Team</h3>
         <button className="btn btn-primary btn-sm" style={{ marginLeft: 'auto' }}>+ Invite member</button>
         </div>
-        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+        <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+        <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 560 }}>
         <thead style={{ background: '#FAF7EC' }}><tr>{['Member','Email','Role','2FA','Last active',''].map((h,i)=>(
           <th key={i} style={{ textAlign: 'left', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
@@ -740,11 +753,13 @@ const TeamTab = ({ demoMode, data }) => {
           </tr>
         ))}</tbody>
       </table>
+      </div>
     </window.AdminCard>
 
     <window.AdminCard style={{ marginBottom: 16, padding: 22 }}>
       <h3 style={{ margin: '0 0 14px', fontSize: 15, fontWeight: 700, color: '#1F4A2C' }}>Permission matrix</h3>
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+      <div className="table-wrapper" style={{ overflowX: 'auto' }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12, minWidth: 460 }}>
         <thead><tr style={{ borderBottom: '2px solid #F1ECDD' }}>{['Capability','Owner','Ops','Agronomist','Support'].map((h,i)=>(
           <th key={i} style={{ textAlign: i === 0 ? 'left' : 'center', padding: '10px 14px', fontSize: 11, fontWeight: 700, color: '#7E7E7E', textTransform: 'uppercase' }}>{h}</th>
         ))}</tr></thead>
@@ -757,6 +772,7 @@ const TeamTab = ({ demoMode, data }) => {
           </tr>
         ))}</tbody>
       </table>
+      </div>
     </window.AdminCard>
 
     <window.AdminCard style={{ padding: 22 }}>

@@ -2,6 +2,7 @@
 const { useState: useS_L, useEffect: useE_L } = React;
 
 const Landing = ({ lang, setLang, navigate }) => {
+  const [menuOpen, setMenuOpen] = useS_L(false);
 
   const features = [
     {
@@ -75,12 +76,9 @@ const Landing = ({ lang, setLang, navigate }) => {
         WebkitBackdropFilter: 'blur(14px)',
         borderBottom: '1px solid var(--line-soft)',
       }}>
-<div style={{
-          maxWidth: 1240, margin: '0 auto', padding: '14px 32px',
-          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        }}>
+        <div className="landing-header-inner">
           <Logo size={42} lang={lang} />
-          <nav style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
+          <nav className="landing-nav" style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
             <a href="#how" style={{ color: 'var(--ink-soft)', fontWeight: 500, fontSize: 14, textDecoration: 'none' }}>
               {lang === 'ur' ? <span className="urdu-inline">طریقہ کار</span> : 'How it works'}
             </a>
@@ -95,9 +93,34 @@ const Landing = ({ lang, setLang, navigate }) => {
               {lang === 'ur' ? <span className="urdu-inline">شروع کریں</span> : 'Get started'}
               <Icon name="arrow-right" size={16} />
             </button>
+            {/* Hamburger — shown only on mobile via CSS */}
+            <button className="hamburger-btn" onClick={() => setMenuOpen(o => !o)} aria-label="Toggle menu">
+              {menuOpen ? '✕' : '☰'}
+            </button>
           </nav>
-         </div>
-       </header>
+          {/* Mobile dropdown nav */}
+          {menuOpen && (
+            <div className="mobile-nav-dropdown">
+              <a href="#how" onClick={() => setMenuOpen(false)}>
+                {lang === 'ur' ? <span className="urdu-inline">طریقہ کار</span> : 'How it works'}
+              </a>
+              <a href="#features" onClick={() => setMenuOpen(false)}>
+                {lang === 'ur' ? <span className="urdu-inline">خصوصیات</span> : 'Features'}
+              </a>
+              <a href="#farmers" onClick={() => setMenuOpen(false)}>
+                {lang === 'ur' ? <span className="urdu-inline">کسان</span> : 'Farmers'}
+              </a>
+              <div style={{ display: 'flex', gap: 10, marginTop: 8 }}>
+                <LangToggle lang={lang} setLang={setLang} />
+                <button className="btn btn-primary" style={{ flex: 1 }} onClick={() => { navigate('onboarding'); setMenuOpen(false); }}>
+                  {lang === 'ur' ? <span className="urdu-inline">شروع کریں</span> : 'Get started'}
+                  <Icon name="arrow-right" size={16} />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </header>
        {/* HERO */}
       <section style={{ position: 'relative', overflow: 'hidden' }}>
         <LeafDeco style={{ position: 'absolute', top: -40, right: -20, transform: 'rotate(10deg)' }} opacity={0.18} />
@@ -256,10 +279,7 @@ const Landing = ({ lang, setLang, navigate }) => {
       </section>
 
       {/* FEATURES */}
-      <section id="features" style={{
-        padding: '80px 32px',
-        background: 'linear-gradient(180deg, var(--cream-50) 0%, var(--bg) 100%)',
-      }}>
+      <section id="features" className="features-section-wrapper">
         <div style={{ maxWidth: 1240, margin: '0 auto' }}>
           <SectionTitle
             eyebrow={lang === 'ur' ? 'ایک ساتھی، چار سپر پاور' : 'One companion, four superpowers'}
@@ -267,7 +287,7 @@ const Landing = ({ lang, setLang, navigate }) => {
             ur={'دفتر کے لیے نہیں — کھیت کے لیے۔'}
             lang={lang}
           />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18, marginTop: 32 }}>
+          <div className="features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 18, marginTop: 32 }}>
             {features.map((f, i) => (
               <div key={i} className="card" style={{
                 padding: 28, display: 'flex', gap: 20,
@@ -299,14 +319,14 @@ const Landing = ({ lang, setLang, navigate }) => {
       </section>
 
       {/* TESTIMONIALS */}
-      <section id="farmers" style={{ padding: '90px 32px', maxWidth: 1240, margin: '0 auto' }}>
+      <section id="farmers" className="testimonials-section-wrapper">
          <SectionTitle
            eyebrow={lang === 'ur' ? 'کسانوں کی زبانی' : 'From the field'}
            en={"What farmers across Pakistan are saying."}
            ur={"پاکستان بھر کے کسان کیا کہتے ہیں۔"}
            lang={lang}
          />
-         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 32 }}>
+         <div className="testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 32 }}>
            {testimonials.map((t, i) => (
              <div key={i} className="card" style={{ padding: 28 }}>
                <div style={{ display: 'flex', gap: 2, marginBottom: 14 }}>
@@ -335,8 +355,8 @@ const Landing = ({ lang, setLang, navigate }) => {
        </section>
 
        {/* CTA strip */}
-       <section style={{ padding: '40px 32px 80px' }}>
-        <div style={{
+       <section className="cta-section-wrapper">
+        <div className="cta-grid" style={{
           maxWidth: 1240, margin: '0 auto',
           background: 'linear-gradient(135deg, var(--green-900) 0%, var(--green-700) 100%)',
           borderRadius: 'var(--radius-xl)',

@@ -1408,3 +1408,342 @@ a, button, input, textarea, select {
     width: 44px; height: 44px;
   }
 }
+
+/* ============================================
+   LANDING PAGE — HEADER MOBILE
+   ============================================ */
+
+.landing-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--green-900);
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.mobile-nav-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line-soft);
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 29;
+  box-shadow: 0 8px 20px rgba(31,74,44,0.10);
+  animation: fadeUp 0.15s ease;
+}
+
+.mobile-nav-dropdown a {
+  color: var(--ink-soft);
+  font-weight: 500;
+  font-size: 16px;
+  text-decoration: none;
+  padding: 12px 4px;
+  border-bottom: 1px solid var(--line-soft);
+  display: block;
+}
+
+.mobile-nav-dropdown a:last-of-type {
+  border-bottom: none;
+}
+
+.mobile-nav-dropdown .btn {
+  margin-top: 12px;
+  width: 100%;
+}
+
+@media (max-width: 900px) {
+  .hamburger-btn {
+    display: flex !important;
+  }
+  .landing-header-inner {
+    padding: 12px 20px !important;
+  }
+  /* Hide text nav links and desktop CTA — they're in the mobile dropdown */
+  .landing-nav > a {
+    display: none !important;
+  }
+  .landing-nav > .btn {
+    display: none !important;
+  }
+}
+
+@media (min-width: 901px) {
+  .hamburger-btn,
+  .mobile-nav-dropdown {
+    display: none !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .landing-header-inner {
+    padding: 10px 16px !important;
+  }
+}
+
+/* ============================================
+   LANDING PAGE — SECTION PADDINGS MOBILE
+   ============================================ */
+
+.features-section-wrapper {
+  padding: 80px 32px;
+  background: linear-gradient(180deg, var(--cream-50) 0%, var(--bg) 100%);
+}
+
+.testimonials-section-wrapper {
+  padding: 90px 32px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+.cta-section-wrapper {
+  padding: 40px 32px 80px;
+}
+
+@media (max-width: 900px) {
+  .features-section-wrapper {
+    padding: 48px 20px !important;
+  }
+  .testimonials-section-wrapper {
+    padding: 48px 20px !important;
+  }
+  .cta-section-wrapper {
+    padding: 32px 16px 48px !important;
+  }
+  .cta-grid {
+    padding: 36px 28px !important;
+    grid-template-columns: 1fr !important;
+    text-align: center !important;
+  }
+  .cta-grid > div:last-child .btn {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .features-section-wrapper {
+    padding: 32px 16px !important;
+  }
+  .testimonials-section-wrapper {
+    padding: 32px 16px !important;
+  }
+  .cta-section-wrapper {
+    padding: 20px 12px 36px !important;
+  }
+  .cta-grid {
+    padding: 24px 20px !important;
+  }
+  .hero-grid {
+    padding: 24px 16px 20px !important;
+  }
+}
+
+/* ============================================
+   DASHBOARD & ANALYZE CONTAINERS
+   ============================================ */
+
+.dashboard-container {
+  padding: 32px 40px;
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+.analyze-page-container {
+  padding: 32px 40px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+@media (max-width: 900px) {
+  .dashboard-container,
+  .analyze-page-container {
+    padding: 24px 20px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .dashboard-container,
+  .analyze-page-container {
+    padding: 16px 14px !important;
+  }
+}
+
+/* ============================================
+   ANALYZE COMPONENT — RESPONSIVE GRIDS
+   ============================================ */
+
+@media (max-width: 900px) {
+  .analyze-upload-row {
+    grid-template-columns: 1fr !important;
+  }
+  .prevention-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ============================================
+   ADMIN PANEL — RESPONSIVE
+   ============================================ */
+
+/* Admin sidebar becomes horizontal scrollable bottom tab bar on mobile */
+@media (max-width: 900px) {
+  .admin-sidebar {
+    position: fixed !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    top: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 56px !important;
+    flex-direction: row !important;
+    padding: 4px 8px !important;
+    border-right: none !important;
+    border-top: 1px solid rgba(255,255,255,0.12) !important;
+    z-index: 999 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    align-items: center !important;
+    gap: 2px !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+  }
+  .admin-sidebar::-webkit-scrollbar {
+    display: none !important;
+  }
+  /* Hide logo, search, group labels, back button */
+  .admin-sidebar-logo,
+  .admin-sidebar-search,
+  .admin-sidebar-group-label,
+  .admin-sidebar-back {
+    display: none !important;
+  }
+  /* Dissolve group containers so buttons flow inline */
+  .admin-sidebar-group {
+    display: contents !important;
+  }
+  /* Style tab buttons as compact icon+label tiles */
+  .admin-sidebar-group > button {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 2px !important;
+    padding: 6px 8px !important;
+    font-size: 10px !important;
+    min-width: 52px !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+    flex-shrink: 0 !important;
+    position: relative !important;
+  }
+  /* Admin main content — add bottom padding so tab bar doesn't cover it */
+  .admin-main {
+    padding-bottom: 70px !important;
+  }
+  /* Admin content area */
+  .admin-content {
+    padding: 16px 16px 60px !important;
+    overflow-x: hidden !important;
+  }
+  /* Admin topbar compact */
+  .admin-topbar {
+    padding: 12px 16px !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  .admin-topbar h1 {
+    font-size: 18px !important;
+  }
+  .admin-topbar > div:last-child {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-topbar {
+    padding: 10px 12px !important;
+  }
+  .admin-topbar h1 {
+    font-size: 16px !important;
+    margin: 0 !important;
+  }
+  .admin-content {
+    padding: 12px 12px 60px !important;
+  }
+}
+
+/* Admin content grid layouts — responsive */
+@media (max-width: 1024px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .admin-two-col {
+    grid-template-columns: 1fr !important;
+  }
+  .admin-three-col {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-kpi-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+  /* Tables: horizontal scroll */
+  .admin-content table {
+    min-width: 600px;
+  }
+  .admin-content .table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpi-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Wrap overflow tables in admin */
+.admin-content > div > div[style*="overflow: auto"],
+.admin-content > div > div[style*="overflow:auto"] {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Command palette full-width on mobile */
+@media (max-width: 640px) {
+  .admin-cmd-palette {
+    width: calc(100vw - 32px) !important;
+    max-width: 100% !important;
+  }
+}

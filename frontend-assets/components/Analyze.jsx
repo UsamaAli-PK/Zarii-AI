@@ -106,7 +106,7 @@ const Analyze = ({ lang, navigate, user }) => {
   };
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
+    <div className="analyze-page-container" style={{ padding: "32px 40px", maxWidth: 1240, margin: "0 auto" }}>
       <div
         style={{
           marginBottom: 20,
@@ -1310,7 +1310,7 @@ const ResultView = ({
           </h4>
           <div
             className="prevention-grid"
-            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginTop: 0 }}
           >
             {(typeof prevention[0] === "string"
               ? prevention.map((p) => ({ i: "sprout", en: p }))

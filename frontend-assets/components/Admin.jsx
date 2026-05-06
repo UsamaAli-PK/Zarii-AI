@@ -25,6 +25,7 @@ const CmdPalette = ({ tabs, onPick, onClose }) => {
       }}
     >
       <div
+        className="admin-cmd-palette"
         onClick={(e) => e.stopPropagation()}
         style={{
           width: 560,
@@ -740,6 +741,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
         }}
       >
         <div
+          className="admin-sidebar-logo"
           style={{
             padding: "4px 8px 18px",
             borderBottom: "1px solid rgba(255,255,255,0.08)",
@@ -772,6 +774,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
         </div>
 
         <button
+          className="admin-sidebar-search"
           onClick={() => setCmdOpen(true)}
           style={{
             display: "flex",
@@ -800,8 +803,9 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
         </button>
 
         {groups.map((g) => (
-          <div key={g} style={{ marginBottom: 12 }}>
+          <div key={g} className="admin-sidebar-group" style={{ marginBottom: 12 }}>
             <div
+              className="admin-sidebar-group-label"
               style={{
                 fontSize: 10,
                 fontWeight: 700,
@@ -860,6 +864,7 @@ const AdminConsole = ({ navigate, onLogout, admin }) => {
         ))}
 
         <div
+          className="admin-sidebar-back"
           style={{
             marginTop: "auto",
             paddingTop: 14,
@@ -1105,6 +1110,7 @@ const Overview = ({ demoMode, data }) => {
   return (
     <div>
       <div
+        className="admin-kpi-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(5, 1fr)",
@@ -1170,6 +1176,7 @@ const Overview = ({ demoMode, data }) => {
       </div>
 
       <div
+        className="admin-two-col"
         style={{
           display: "grid",
           gridTemplateColumns: "1.6fr 1fr",
@@ -1323,6 +1330,7 @@ const Overview = ({ demoMode, data }) => {
       </div>
 
       <div
+        className="admin-two-col"
         style={{
           display: "grid",
           gridTemplateColumns: "1fr 1fr",
@@ -1469,6 +1477,7 @@ const Overview = ({ demoMode, data }) => {
       </div>
 
       <div
+        className="admin-three-col"
         style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 14 }}
       >
         <Stat
@@ -1634,6 +1643,7 @@ const UsersTable = ({ demoMode, data }) => {
   return (
     <div>
       <div
+        className="admin-kpi-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -1735,9 +1745,9 @@ const UsersTable = ({ demoMode, data }) => {
             {filtered.length} of {displayUsers.length}
           </div>
         </div>
-        <div style={{ overflow: "auto" }}>
+        <div style={{ overflow: "auto" }} className="table-wrapper">
           <table
-            style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}
+            style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 680 }}
           >
             <thead
               style={{
@@ -1992,6 +2002,7 @@ const DiagnosesTab = ({ demoMode, data }) => {
   return (
     <div>
       <div
+        className="admin-kpi-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -2046,6 +2057,7 @@ const DiagnosesTab = ({ demoMode, data }) => {
       </div>
 
       <div
+        className="admin-two-col"
         style={{
           display: "grid",
           gridTemplateColumns: "1.6fr 1fr",
@@ -2165,7 +2177,7 @@ const DiagnosesTab = ({ demoMode, data }) => {
         </Card>
       </div>
 
-      <Card>
+      <Card style={{ overflow: "hidden" }}>
         <div
           style={{
             padding: 16,
@@ -2173,6 +2185,7 @@ const DiagnosesTab = ({ demoMode, data }) => {
             gap: 10,
             alignItems: "center",
             borderBottom: "1px solid #F1ECDD",
+            flexWrap: "wrap",
           }}
         >
           <h3
@@ -2211,8 +2224,9 @@ const DiagnosesTab = ({ demoMode, data }) => {
             Send to agronomist queue
           </button>
         </div>
+        <div className="table-wrapper" style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <table
-          style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}
+          style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 760 }}
         >
           <thead style={{ background: "#FAF7EC" }}>
             <tr>
@@ -2391,6 +2405,7 @@ const DiagnosesTab = ({ demoMode, data }) => {
             ))}
           </tbody>
         </table>
+        </div>
       </Card>
     </div>
   );
@@ -2500,6 +2515,7 @@ const OutbreaksTab = ({ demoMode, data }) => {
   return (
     <div>
       <div
+        className="admin-kpi-grid"
         style={{
           display: "grid",
           gridTemplateColumns: "repeat(4, 1fr)",
@@ -2593,6 +2609,7 @@ const OutbreaksTab = ({ demoMode, data }) => {
         </div>
 
         <div
+          className="admin-two-col"
           style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 24 }}
         >
           <div

@@ -207,7 +207,7 @@ const Dashboard = ({ user, lang, navigate }) => {
   })();
 
   return (
-    <div style={{ padding: "32px 40px", maxWidth: 1320, margin: "0 auto" }}>
+    <div className="dashboard-container" style={{ padding: "32px 40px", maxWidth: 1320, margin: "0 auto" }}>
       {/* Header */}
       <div
         style={{
