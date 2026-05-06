@@ -96,8 +96,9 @@ const Landing = ({ lang, setLang, navigate }) => {
               <Icon name="arrow-right" size={16} />
             </button>
           </nav>
-        </div>
-      {/* HERO */}
+         </div>
+       </header>
+       {/* HERO */}
       <section style={{ position: 'relative', overflow: 'hidden' }}>
         <LeafDeco style={{ position: 'absolute', top: -40, right: -20, transform: 'rotate(10deg)' }} opacity={0.18} />
         <LeafDeco style={{ position: 'absolute', bottom: 40, left: -60, transform: 'scaleX(-1) rotate(15deg)' }} opacity={0.14} color="#66A64F" />
@@ -299,42 +300,42 @@ const Landing = ({ lang, setLang, navigate }) => {
 
       {/* TESTIMONIALS */}
       <section id="farmers" style={{ padding: '90px 32px', maxWidth: 1240, margin: '0 auto' }}>
-        <SectionTitle
-          eyebrow={lang === 'ur' ? 'کسانوں کی زبانی' : 'From the field'}
-          en={"What farmers across Pakistan are saying."}
-          ur={"پاکستان بھر کے کسان کیا کہتے ہیں۔"}
-          lang={lang}
-        />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 32 }}>
-          {testimonials.map((t, i) => (
-            <div key={i} className="card" style={{ padding: 28 }}>
-              <div style={{ display: 'flex', gap: 2, marginBottom: 14 }}>
-                {[...Array(t.rating)].map((_, j) => <Icon key={j} name="star" size={14} color="#F4A62A" />)}
-              </div>
-              <p style={{
-                margin: '0 0 20px', fontSize: 16, lineHeight: 1.6, color: 'var(--ink)',
-                fontFamily: lang === 'ur' ? 'var(--font-ur)' : 'inherit',
-                direction: lang === 'ur' ? 'rtl' : 'ltr',
-              }}>{lang === 'ur' ? t.ur : t.en}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 16, borderTop: '1px solid var(--line-soft)' }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: '50%',
-                  background: ['#9DCB7C','#F4A62A','#66A64F'][i],
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: '#fff', fontWeight: 700,
-                }}>{t.name.split(' ').map(n => n[0]).slice(0,2).join('')}</div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--green-900)' }}>{t.name}</div>
-                  <div style={{ fontSize: 12.5, color: 'var(--ink-mute)' }}>{t.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+         <SectionTitle
+           eyebrow={lang === 'ur' ? 'کسانوں کی زبانی' : 'From the field'}
+           en={"What farmers across Pakistan are saying."}
+           ur={"پاکستان بھر کے کسان کیا کہتے ہیں۔"}
+           lang={lang}
+         />
+         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18, marginTop: 32 }}>
+           {testimonials.map((t, i) => (
+             <div key={i} className="card" style={{ padding: 28 }}>
+               <div style={{ display: 'flex', gap: 2, marginBottom: 14 }}>
+                 {[...Array(t.rating)].map((_, j) => <Icon key={j} name="star" size={14} color="#F4A62A" />)}
+               </div>
+               <p style={{
+                 margin: '0 0 20px', fontSize: 16, lineHeight: 1.6, color: 'var(--ink)',
+                 fontFamily: lang === 'ur' ? 'var(--font-ur)' : 'inherit',
+                 direction: lang === 'ur' ? 'rtl' : 'ltr',
+               }}>{lang === 'ur' ? t.ur : t.en}</p>
+               <div style={{ display: 'flex', alignItems: 'center', gap: 12, paddingTop: 16, borderTop: '1px solid var(--line-soft)' }}>
+                 <div style={{
+                   width: 40, height: 40, borderRadius: '50%',
+                   background: ['#9DCB7C','#F4A62A','#66A64F'][i],
+                   display: 'flex', alignItems: 'center', justifyContent: 'center',
+                   color: '#fff', fontWeight: 700,
+                 }}>{t.name.split(' ').map(n => n[0]).slice(0,2).join('')}</div>
+                 <div>
+                   <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--green-900)' }}>{t.name}</div>
+                   <div style={{ fontSize: 12.5, color: 'var(--ink-mute)' }}>{t.role}</div>
+                 </div>
+               </div>
+             </div>
+           ))}
+         </div>
+       </section>
 
-      {/* CTA strip */}
-      <section style={{ padding: '40px 32px 80px' }}>
+       {/* CTA strip */}
+       <section style={{ padding: '40px 32px 80px' }}>
         <div style={{
           maxWidth: 1240, margin: '0 auto',
           background: 'linear-gradient(135deg, var(--green-900) 0%, var(--green-700) 100%)',
@@ -443,25 +444,25 @@ const Landing = ({ lang, setLang, navigate }) => {
               ))}
             </div>
           </div>
-          {/* Bottom bar */}
-          <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-              <img src="assets/farmer-badge.png" alt="" width={32} height={32} style={{ borderRadius: '50%' }} />
-              <div>
-                <div style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>ZARii AI</div>
-                <div style={{ fontSize: 11.5, opacity: 0.6 }}>© 2026 · Made with 🌱 in Lahore</div>
-              </div>
-            </div>
-            <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
-              <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</a>
-              <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</a>
-              <a href="/sitemap.xml" style={{ color: 'inherit', textDecoration: 'none' }}>Sitemap</a>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+           {/* Bottom bar */}
+           <div style={{ borderTop: '1px solid rgba(255,255,255,0.12)', paddingTop: 24, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+               <img src="assets/farmer-badge.png" alt="" width={32} height={32} style={{ borderRadius: '50%' }} />
+               <div>
+                 <div style={{ color: '#fff', fontWeight: 700, fontSize: 14 }}>ZARii AI</div>
+                 <div style={{ fontSize: 11.5, opacity: 0.6 }}>© 2026 · Made with 🌱 in Lahore</div>
+               </div>
+             </div>
+             <div style={{ display: 'flex', gap: 20, fontSize: 13 }}>
+               <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacy</a>
+               <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Terms</a>
+               <a href="/sitemap.xml" style={{ color: 'inherit', textDecoration: 'none' }}>Sitemap</a>
+             </div>
+           </div>
+         </div>
+       </footer>
+     </div>
+   );
 };
 
 const HeroVisual = ({ lang }) => {
