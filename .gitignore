@@ -53,6 +53,7 @@ DOCUMENTATION_OLD.md
 temp/
 
 # Internal / Dev Files (not for public repo)
+wiki/
 raw/
 AGENTS.md
 CLAUDE.md
