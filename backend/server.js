@@ -19,14 +19,14 @@ function transpileJSX(filePath, versionParam) {
     const result = babel.transformSync(src, {
       presets: [['@babel/preset-react', { runtime: 'classic' }]],
       filename: path.basename(filePath),
-      compact: true,       // minify output
-      comments: false,     // strip comments
+      compact: true,
+      comments: false,
     });
     jsxCache.set(cacheKey, result.code);
     return result.code;
   } catch (err) {
-    console.error('[JSX] Transpile error:', filePath, err.message);
-    return null;
+    console.error('[JSX] Transpile error:', filePath, err.message, err.stack);
+    return 'console.error("Transpile failed for ' + path.basename(filePath) + ': ' + err.message + '");';
   }
 }
 
@@ -134,9 +134,8 @@ app.use((req, res, next) => {
   const filePath = path.join(FRONTEND_DIR, req.path);
   if (!fs.existsSync(filePath)) return next();
   const code = transpileJSX(filePath, req.query.v);
-  if (!code) return res.status(500).send('// transpile error');
+  if (!code) return res.status(500).send('// Transpile error - check server logs');
   res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
-  // Version-busted URLs get long cache; bare .jsx requests get no-cache
   const versioned = !!req.query.v;
   res.setHeader('Cache-Control', versioned
     ? 'public, max-age=31536000, immutable'
