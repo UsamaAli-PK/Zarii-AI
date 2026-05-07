@@ -5,8 +5,10 @@ const { useState: useS_V, useEffect: useE_V, useRef: useR_V } = React;
 // VOICE ASSISTANT
 // ============================================================
 const Voice = ({ lang, navigate }) => {
-  console.log("Voice component rendered, lang:", lang);
   const [state, setState] = useS_V("idle"); // idle, listening, thinking, speaking
+  const stateRef = useR_V("idle"); // mirror of state for use inside closures/timeouts
+  const setStateSynced = (s) => { stateRef.current = s; setState(s); };
+
   const [conversation, setConversation] = useS_V([
     {
       role: "assistant",
@@ -15,35 +17,21 @@ const Voice = ({ lang, navigate }) => {
     },
   ]);
   const [transcript, setTranscript] = useS_V("");
+  const [voiceError, setVoiceError] = useS_V(null); // { code, title, detail }
   const [pendingAsk, setPendingAsk] = useS_V(() => {
     const q = sessionStorage.getItem("zarii_quick_ask");
-    if (q) {
-      sessionStorage.removeItem("zarii_quick_ask");
-      return q;
-    }
+    if (q) { sessionStorage.removeItem("zarii_quick_ask"); return q; }
     return null;
   });
 
   const sampleAsks =
     lang === "ur"
-      ? [
-          "میرے گندم کے پتے پیلے کیوں ہیں؟",
-          "کاٹن پر سفید مکھی کا علاج؟",
-          "آلو کب لگانا چاہیے؟",
-        ]
-      : [
-          "Why are my wheat leaves yellow?",
-          "How to treat whitefly on cotton?",
-          "When should I plant potatoes?",
-        ];
-
-  const sampleAnswers = {
-    en: "Yellowing wheat leaves usually means nitrogen deficiency. Apply Urea at 1 bag per acre, and water lightly. If yellowing is on lower leaves only, it's a clear nitrogen sign. Want me to recommend a brand?",
-    ur: "گندم کے پیلے پتے عام طور پر نائٹروجن کی کمی کا اشارہ ہیں۔ فی ایکڑ ایک بوری یوریا ڈالیں اور ہلکا پانی دیں۔ اگر صرف نچلے پتے پیلے ہیں تو یہ یقینی نائٹروجن کی کمی ہے۔",
-  };
+      ? ["میرے گندم کے پتے پیلے کیوں ہیں؟", "کاٹن پر سفید مکھی کا علاج؟", "آلو کب لگانا چاہیے؟"]
+      : ["Why are my wheat leaves yellow?", "How to treat whitefly on cotton?", "When should I plant potatoes?"];
 
   const mediaRecorder = useR_V(null);
   const chunks = useR_V([]);
+  const mimeTypeRef = useR_V("audio/webm"); // actual MIME detected at record-start
   const voiceAudio = useR_V(null);
 
   const getAudioDuration = (blob) => {
@@ -62,174 +50,165 @@ const Voice = ({ lang, navigate }) => {
   };
 
   const startListen = async () => {
-    console.log("Mic clicked, state:", state);
-    if (state === "listening") {
-      stopListen();
-      return;
-    }
+    if (stateRef.current === "listening") { stopListen(); return; }
+    setVoiceError(null);
     try {
-      console.log("Requesting microphone access...");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log("Microphone access granted");
-      mediaRecorder.current = new MediaRecorder(stream);
+
+      // Detect actual MIME type supported by this browser (Safari uses mp4, others webm)
+      const mime = MediaRecorder.isTypeSupported("audio/webm;codecs=opus") ? "audio/webm;codecs=opus"
+        : MediaRecorder.isTypeSupported("audio/webm") ? "audio/webm"
+        : MediaRecorder.isTypeSupported("audio/mp4") ? "audio/mp4"
+        : "audio/ogg";
+      mimeTypeRef.current = mime;
+
+      mediaRecorder.current = new MediaRecorder(stream, { mimeType: mime });
       chunks.current = [];
       mediaRecorder.current.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.current.push(e.data);
       };
-      mediaRecorder.current.onstop = () => {
-        console.log("Recording stopped, processing audio...");
-        processAudio(stream);
-      };
+      mediaRecorder.current.onstop = () => processAudio(stream);
       mediaRecorder.current.start();
-      setState("listening");
-      console.log("Now listening...");
-      
-      // Auto-stop after 15 seconds
+      setStateSynced("listening");
+
+      // Auto-stop after 15 seconds — use stateRef (not state) to avoid stale closure
       setTimeout(() => {
-        if (state === "listening") {
-          console.log("Auto-stopping after 15 seconds");
-          stopListen();
-        }
+        if (stateRef.current === "listening") stopListen();
       }, 15000);
     } catch (err) {
-      console.error("Mic error:", err);
-      alert("Microphone error: " + err.message);
+      setVoiceError({
+        code: "E001",
+        title: "Microphone access denied",
+        detail: err.message,
+      });
     }
   };
 
   const stopListen = async () => {
-    console.log("stopListen called, recorder state:", mediaRecorder.current?.state);
     if (mediaRecorder.current && mediaRecorder.current.state === "recording") {
       mediaRecorder.current.stop();
-      // Stop stream tracks immediately after stopping recorder
       setTimeout(() => {
-        if (mediaRecorder.current && mediaRecorder.current.stream) {
-          mediaRecorder.current.stream.getTracks().forEach(t => t.stop());
-        }
+        mediaRecorder.current?.stream?.getTracks().forEach(t => t.stop());
       }, 100);
-    } else if (!mediaRecorder.current || mediaRecorder.current.state === "inactive") {
-      // If recorder not active, process whatever we have
-      if (chunks.current.length > 0) {
-        processAudio(null);
-      }
+    } else if (chunks.current.length > 0) {
+      processAudio(null);
     }
   };
 
   const processAudio = async (stream) => {
-    console.log("processAudio called");
-    // Stop the stream tracks
-    if (stream) {
-      stream.getTracks().forEach((t) => t.stop());
-    }
-    
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+
     if (chunks.current.length === 0) {
-      console.log("No audio recorded");
-      setState("idle");
+      setVoiceError({ code: "E002", title: "No audio captured", detail: "Nothing was recorded. Try holding the mic button and speaking clearly." });
+      setStateSynced("idle");
       return;
     }
-    
-    setState("thinking");
-    console.log("Creating audio blob...");
-    const blob = new Blob(chunks.current, { type: "audio/webm" });
-    
-    // Create audio URL for playback (like WhatsApp voice message)
+
+    setStateSynced("thinking");
+    const blob = new Blob(chunks.current, { type: mimeTypeRef.current });
     const audioUrl = URL.createObjectURL(blob);
     const audioDuration = await getAudioDuration(blob);
-    
-    // Show user's voice message in chat immediately (like WhatsApp)
-    setConversation((c) => [...c, { 
-      role: "user", 
-      en: "🎤 Voice message", 
-      ur: "🎤 آواز کا پیغام",
-      isVoice: true,
-      audioUrl: audioUrl,
-      duration: audioDuration
+
+    setConversation((c) => [...c, {
+      role: "user",
+      en: "🎤 Voice message", ur: "🎤 آواز کا پیغام",
+      isVoice: true, audioUrl, duration: audioDuration,
     }]);
 
     const formData = new FormData();
-    formData.append("audio", blob, "audio.webm");
+    formData.append("audio", blob, "audio." + (mimeTypeRef.current.split("/")[1]?.split(";")[0] || "webm"));
     formData.append("lang", lang);
 
+    // ── Step 1: Speech → Text ──────────────────────────────────
+    let transcript_text;
     try {
-      console.log("Calling STT API...");
-      const { transcript: t } = await window.API.transcribeAudio(formData);
-      console.log("STT result:", t);
-      if (!t) throw new Error("No transcript");
-      setTranscript(t);
-      
-      // Update the voice message with actual transcript
-      setConversation((c) => c.map((msg, i) => 
-        i === c.length - 1 ? { ...msg, en: t, ur: t, isVoice: false } : msg
+      const res = await window.API.transcribeAudio(formData);
+      transcript_text = res.transcript;
+      if (!transcript_text) throw new Error("Empty transcript returned");
+      setTranscript(transcript_text);
+      setConversation((c) => c.map((msg, i) =>
+        i === c.length - 1 ? { ...msg, en: transcript_text, ur: transcript_text, isVoice: false } : msg
       ));
+    } catch (err) {
+      const detail = err.data?.error || err.message || "Unknown error";
+      setVoiceError({ code: "E003", title: "Speech recognition failed", detail });
+      setStateSynced("idle");
+      return;
+    }
 
-      console.log("Calling AI...");
-      const { answer, query_id } = await window.API.askQuestion(t, lang);
-      console.log("AI answer:", answer);
-      setConversation((c) => [
-        ...c,
-        { role: "assistant", en: answer, ur: answer },
-      ]);
+    // ── Step 2: AI Answer ──────────────────────────────────────
+    let answer, query_id;
+    try {
+      const res = await window.API.askQuestion(transcript_text, lang);
+      answer = res.answer;
+      query_id = res.query_id;
+      if (!answer) throw new Error("Empty answer");
+      setConversation((c) => [...c, { role: "assistant", en: answer, ur: answer }]);
+    } catch (err) {
+      const detail = err.data?.error || err.message || "Unknown error";
+      setVoiceError({ code: "E004", title: "AI failed to answer", detail });
+      setStateSynced("idle");
+      return;
+    }
 
-      console.log("Calling TTS...");
-      const { audio_url } = await window.API.textToSpeech(
-        answer,
-        lang,
-        query_id,
-      );
-      console.log("TTS result:", audio_url);
+    // ── Step 3: Text → Speech ──────────────────────────────────
+    try {
+      const { audio_url, tts_error } = await window.API.textToSpeech(answer, lang, query_id);
       if (audio_url) {
-        const audio = new Audio(audio_url);
-        audio.onended = () => {
-          console.log("Audio finished playing");
-          setState("idle");
-          setTranscript("");
-        };
-        audio.onerror = (e) => {
-          console.error("Audio play error:", e);
-          setState("idle");
-          setTranscript("");
-        };
-        audio.play();
-        setState("speaking");
+        voiceAudio.current = new Audio(audio_url);
+        voiceAudio.current.onended = () => { setStateSynced("idle"); setTranscript(""); };
+        voiceAudio.current.onerror = () => { setStateSynced("idle"); setTranscript(""); };
+        voiceAudio.current.play();
+        setStateSynced("speaking");
       } else {
-        console.log("No audio URL, showing text only");
-        setState("idle");
+        // TTS non-fatal: text answer already shown, just no audio
+        if (tts_error) setVoiceError({ code: "E005", title: "Audio playback unavailable", detail: tts_error + " — text answer is shown above." });
+        setStateSynced("idle");
         setTranscript("");
       }
     } catch (err) {
-      console.error("Voice error:", err);
-      setState("idle");
+      const detail = err.data?.error || err.message || "Unknown error";
+      setVoiceError({ code: "E005", title: "Text-to-speech failed", detail: detail + " — text answer is shown above." });
+      setStateSynced("idle");
+      setTranscript("");
     }
   };
 
   const askDirectly = async (text) => {
-    setState("thinking");
+    setVoiceError(null);
+    setStateSynced("thinking");
     setTranscript(text);
     setConversation((c) => [...c, { role: "user", en: text, ur: text }]);
+
+    let answer, query_id;
     try {
-      const { answer, query_id } = await window.API.askQuestion(text, lang);
-      setConversation((c) => [
-        ...c,
-        { role: "assistant", en: answer, ur: answer },
-      ]);
-      const { audio_url } = await window.API.textToSpeech(
-        answer,
-        lang,
-        query_id,
-      );
+      const res = await window.API.askQuestion(text, lang);
+      answer = res.answer;
+      query_id = res.query_id;
+      if (!answer) throw new Error("Empty answer");
+      setConversation((c) => [...c, { role: "assistant", en: answer, ur: answer }]);
+    } catch (err) {
+      const detail = err.data?.error || err.message || "Unknown error";
+      setVoiceError({ code: "E004", title: "AI failed to answer", detail });
+      setStateSynced("idle");
+      return;
+    }
+
+    try {
+      const { audio_url, tts_error } = await window.API.textToSpeech(answer, lang, query_id);
       if (audio_url) {
-        const audio = new Audio(audio_url);
-        audio.onended = () => {
-          setState("idle");
-          setTranscript("");
-        };
-        audio.play();
-        setState("speaking");
+        voiceAudio.current = new Audio(audio_url);
+        voiceAudio.current.onended = () => { setStateSynced("idle"); setTranscript(""); };
+        voiceAudio.current.play();
+        setStateSynced("speaking");
       } else {
-        setState("idle");
+        if (tts_error) setVoiceError({ code: "E005", title: "Audio unavailable", detail: tts_error + " — text answer is shown above." });
+        setStateSynced("idle");
+        setTranscript("");
       }
     } catch (err) {
-      setState("idle");
+      setStateSynced("idle");
+      setTranscript("");
     }
   };
 
@@ -523,16 +502,35 @@ const Voice = ({ lang, navigate }) => {
                 : "Hold the mic and ask anything…")}
           </div>
 
-          {/* sample chips */}
-          {state === "idle" && (
-            <div
-              style={{
-                display: "flex",
-                gap: 8,
-                marginTop: 14,
-                flexWrap: "wrap",
-              }}
-            >
+          {/* Error banner */}
+          {voiceError && (
+            <div style={{
+              marginTop: 12,
+              background: "#fff5f5",
+              border: "1.5px solid #fca5a5",
+              borderRadius: 12,
+              padding: "10px 14px",
+              fontSize: 13,
+            }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ fontWeight: 700, color: "#dc2626", display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{ background: "#dc2626", color: "#fff", borderRadius: 4, padding: "1px 6px", fontSize: 11, fontFamily: "monospace" }}>{voiceError.code}</span>
+                  {voiceError.title}
+                </span>
+                <button onClick={() => setVoiceError(null)} style={{ background: "none", border: "none", cursor: "pointer", color: "#999", fontSize: 16, lineHeight: 1, padding: "0 2px" }}>✕</button>
+              </div>
+              <div style={{ color: "#7f1d1d", lineHeight: 1.5, wordBreak: "break-word" }}>{voiceError.detail}</div>
+              {(voiceError.code === "E003" || voiceError.code === "E004" || voiceError.code === "E005") && (
+                <div style={{ marginTop: 6, color: "#991b1b", fontSize: 12 }}>
+                  → Check: <strong>Admin → API Keys</strong> → voice pool (ensure key is active & correct)
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Sample chips */}
+          {state === "idle" && !voiceError && (
+            <div style={{ display: "flex", gap: 8, marginTop: 14, flexWrap: "wrap" }}>
               {sampleAsks.map((q, i) => (
                 <button
                   key={i}
