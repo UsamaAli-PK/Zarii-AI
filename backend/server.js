@@ -9,6 +9,7 @@ const { runMigrations } = require('./db/migrate');
 
 // ─── Server-side JSX transpiler (replaces browser Babel) ──────
 const babel = require('@babel/core');
+require('@babel/preset-react'); // Ensure preset is loaded
 const jsxCache = new Map(); // in-memory: cleared on server restart
 
 function transpileJSX(filePath, versionParam) {
