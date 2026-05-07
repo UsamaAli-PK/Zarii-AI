@@ -103,22 +103,43 @@
       </div>
     </div>
     <script>
-      // If React hasn't mounted after 10 seconds show a reload button
+      var preloaderStart = Date.now();
+      var reactLoaded = false;
+      var scriptErrors = [];
+      // If React hasn't mounted after 15 seconds show error with details
       setTimeout(function() {
         var pre = document.getElementById('preloader');
-        if (!pre) return; // React already removed it
-        document.getElementById('preloader-msg').innerHTML =
-          'Taking longer than expected...<br><br>' +
-          '<button onclick="location.reload()" style="margin-top:8px;padding:10px 24px;background:#9DCB7C;color:#1a4d1a;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Reload App</button>';
-      }, 10000);
+        if (!pre) return;
+        var elapsed = Math.round((Date.now() - preloaderStart) / 1000);
+        var msg = 'App not loading after ' + elapsed + ' seconds.<br><br>';
+        if (scriptErrors.length > 0) {
+          msg += '<strong>Errors detected:</strong><br>' + scriptErrors.join('<br>') + '<br><br>';
+        }
+        msg += '<button onclick="location.reload()" style="margin-top:8px;padding:10px 24px;background:#9DCB7C;color:#1a4d1a;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Reload App</button>';
+        document.getElementById('preloader-msg').innerHTML = msg;
+      }, 15000);
+      // Track script errors
+      window.addEventListener('error', function(e) {
+        if (e.target.tagName === 'SCRIPT' && e.target.src) {
+          scriptErrors.push(e.target.src.split('/').pop());
+        }
+      }, true);
     </script>
     </div>
     <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}</style>
   </div>
 
   <!-- React production builds (~10x smaller than dev) -->
-  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js'"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js'"></script>
+  <script>
+    // Fallback error handler - show error if React fails to load
+    window.addEventListener('error', function(e) {
+      if (e.target.tagName === 'SCRIPT' && (e.target.src.includes('react') || e.target.src.includes('unpkg'))) {
+        document.getElementById('preloader-msg').innerHTML = 'Failed to load React.<br>Check your internet connection.<br><br><button onclick="location.reload()" style="margin-top:8px;padding:10px 24px;background:#9DCB7C;color:#1a4d1a;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Reload App</button>';
+      }
+    }, true);
+  </script>
 
   <!-- ZARii Backend API bridge — must load before components -->
   <script src="src/api.js?v=4"></script>
