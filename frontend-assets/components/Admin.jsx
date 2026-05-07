@@ -1,5 +1,4 @@
-/* global React, ReactDOM, useState, useEffect, useMemo, useRef, useE_App, useS_App, Icon, Logo, useS_Adm, useE_Adm, useM_Adm */
-const { useState: useS_Adm, useEffect: useE_Adm, useMemo: useM_Adm } = React;
+/* global React, ReactDOM, Icon, Logo */
 
 // ============================================================
 // CMD PALETTE (Moved up for TDZ)

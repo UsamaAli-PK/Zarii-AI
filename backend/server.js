@@ -18,7 +18,7 @@ function transpileJSX(filePath, versionParam) {
   try {
     const src = fs.readFileSync(filePath, 'utf8');
     const result = babel.transformSync(src, {
-      presets: [['@babel/preset-react', { runtime: 'classic' }]],
+      presets: [['@babel/preset-react', { runtime: 'automatic' }]],
       filename: path.basename(filePath),
       compact: true,
       comments: false,
