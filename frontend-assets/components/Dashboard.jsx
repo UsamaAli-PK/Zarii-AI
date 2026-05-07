@@ -1,4 +1,4 @@
-/* global React, Icon, Logo, LangToggle, LeafDeco */
+/* global React, ReactDOM, useState, useEffect, useRef, useE_App, useS_App, Icon, Logo, LangToggle, LeafDeco, useS_D, useE_D, useR_D */
 const { useState: useS_D, useEffect: useE_D, useRef: useR_D } = React;
 
 // Shared app shell with sidebar

@@ -1,4 +1,4 @@
-/* global React, Icon, T, Logo, LangToggle, LeafDeco */
+/* global React, ReactDOM, useState, useEffect, useRef, useE_App, useS_App, Icon, T, Logo, LangToggle, LeafDeco, useS_L, useE_L */
 const { useState: useS_L, useEffect: useE_L } = React;
 
 const Landing = ({ lang, setLang, navigate }) => {

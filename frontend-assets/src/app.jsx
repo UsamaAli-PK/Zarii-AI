@@ -1,4 +1,4 @@
-/* global React, ReactDOM */
+/* global React, ReactDOM, useState, useEffect, useRef */
 /* global Landing, Onboarding, AppShell, Dashboard, Analyze, Voice, History, Analytics, WhatsAppView, AdminConsole, AdminLogin, WhatsAppComingSoon */
 
 const { useState: useS_App, useEffect: useE_App } = React;

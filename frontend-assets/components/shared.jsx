@@ -1,4 +1,4 @@
-/* global React */
+/* global React, ReactDOM, useState, useEffect, useRef, useMemo, useCallback, useE_App, useS_App */
 const { useState, useEffect, useRef, useMemo, useCallback } = React;
 
 // ---------- Icons (stroke-based, brand-friendly) ----------

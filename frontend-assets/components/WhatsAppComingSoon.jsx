@@ -1,5 +1,4 @@
-/* global React */
-/* global Logo, Icon */
+/* global React, ReactDOM, useState, useEffect, useRef, useE_App, useS_App, Logo, Icon */
 
 const { useState } = React;
 

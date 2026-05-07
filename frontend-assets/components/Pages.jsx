@@ -1,4 +1,4 @@
-/* global React, Icon, CropGlyph */
+/* global React, ReactDOM, useState, useEffect, useRef, useE_App, useS_App, Icon, CropGlyph, useS_V, useE_V, useR_V */
 const { useState: useS_V, useEffect: useE_V, useRef: useR_V } = React;
 
 // ============================================================
