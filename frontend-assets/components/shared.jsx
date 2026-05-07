@@ -418,7 +418,6 @@ const LangToggle = ({ lang, setLang }) => (
     {[
       { code: "en", label: "EN", font: "var(--font-en)" },
       { code: "ur", label: "اردو", font: "var(--font-ur)" },
-      { code: "pa", label: "ਪੰਜਾਬੀ", font: "var(--font-ur)" },
     ].map((l) => (
       <button
         key={l.code}

@@ -288,7 +288,6 @@ const Voice = ({ lang, navigate }) => {
       {/* Conversation */}
         <div
           className="card conversation-container"
-          className="card conversation-container"
           style={{
             flex: 1,
             padding: 28,
@@ -396,20 +395,6 @@ const Voice = ({ lang, navigate }) => {
                 <>
                   {lang === "ur" ? msg.ur : msg.en}
                 </>
-              )}
-                <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
-                  <button
-                    className="btn btn-sm"
-                    style={{
-                      background: "var(--paper)",
-                      color: "var(--green-700)",
-                      padding: "4px 10px",
-                      fontSize: 11,
-                    }}
-                  >
-                    <Icon name="speaker" size={12} /> Replay
-                  </button>
-                </div>
               )}
             </div>
           </div>
@@ -569,9 +554,6 @@ const Voice = ({ lang, navigate }) => {
           )}
         </div>
 
-        <button className="btn btn-secondary btn-sm">
-          <Icon name="globe" size={14} /> {lang === "ur" ? "اردو" : "English"}
-        </button>
       </div>
     </div>
   );
@@ -1286,6 +1268,7 @@ const Analytics = ({ lang, navigate }) => {
         </div>
 
         <div
+          className="analytics-map-grid"
           style={{ display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: 24 }}
         >
           {/* Faux Pakistan map */}

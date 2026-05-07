@@ -524,21 +524,18 @@ const AnalyzingView = ({ lang, crop }) => {
     {
       en: `Analyzing ${crop || "crop"} leaf image…`,
       ur: `${crop || "فصل"} کے پتے کا تجزیہ ہو رہا ہے…`,
-      pa: `ਫ਼ਸਲ ਦੇ ਪੱਤੇ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਹੋ ਰਿਹਾ ਹੈ…`,
       sub_en: "Step 1 of 2 · Disease Detection AI",
       sub_ur: "مرحلہ 1 از 2 · بیماری کی شناخت",
     },
     {
       en: "Disease identified. Finding best treatment…",
       ur: "بیماری پہچانی گئی۔ بہترین علاج تلاش ہو رہا ہے…",
-      pa: "ਬਿਮਾਰੀ ਪਛਾਣੀ ਗਈ। ਬਿਹਤਰੀਨ ਇਲਾਜ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ…",
       sub_en: "Step 2 of 2 · Solution AI · Checking sponsored products",
       sub_ur: "مرحلہ 2 از 2 · حل AI · اسپانسرڈ مصنوعات چیک ہو رہی ہیں",
     },
     {
       en: "Preparing your personalised plan…",
       ur: "آپ کا ذاتی پلان تیار ہو رہا ہے…",
-      pa: "ਤੁਹਾਡ਼ੀ ਨਿੱਜੀ ਯੋਜਨਾ ਤਿਆਰ ਕੀਤੀ ਜਾ ਰਿਹੀ ਹੈ…",
       sub_en: "Almost done",
       sub_ur: "تقریباً مکمل",
     },
@@ -553,8 +550,8 @@ const AnalyzingView = ({ lang, crop }) => {
   }, []);
 
   const s = stages[step];
-  const isUrLike = lang === "ur" || lang === "pa";
-  const txt = lang === "pa" ? s.pa : lang === "ur" ? s.ur : s.en;
+  const isUrLike = lang === "ur";
+  const txt = lang === "ur" ? s.ur : s.en;
   const sub = lang === "ur" ? s.sub_ur : s.sub_en;
 
   return (

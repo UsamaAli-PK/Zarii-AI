@@ -532,7 +532,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
                 }
               />
 
-              <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+              <div className="onboarding-btn-row" style={{ display: "flex", gap: 12, marginTop: 24 }}>
                 <button
                   className="btn btn-secondary btn-lg"
                   onClick={() => setStep(0)}
@@ -770,7 +770,7 @@ const Onboarding = ({ lang, setLang, navigate, setUser }) => {
                 </button>
               </div>
 
-              <div style={{ display: "flex", gap: 12, marginTop: 28 }}>
+              <div className="onboarding-btn-row" style={{ display: "flex", gap: 12, marginTop: 28 }}>
                 <button
                   className="btn btn-secondary btn-lg"
                   onClick={() => {
