@@ -1,4 +1,5 @@
-/* global React, ReactDOM, Icon, T, Logo, LangToggle, LeafDeco */
+/* global React, Icon, T, Logo, LangToggle, LeafDeco */
+const { useState: useS_L, useEffect: useE_L } = React;
 
 const Landing = ({ lang, setLang, navigate }) => {
   const [menuOpen, setMenuOpen] = useS_L(false);

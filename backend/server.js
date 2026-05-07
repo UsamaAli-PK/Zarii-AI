@@ -18,13 +18,16 @@ function transpileJSX(filePath, versionParam) {
   try {
     const src = fs.readFileSync(filePath, 'utf8');
     const result = babel.transformSync(src, {
-      presets: [['@babel/preset-react', { runtime: 'automatic' }]],
+      presets: [['@babel/preset-react', { runtime: 'classic' }]],
       filename: path.basename(filePath),
       compact: true,
       comments: false,
     });
-    jsxCache.set(cacheKey, result.code);
-    return result.code;
+    let code = result.code;
+    // Wrap in IIFE to avoid global scope pollution
+    code = '(function() { "use strict"; ' + code + ' })();';
+    jsxCache.set(cacheKey, code);
+    return code;
   } catch (err) {
     console.error('[JSX] Transpile error:', filePath, err.message, err.stack);
     return 'console.error("Transpile failed for ' + path.basename(filePath) + ': ' + err.message + '");';

@@ -1,4 +1,5 @@
-/* global React, ReactDOM, Icon, T, Logo, LangToggle, LeafDeco */
+/* global React, Icon, T, Logo, LangToggle, LeafDeco */
+const { useState: useS_O, useEffect: useE_O, useRef: useR_O } = React;
 
 const Onboarding = ({ lang, setLang, navigate, setUser }) => {
   const [step, setStep] = useS_O(0);

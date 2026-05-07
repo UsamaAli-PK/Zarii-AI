@@ -1,4 +1,5 @@
-/* global React, ReactDOM, Logo, Icon */
+/* global React, Logo, Icon */
+const { useState, useEffect } = React;
 
 const WhatsAppComingSoon = ({ lang, navigate }) => {
   const [contact, setContact] = useState('');

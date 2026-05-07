@@ -1,4 +1,5 @@
-/* global React, ReactDOM */
+/* global React */
+const { useState: useS_Adm2, useEffect: useE_Adm2, useMemo: useM_Adm2 } = React;
 // We'll access window.AdminCard etc inside components to avoid race conditions during script loading
 
 

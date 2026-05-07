@@ -1,5 +1,6 @@
-/* global React, ReactDOM */
+/* global React */
 /* global Landing, Onboarding, AppShell, Dashboard, Analyze, Voice, History, Analytics, WhatsAppView, AdminConsole, AdminLogin, WhatsAppComingSoon */
+const { useState: useS_App, useEffect: useE_App } = React;
 
 const App = () => {
   const [screen, setScreen]           = useS_App('landing');

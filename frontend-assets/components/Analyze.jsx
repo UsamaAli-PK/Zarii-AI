@@ -1,4 +1,5 @@
-/* global React, ReactDOM, Icon, CropGlyph */
+/* global React, Icon, CropGlyph */
+const { useState: useS_A, useEffect: useE_A, useRef: useR_A, useCallback: useC_A } = React;
 
 const ALLOWED_IMAGE_MIME_TYPES = [
   "image/jpeg",

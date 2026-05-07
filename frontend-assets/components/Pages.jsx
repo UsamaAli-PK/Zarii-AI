@@ -1,4 +1,5 @@
-/* global React, ReactDOM, Icon, CropGlyph */
+/* global React, Icon, CropGlyph */
+const { useState: useS_V, useEffect: useE_V, useRef: useR_V } = React;
 
 // ============================================================
 // VOICE ASSISTANT
