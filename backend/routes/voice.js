@@ -27,7 +27,6 @@ router.post("/stt", auth, upload.single("audio"), async (req, res) => {
         "voice",
         (k) =>
           k.provider.toLowerCase().includes("stt") ||
-          k.provider.toLowerCase().includes("eleven") ||
           k.provider.toLowerCase().includes("scribe"),
       );
 
@@ -44,7 +43,7 @@ router.post("/stt", auth, upload.single("audio"), async (req, res) => {
           form.append("model_id", keyObj.model_id || "scribe_v2");
           
           // Map language codes for ElevenLabs
-          const langMap = { ur: "ur", pa: "pnb", en: "en" };
+          const langMap = { ur: "ur", en: "en" };
           form.append("language_code", langMap[lang] || "en");
 
           const response = await fetch(
@@ -80,7 +79,6 @@ router.post("/stt", auth, upload.single("audio"), async (req, res) => {
     if (!transcript) {
       const mockTranscripts = {
         ur: "میرے گندم کے پتے پیلے ہو رہے ہیں، کیا مسئلہ ہے؟",
-        pa: "ਮੇਰੀ ਕਣਕ ਦੇ ਪੱਤੇ ਪੀਲੇ ਹੋ ਰਹੇ ਹਨ, ਕੀ ਸਮੱਸਿਆ ਹੈ?",
         en: "My wheat leaves are turning yellow, what is the problem?",
       };
       transcript = mockTranscripts[lang] || mockTranscripts.en;
@@ -131,9 +129,7 @@ router.post("/tts", auth, async (req, res) => {
 
     const keyObj = await apiKeys.getServiceKey(
       "voice",
-      (k) =>
-        k.provider.toLowerCase().includes("tts") ||
-        k.provider.toLowerCase().includes("eleven"),
+      (k) => k.provider.toLowerCase().includes("tts"),
     );
 
     if (keyObj && keyObj.api_key) {

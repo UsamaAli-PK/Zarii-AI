@@ -759,9 +759,7 @@ async function answerVoiceQuery({ text, lang }) {
   const langInstruction =
     lang === "ur"
       ? "Always answer in Urdu (Nastaliq script)."
-      : lang === "pa"
-        ? "Always answer in Punjabi (Shahmukhi script)."
-        : "Answer in English.";
+      : "Answer in English.";
 
   const systemPrompt = `You are ZARii AI, an agricultural expert assistant for Pakistani farmers. Give concise, practical advice about crops, diseases, pesticides available in Pakistan with PKR prices. ${langInstruction} Keep answers under 100 words.`;
 
@@ -806,7 +804,6 @@ async function answerVoiceQuery({ text, lang }) {
   const mockAnswers = {
     en: "Yellowing wheat leaves usually means nitrogen deficiency. Apply Urea at 1 bag per acre and water lightly. Want me to recommend a specific brand available in your area?",
     ur: "گندم کے پیلے پتے عام طور پر نائٹروجن کی کمی کا اشارہ ہیں۔ فی ایکڑ ایک بوری یوریا ڈالیں اور ہلکا پانی دیں۔",
-    pa: "ਕਣਕ ਦੇ ਪੀਲੇ ਪੱਤੇ ਆਮ ਤੌਰ ਸ਼ਿੰ ਨਾਈਟ੍ਰੋਜਨ ਦੀ ਘਾਟ ਦੱਸਦੇ ਨੇ। ਪ੍ਰਤੀ ਏਕੜ ਇੱਕ ਬੋਰੀ ਯੂਰੀਆ ਪਾਓ ਅਤੇ ਹਲਕਾ ਪਾਣੀ ਦਿਓ।",
   };
   return mockAnswers[lang] || mockAnswers.en;
 }
