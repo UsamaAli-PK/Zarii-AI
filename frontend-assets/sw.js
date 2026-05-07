@@ -1,5 +1,5 @@
 /* ZARii AI Service Worker — App Shell Cache */
-const CACHE = 'zarii-v2';
+const CACHE = 'zarii-v3';
 const SHELL = [
   '/',
   '/styles.css?v=4',
@@ -10,6 +10,8 @@ const SHELL = [
   '/components/Dashboard.jsx?v=4',
   '/components/Analyze.jsx?v=4',
   '/components/Pages.jsx?v=4',
+  '/components/Admin.jsx?v=4',
+  '/components/AdminTabs.jsx?v=4',
   '/components/WhatsAppComingSoon.jsx?v=4',
   '/src/app.jsx?v=4',
   '/assets/farmer-badge.png',

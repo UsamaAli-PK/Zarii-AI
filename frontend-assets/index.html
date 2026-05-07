@@ -95,12 +95,23 @@
   })();
   </script>
   <div id="root">
-    <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a4d1a 0%,#2d6a2d 50%,#3d8b3d 100%);font-family:Inter,sans-serif;">
+    <div id="preloader" style="display:flex;align-items:center;justify-content:center;min-height:100vh;background:linear-gradient(135deg,#1a4d1a 0%,#2d6a2d 50%,#3d8b3d 100%);font-family:Inter,sans-serif;">
       <div style="text-align:center;animation:pulse 2s ease-in-out infinite;">
-        <img src="assets/zarii-full-logo.png" alt="ZARii AI" style="width:280px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));" onerror="this.style.display='none'" />
+        <img src="assets/zarii-full-logo.png" alt="ZARii AI" style="width:240px;margin-bottom:24px;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.3));" onerror="this.style.display='none'" />
         <div style="color:#fff;font-size:18px;font-weight:600;letter-spacing:1px;margin-bottom:8px;">ZARii AI</div>
-        <div style="color:rgba(255,255,255,0.7);font-size:13px;">Loading...</div>
+        <div id="preloader-msg" style="color:rgba(255,255,255,0.7);font-size:13px;">Loading...</div>
       </div>
+    </div>
+    <script>
+      // If React hasn't mounted after 10 seconds show a reload button
+      setTimeout(function() {
+        var pre = document.getElementById('preloader');
+        if (!pre) return; // React already removed it
+        document.getElementById('preloader-msg').innerHTML =
+          'Taking longer than expected...<br><br>' +
+          '<button onclick="location.reload()" style="margin-top:8px;padding:10px 24px;background:#9DCB7C;color:#1a4d1a;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;">Reload App</button>';
+      }, 10000);
+    </script>
     </div>
     <style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}</style>
   </div>
