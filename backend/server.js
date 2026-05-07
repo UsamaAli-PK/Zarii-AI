@@ -95,6 +95,14 @@ app.use('/uploads', (req, res, next) => {
   }
 }, express.static(config.UPLOAD_DIR));
 
+// ─── Service Worker — must have no-cache + full-scope header ─────
+app.get('/sw.js', (req, res) => {
+  res.setHeader('Content-Type', 'application/javascript');
+  res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+  res.setHeader('Service-Worker-Allowed', '/');
+  res.sendFile(path.join(__dirname, '..', 'frontend-assets', 'sw.js'));
+});
+
 // ─── Serve frontend static files (js, css, assets, etc.) ─────
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend-assets');
 app.use(express.static(FRONTEND_DIR, {

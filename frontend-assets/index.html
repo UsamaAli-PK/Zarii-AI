@@ -22,7 +22,13 @@
   <meta name="twitter:description" content="Free AI crop disease diagnosis for Pakistani farmers. Works in Urdu and English. Available on web · WhatsApp coming soon." />
 
   <meta name="theme-color" content="#2d6a2d" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ZARii AI" />
   <link rel="icon" type="image/png" href="assets/farmer-badge.png" />
+  <link rel="apple-touch-icon" href="assets/farmer-badge.png" />
+  <link rel="manifest" href="manifest.json" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -114,5 +120,261 @@
    <script type="text/babel" src="components/AdminTabs.jsx?v=3"></script>
    <script type="text/babel" src="components/WhatsAppComingSoon.jsx?v=3"></script>
    <script type="text/babel" src="src/app.jsx?v=3"></script>
+
+  <!-- ── PWA: Service Worker + Install Prompt ─────────────────── -->
+  <style>
+    #pwa-prompt {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      z-index: 99999;
+      width: calc(100vw - 32px);
+      max-width: 420px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(45,106,45,0.15);
+      padding: 20px 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      opacity: 0;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.3s ease;
+      pointer-events: none;
+      border: 1.5px solid rgba(45,106,45,0.12);
+    }
+    #pwa-prompt.visible {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    #pwa-prompt .pwa-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    #pwa-prompt .pwa-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 2px 10px rgba(45,106,45,0.2);
+    }
+    #pwa-prompt .pwa-text-block {
+      flex: 1;
+    }
+    #pwa-prompt .pwa-title {
+      font-family: Inter, sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      color: #1a4d1a;
+      margin: 0 0 3px;
+      line-height: 1.2;
+    }
+    #pwa-prompt .pwa-sub {
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      color: #666;
+      margin: 0;
+      line-height: 1.45;
+    }
+    #pwa-prompt .pwa-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    #pwa-prompt .pwa-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: #f0faf0;
+      border: 1px solid #c8e6c8;
+      border-radius: 20px;
+      padding: 4px 10px;
+      font-family: Inter, sans-serif;
+      font-size: 12px;
+      color: #2d6a2d;
+      font-weight: 600;
+    }
+    #pwa-prompt .pwa-actions {
+      display: flex;
+      gap: 10px;
+    }
+    #pwa-prompt .pwa-btn-install {
+      flex: 1;
+      background: linear-gradient(135deg, #2d6a2d, #3d8b3d);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 20px;
+      font-family: Inter, sans-serif;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      transition: opacity 0.2s;
+    }
+    #pwa-prompt .pwa-btn-install:hover { opacity: 0.9; }
+    #pwa-prompt .pwa-btn-later {
+      background: #f5f5f5;
+      color: #555;
+      border: none;
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: Inter, sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+    #pwa-prompt .pwa-btn-later:hover { background: #eee; }
+    /* iOS manual-install variant */
+    #pwa-prompt .pwa-ios-note {
+      display: none;
+      background: #f0faf0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      font-family: Inter, sans-serif;
+      font-size: 13px;
+      color: #2d6a2d;
+      line-height: 1.5;
+    }
+    #pwa-prompt.ios-mode .pwa-actions { display: none; }
+    #pwa-prompt.ios-mode .pwa-ios-note { display: block; }
+    #pwa-prompt.ios-mode .pwa-ios-close {
+      width: 100%;
+      background: #2d6a2d;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: Inter, sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+    }
+  </style>
+
+  <div id="pwa-prompt" role="dialog" aria-label="Install ZARii AI">
+    <div class="pwa-header">
+      <img class="pwa-icon" src="assets/farmer-badge.png" alt="ZARii AI" />
+      <div class="pwa-text-block">
+        <p class="pwa-title">Install ZARii AI</p>
+        <p class="pwa-sub">Get instant crop diagnosis — works offline too. Free for Pakistani farmers.</p>
+      </div>
+    </div>
+    <div class="pwa-badges">
+      <span class="pwa-badge">⚡ Works Offline</span>
+      <span class="pwa-badge">📸 Instant Diagnosis</span>
+      <span class="pwa-badge">🆓 Free Forever</span>
+    </div>
+    <div class="pwa-actions">
+      <button class="pwa-btn-install" id="pwa-install-btn">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Install App
+      </button>
+      <button class="pwa-btn-later" id="pwa-later-btn">Maybe Later</button>
+    </div>
+    <!-- iOS Safari instructions (shown instead on iOS) -->
+    <div class="pwa-ios-note">
+      📱 To install on iPhone/iPad:<br>
+      Tap the <strong>Share</strong> button (□↑) in Safari, then choose <strong>"Add to Home Screen"</strong>.
+    </div>
+    <button class="pwa-ios-close" id="pwa-ios-close-btn" style="display:none">Got it!</button>
+  </div>
+
+  <script>
+  (function() {
+    var DISMISS_KEY = 'zarii_pwa_dismissed';
+    var INSTALL_KEY = 'zarii_pwa_installed';
+    var deferredPrompt = null;
+    var prompt = document.getElementById('pwa-prompt');
+    var installBtn = document.getElementById('pwa-install-btn');
+    var laterBtn = document.getElementById('pwa-later-btn');
+    var iosCloseBtn = document.getElementById('pwa-ios-close-btn');
+
+    function isDismissed() {
+      var ts = localStorage.getItem(DISMISS_KEY);
+      if (!ts) return false;
+      return Date.now() - parseInt(ts, 10) < 30 * 24 * 60 * 60 * 1000; // 30 days
+    }
+
+    function isInstalled() {
+      return localStorage.getItem(INSTALL_KEY) === '1' ||
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone === true;
+    }
+
+    function showPrompt(isIOS) {
+      if (isDismissed() || isInstalled()) return;
+      if (isIOS) {
+        prompt.classList.add('ios-mode');
+        iosCloseBtn.style.display = 'block';
+      }
+      setTimeout(function() { prompt.classList.add('visible'); }, 3000);
+    }
+
+    function hidePrompt() {
+      prompt.classList.remove('visible');
+    }
+
+    // Detect iOS Safari (no beforeinstallprompt support)
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.MSStream;
+    var isSafari = /safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent);
+
+    if (isIOS && isSafari) {
+      showPrompt(true);
+    }
+
+    // Chrome / Android / Edge — standard install prompt
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      deferredPrompt = e;
+      showPrompt(false);
+    });
+
+    installBtn.addEventListener('click', function() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(function(choice) {
+        if (choice.outcome === 'accepted') {
+          localStorage.setItem(INSTALL_KEY, '1');
+        }
+        deferredPrompt = null;
+        hidePrompt();
+      });
+    });
+
+    laterBtn.addEventListener('click', function() {
+      localStorage.setItem(DISMISS_KEY, Date.now().toString());
+      hidePrompt();
+    });
+
+    iosCloseBtn.addEventListener('click', function() {
+      localStorage.setItem(DISMISS_KEY, Date.now().toString());
+      hidePrompt();
+    });
+
+    window.addEventListener('appinstalled', function() {
+      localStorage.setItem(INSTALL_KEY, '1');
+      hidePrompt();
+    });
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js').catch(function(err) {
+          console.warn('SW registration failed:', err);
+        });
+      });
+    }
+  })();
+  </script>
 </body>
 </html>
