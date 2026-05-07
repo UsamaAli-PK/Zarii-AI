@@ -1,6 +1,6 @@
 {
   "name": "zarii-ai",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "ZARii AI - Bilingual crop disease diagnosis assistant for Pakistani farmers",
   "scripts": {
     "dev": "node backend/server.js",
