@@ -1,9 +1,17 @@
 /* ZARii AI Service Worker — App Shell Cache */
-const CACHE = 'zarii-v1';
+const CACHE = 'zarii-v2';
 const SHELL = [
   '/',
-  '/styles.css',
-  '/src/api.js',
+  '/styles.css?v=4',
+  '/src/api.js?v=4',
+  '/components/shared.jsx?v=4',
+  '/components/Landing.jsx?v=4',
+  '/components/Onboarding.jsx?v=4',
+  '/components/Dashboard.jsx?v=4',
+  '/components/Analyze.jsx?v=4',
+  '/components/Pages.jsx?v=4',
+  '/components/WhatsAppComingSoon.jsx?v=4',
+  '/src/app.jsx?v=4',
   '/assets/farmer-badge.png',
   '/assets/zarii-full-logo.png',
   '/assets/zarii-logo.png',

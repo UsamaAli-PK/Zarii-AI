@@ -7,6 +7,29 @@ const rateLimit = require('express-rate-limit');
 const config = require('./config');
 const { runMigrations } = require('./db/migrate');
 
+// ─── Server-side JSX transpiler (replaces browser Babel) ──────
+const babel = require('@babel/core');
+const jsxCache = new Map(); // in-memory: cleared on server restart
+
+function transpileJSX(filePath, versionParam) {
+  const cacheKey = filePath + (versionParam || '');
+  if (jsxCache.has(cacheKey)) return jsxCache.get(cacheKey);
+  try {
+    const src = fs.readFileSync(filePath, 'utf8');
+    const result = babel.transformSync(src, {
+      presets: [['@babel/preset-react', { runtime: 'classic' }]],
+      filename: path.basename(filePath),
+      compact: true,       // minify output
+      comments: false,     // strip comments
+    });
+    jsxCache.set(cacheKey, result.code);
+    return result.code;
+  } catch (err) {
+    console.error('[JSX] Transpile error:', filePath, err.message);
+    return null;
+  }
+}
+
 const app = express();
 
 // ─── Trust Replit's proxy (required for rate limiting) ─────────
@@ -103,13 +126,34 @@ app.get('/sw.js', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'frontend-assets', 'sw.js'));
 });
 
-// ─── Serve frontend static files (js, css, assets, etc.) ─────
 const FRONTEND_DIR = path.join(__dirname, '..', 'frontend-assets');
+
+// ─── JSX → JS transpilation (server-side, replaces browser Babel) ─
+app.use((req, res, next) => {
+  if (!req.path.endsWith('.jsx')) return next();
+  const filePath = path.join(FRONTEND_DIR, req.path);
+  if (!fs.existsSync(filePath)) return next();
+  const code = transpileJSX(filePath, req.query.v);
+  if (!code) return res.status(500).send('// transpile error');
+  res.setHeader('Content-Type', 'application/javascript; charset=utf-8');
+  // Version-busted URLs get long cache; bare .jsx requests get no-cache
+  const versioned = !!req.query.v;
+  res.setHeader('Cache-Control', versioned
+    ? 'public, max-age=31536000, immutable'
+    : 'no-cache');
+  res.send(code);
+});
+
+// ─── Serve frontend static files (js, css, assets, etc.) ─────
 app.use(express.static(FRONTEND_DIR, {
   index: false,
   setHeaders: (res, filePath) => {
-    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-cache');
-    else if (filePath.match(/\.(js|jsx|css)$/)) res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    if (filePath.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache');
+    } else if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      // Static JS/CSS are version-busted via ?v= in HTML — long cache
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
   },
 }));
 
